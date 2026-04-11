@@ -756,6 +756,12 @@
         </div>
 
         <div id="stock-list" style="margin-top:1.25rem;"></div>
+
+        <!-- Clear all stock -->
+        <div style="margin-top:1rem;padding-top:1rem;border-top:1.5px solid var(--border);">
+          <button class="btn btn-danger btn-sm" onclick="clearAllStock()">🗑 Clear All Stock</button>
+          <span style="font-size:0.68rem;color:var(--muted);margin-left:0.75rem;">Permanently removes all stock items from the database.</span>
+        </div>
       </div>
     </div>
 
@@ -2258,6 +2264,18 @@ function deleteStockItem(name) {
     deleteStockRemote(name);
     renderStockList();
     showToast('Item removed from stock', 'success');
+  });
+}
+
+function clearAllStock() {
+  const stock = getStock();
+  if (!stock.length) return showToast('Stock is already empty', 'error');
+  askConfirm(`Clear ALL ${stock.length} stock item${stock.length !== 1 ? 's' : ''}? This permanently deletes them from the database.`, () => {
+    stock.forEach(item => deleteStockRemote(item.name));
+    setStock([]);
+    renderStockList();
+    renderLowStockAlerts();
+    showToast('All stock cleared ✓', 'success');
   });
 }
 
