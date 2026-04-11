@@ -704,6 +704,10 @@
 
     <!-- REVIEW TAB -->
     <div class="tab-pane active" id="o-tab-review">
+      <!-- Refresh button -->
+      <div style="display:flex;justify-content:flex-end;margin-bottom:0.5rem;">
+        <button class="btn btn-ghost btn-sm" onclick="initOwner()" style="font-size:0.7rem;">↻ Refresh from cloud</button>
+      </div>
       <!-- Low Stock Alerts -->
       <div id="o-low-stock-alerts"></div>
       <!-- Pending Purchases needing stock action -->
@@ -1193,6 +1197,7 @@ async function sbGet(table) {
     const r = await fetch(`${SUPABASE_URL}/rest/v1/${table}?select=*`, {
       headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
     });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
     const rows = await r.json();
     if (!Array.isArray(rows)) return [];
     return rows.map(row => row.data || row);
@@ -1201,7 +1206,7 @@ async function sbGet(table) {
 
 async function sbUpsert(table, id, data) {
   try {
-    await fetch(`${SUPABASE_URL}/rest/v1/${table}`, {
+    const r = await fetch(`${SUPABASE_URL}/rest/v1/${table}`, {
       method: 'POST',
       headers: {
         'apikey': SUPABASE_KEY,
@@ -1211,7 +1216,8 @@ async function sbUpsert(table, id, data) {
       },
       body: JSON.stringify({ id, data })
     });
-  } catch {}
+    return r.ok;
+  } catch { return false; }
 }
 
 async function sbDelete(table, id) {
@@ -1360,6 +1366,7 @@ function switchTab(tab, el) {
 // ════════════════════════════════════════
 async function initOwner() {
   showLoading('Loading data from cloud...');
+  let loadOk = false;
   try {
     const [sales, purchases, stock, taxLogs, loans, settings] = await Promise.all([
       getSalesRemote(),
@@ -1375,8 +1382,23 @@ async function initOwner() {
     if (taxLogs.length) setTaxLogs(taxLogs);
     if (loans.length) setLoans(loans);
     if (settings) setS('sf_settings', settings);
-  } catch {}
+    loadOk = true;
+  } catch(e) {
+    console.error('Supabase load error:', e);
+  }
   hideLoading();
+
+  if (!loadOk) {
+    showToast('Could not reach cloud — showing cached data. Tap Refresh to retry.', 'error');
+    // Add a refresh button to the review tab
+    const reviewEl = document.getElementById('o-review-list');
+    if (reviewEl) reviewEl.innerHTML = `
+      <div style="text-align:center;padding:2rem;">
+        <p style="color:var(--red);margin-bottom:1rem;">⚠ Could not load data from cloud.</p>
+        <button class="btn btn-primary" onclick="initOwner()">↻ Retry</button>
+      </div>`;
+    return;
+  }
 
   renderOwnerReview();
   renderOwnerRecords();
