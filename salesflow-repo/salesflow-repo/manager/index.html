@@ -509,8 +509,23 @@
         </div>
 
         <div class="btn-row">
-          <button class="btn btn-primary" onclick="submitSale()" style="flex:1;">Submit to Owner →</button>
+          <button class="btn btn-primary" onclick="addSaleToList()" style="flex:1;">+ Add to List</button>
           <button class="btn btn-ghost btn-sm" onclick="clearSaleForm()">Clear</button>
+        </div>
+      </div>
+
+      <!-- Sale staging list -->
+      <div id="sale-staging-area" style="display:none;margin-top:0.75rem;">
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.75rem;">
+            <div class="card-title" style="margin:0;">🧾 Sale List</div>
+            <button class="btn btn-ghost btn-sm" onclick="clearSaleList()">✕ Clear List</button>
+          </div>
+          <div id="sale-staging-list"></div>
+          <div id="sale-staging-total" style="margin-top:0.75rem;padding:0.75rem;background:var(--cream);border-radius:3px;font-family:'Syne',sans-serif;font-weight:700;font-size:0.85rem;"></div>
+          <div class="btn-row" style="margin-top:0.75rem;">
+            <button class="btn btn-primary" onclick="submitAllSales()" style="flex:1;">Submit All to Owner →</button>
+          </div>
         </div>
       </div>
     </div>
@@ -617,8 +632,23 @@
         </div>
 
         <div class="btn-row">
-          <button class="btn btn-primary" onclick="submitPurchase()" style="flex:1;">Submit to Owner →</button>
+          <button class="btn btn-primary" onclick="addPurchaseToList()" style="flex:1;">+ Add to List</button>
           <button class="btn btn-ghost btn-sm" onclick="clearPurchaseForm()">Clear</button>
+        </div>
+      </div>
+
+      <!-- Purchase staging list -->
+      <div id="purchase-staging-area" style="display:none;margin-top:0.75rem;">
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.75rem;">
+            <div class="card-title" style="margin:0;">🧾 Purchase List</div>
+            <button class="btn btn-ghost btn-sm" onclick="clearPurchaseList()">✕ Clear List</button>
+          </div>
+          <div id="purchase-staging-list"></div>
+          <div id="purchase-staging-total" style="margin-top:0.75rem;padding:0.75rem;background:var(--cream);border-radius:3px;font-family:'Syne',sans-serif;font-weight:700;font-size:0.85rem;"></div>
+          <div class="btn-row" style="margin-top:0.75rem;">
+            <button class="btn btn-primary" onclick="submitAllPurchases()" style="flex:1;">Submit All to Owner →</button>
+          </div>
         </div>
       </div>
     </div>
@@ -832,9 +862,38 @@ function switchTab(tab, el) {
   if (el) el.classList.add('active');
   const pane = document.getElementById('tab-' + tab);
   if (pane) pane.classList.add('active');
-  if (tab === 'history') renderHistory();
-  if (tab === 'purchases-history') renderPurchasesHistory();
+  if (tab === 'history') { renderHistory(); refreshFromCloud(); }
+  if (tab === 'purchases-history') { renderPurchasesHistory(); refreshFromCloud(); }
   if (tab === 'loans') renderLoans();
+  // Refresh stock from cloud when opening sale/purchase forms
+  if (tab === 'sale' || tab === 'purchase') refreshStockAndSales();
+}
+
+async function refreshStockAndSales() {
+  if (!navigator.onLine) return;
+  try {
+    const [stock, sales, purchases] = await Promise.all([
+      sbGet('stock'), sbGet('sales'), sbGet('purchases')
+    ]);
+    if (stock.length) { setStock(stock); refreshStockDatalist(); }
+    if (sales.length) setSales(sales);
+    if (purchases.length) setPurchases(purchases);
+  } catch {}
+}
+
+async function refreshFromCloud() {
+  if (!navigator.onLine) return;
+  try {
+    const [sales, purchases, loans] = await Promise.all([
+      sbGet('sales'), sbGet('purchases'), sbGet('loans')
+    ]);
+    if (sales.length) setSales(sales);
+    if (purchases.length) setPurchases(purchases);
+    if (loans.length) setLoans(loans);
+    renderHistory();
+    renderPurchasesHistory();
+    renderLoans();
+  } catch {}
 }
 
 // ════════════════════════════════════════
@@ -979,6 +1038,274 @@ function calcPreview() {
   }
 
   updateStockBanner();
+}
+
+// ════════════════════════════════════════
+// MULTI-ITEM STAGING LISTS
+// ════════════════════════════════════════
+let saleList = [];
+let purchaseList = [];
+
+function addSaleToList() {
+  const name     = document.getElementById('s-name').value.trim();
+  const date     = document.getElementById('s-date').value;
+  const qty      = parseFloat(document.getElementById('s-qty').value);
+  const price    = parseFloat(document.getElementById('s-price').value);
+  const cost     = parseFloat(document.getElementById('s-cost').value);
+  const expUnit  = parseFloat(document.getElementById('s-expenses').value) || 0;
+  const notes    = document.getElementById('s-notes').value.trim();
+  const vatRate  = vatOn ? (parseFloat(document.getElementById('s-vat-rate').value) || 0) : 0;
+
+  if (!name)            return showToast('Enter item name', 'error');
+  if (!date)            return showToast('Select a date', 'error');
+  if (!qty || qty <= 0) return showToast('Enter valid quantity', 'error');
+  if (!price || price <= 0) return showToast('Enter selling price', 'error');
+  if (isNaN(cost) || cost < 0) return showToast('Enter cost price', 'error');
+
+  if (vatOn) {
+    const item = getStock().find(s => s.name.toLowerCase() === name.toLowerCase());
+    if (!item || item.qty <= 0) return showToast('Cannot add — item has no stock. VAT blocked.', 'error');
+    if (qty > item.qty) return showToast(`Cannot add — only ${item.qty} in stock.`, 'error');
+  }
+
+  if (saleLoanOn) {
+    if (!document.getElementById('sale-loan-person').value.trim()) return showToast('Enter person/customer name for the loan', 'error');
+    if (!document.getElementById('sale-loan-amount').value) return showToast('Enter the amount owed', 'error');
+  }
+
+  const revenue  = qty * price;
+  const vatAmt   = vatOn ? (revenue * vatRate / 100) : 0;
+  const totalExp = expUnit * qty;
+  const totalCost= (cost * qty) + totalExp;
+  const profit   = revenue - totalCost;
+
+  const loanInfo = saleLoanOn ? {
+    isLoan: true,
+    loanType: document.getElementById('sale-loan-type').value,
+    person: document.getElementById('sale-loan-person').value.trim(),
+    amountOwed: parseFloat(document.getElementById('sale-loan-amount').value) || 0,
+    loanNotes: document.getElementById('sale-loan-notes').value.trim()
+  } : { isLoan: false };
+
+  saleList.push({
+    id: Date.now().toString() + '_' + saleList.length,
+    name, date, qty, price, cost,
+    expensesPerUnit: expUnit, expenses: totalExp,
+    notes, vatOn, vatRate, vatAmount: vatAmt,
+    revenue, totalCost, profit,
+    status: 'pending',
+    submittedAt: new Date().toISOString(),
+    ownerNote: '',
+    ...loanInfo
+  });
+
+  clearSaleForm();
+  renderSaleStaging();
+  showToast(`"${name}" added to list ✓`, 'success');
+}
+
+function renderSaleStaging() {
+  const area = document.getElementById('sale-staging-area');
+  const list = document.getElementById('sale-staging-list');
+  const total = document.getElementById('sale-staging-total');
+
+  if (!saleList.length) { area.style.display = 'none'; return; }
+  area.style.display = 'block';
+
+  const totalRevenue = saleList.reduce((s, i) => s + i.revenue, 0);
+  const totalProfit  = saleList.reduce((s, i) => s + i.profit, 0);
+
+  list.innerHTML = saleList.map((s, idx) => `
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:0.6rem 0.75rem;background:var(--paper);border:1.5px solid var(--border);border-radius:3px;margin-bottom:0.4rem;">
+      <div>
+        <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.82rem;">${s.name} ${s.vatOn ? `<span style="font-size:0.6rem;background:#dbeafe;color:#1e40af;padding:0.1rem 0.35rem;border-radius:2px;">VAT</span>` : ''} ${s.isLoan ? `<span style="font-size:0.6rem;background:#fef9c3;color:#713f12;padding:0.1rem 0.35rem;border-radius:2px;">💳</span>` : ''}</div>
+        <div style="font-size:0.68rem;color:var(--muted);">Qty: ${s.qty} · ETB ${s.price.toFixed(2)}/unit · ${s.date}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:0.5rem;">
+        <div style="text-align:right;">
+          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.82rem;">ETB ${s.revenue.toFixed(2)}</div>
+          <div style="font-size:0.65rem;color:var(--green);">+${s.profit.toFixed(2)}</div>
+        </div>
+        <button onclick="removeSaleItem(${idx})" style="background:none;border:none;color:var(--red);font-size:1rem;cursor:pointer;padding:0.25rem;">✕</button>
+      </div>
+    </div>
+  `).join('');
+
+  total.innerHTML = `${saleList.length} item${saleList.length !== 1 ? 's' : ''} &nbsp;·&nbsp; Total Revenue: <span style="color:var(--ink);">ETB ${totalRevenue.toFixed(2)}</span> &nbsp;·&nbsp; Total Profit: <span style="color:var(--green);">ETB ${totalProfit.toFixed(2)}</span>`;
+}
+
+function removeSaleItem(idx) {
+  saleList.splice(idx, 1);
+  renderSaleStaging();
+}
+
+function clearSaleList() {
+  saleList = [];
+  renderSaleStaging();
+}
+
+async function submitAllSales() {
+  if (!saleList.length) return showToast('No items in list', 'error');
+  const btn = document.querySelector('#sale-staging-area .btn-primary');
+  btn.textContent = 'Submitting...';
+  btn.disabled = true;
+
+  let successCount = 0;
+  const sales = getSales();
+  for (const sale of saleList) {
+    sales.push(sale);
+    if (navigator.onLine) {
+      const ok = await sbUpsert('sales', sale.id, sale);
+      if (ok) successCount++;
+      else addToOfflineQueue('sale', sale);
+    } else {
+      addToOfflineQueue('sale', sale);
+    }
+  }
+  setSales(sales);
+
+  btn.textContent = 'Submit All to Owner →';
+  btn.disabled = false;
+
+  const queued = saleList.length - successCount;
+  if (!navigator.onLine || queued === saleList.length) {
+    showToast(`${saleList.length} items saved offline — tap Sync Now to send`, 'success');
+  } else if (queued > 0) {
+    showToast(`${successCount} submitted ✓, ${queued} queued for sync`, 'success');
+  } else {
+    showToast(`${saleList.length} sale${saleList.length !== 1 ? 's' : ''} submitted to owner ✓`, 'success');
+  }
+
+  saleList = [];
+  renderSaleStaging();
+  updateOfflineBar();
+  if (currentTab === 'history') renderHistory();
+}
+
+function addPurchaseToList() {
+  const name    = document.getElementById('pu-name').value.trim();
+  const qty     = parseInt(document.getElementById('pu-qty').value);
+  const costUnit= parseFloat(document.getElementById('pu-cost').value);
+  const expUnit = parseFloat(document.getElementById('pu-exp').value) || 0;
+  const date    = document.getElementById('pu-date').value;
+  const notes   = document.getElementById('pu-notes').value.trim();
+  const vatRate = purchaseVatOn ? (parseFloat(document.getElementById('pu-vat-rate').value) || 0) : 0;
+
+  if (!name)              return showToast('Enter item name', 'error');
+  if (!qty || qty <= 0)   return showToast('Enter valid quantity', 'error');
+  if (isNaN(costUnit) || costUnit < 0) return showToast('Enter cost per unit', 'error');
+  if (!date)              return showToast('Select a date', 'error');
+
+  if (purchaseLoanOn) {
+    if (!document.getElementById('pu-loan-person').value.trim()) return showToast('Enter supplier name for credit purchase', 'error');
+    if (!document.getElementById('pu-loan-amount').value) return showToast('Enter amount owed', 'error');
+  }
+
+  const totalExp = expUnit * qty;
+  const sub      = (qty * costUnit) + totalExp;
+  const vatAmt   = purchaseVatOn ? (sub * vatRate / 100) : 0;
+  const total    = sub + vatAmt;
+
+  const loanInfo = purchaseLoanOn ? {
+    isLoan: true,
+    loanType: 'credit_purchase',
+    person: document.getElementById('pu-loan-person').value.trim(),
+    amountOwed: parseFloat(document.getElementById('pu-loan-amount').value) || 0,
+    loanNotes: document.getElementById('pu-loan-notes').value.trim()
+  } : { isLoan: false };
+
+  purchaseList.push({
+    id: Date.now().toString() + '_' + purchaseList.length,
+    type: 'purchase', name, qty, costUnit,
+    expensesPerUnit: expUnit, totalExpenses: totalExp,
+    date, notes,
+    vatOn: purchaseVatOn, vatRate, vatAmount: vatAmt,
+    subtotal: sub, total,
+    status: 'pending',
+    flagForStock: purchaseVatOn,
+    stockAdded: false,
+    submittedAt: new Date().toISOString(),
+    ownerNote: '',
+    ...loanInfo
+  });
+
+  clearPurchaseForm();
+  renderPurchaseStaging();
+  showToast(`"${name}" added to list ✓`, 'success');
+}
+
+function renderPurchaseStaging() {
+  const area = document.getElementById('purchase-staging-area');
+  const list = document.getElementById('purchase-staging-list');
+  const total = document.getElementById('purchase-staging-total');
+
+  if (!purchaseList.length) { area.style.display = 'none'; return; }
+  area.style.display = 'block';
+
+  const totalCost = purchaseList.reduce((s, p) => s + p.total, 0);
+
+  list.innerHTML = purchaseList.map((p, idx) => `
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:0.6rem 0.75rem;background:var(--paper);border:1.5px solid var(--border);border-radius:3px;margin-bottom:0.4rem;">
+      <div>
+        <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.82rem;">${p.name} ${p.flagForStock ? `<span style="font-size:0.6rem;background:#fef9c3;color:#713f12;padding:0.1rem 0.35rem;border-radius:2px;">🚩 VAT→Stock</span>` : ''} ${p.isLoan ? `<span style="font-size:0.6rem;background:#fee2e2;color:#991b1b;padding:0.1rem 0.35rem;border-radius:2px;">💳</span>` : ''}</div>
+        <div style="font-size:0.68rem;color:var(--muted);">Qty: ${p.qty} · ETB ${p.costUnit.toFixed(2)}/unit · ${p.date}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:0.5rem;">
+        <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.82rem;">ETB ${p.total.toFixed(2)}</div>
+        <button onclick="removePurchaseItem(${idx})" style="background:none;border:none;color:var(--red);font-size:1rem;cursor:pointer;padding:0.25rem;">✕</button>
+      </div>
+    </div>
+  `).join('');
+
+  total.innerHTML = `${purchaseList.length} item${purchaseList.length !== 1 ? 's' : ''} &nbsp;·&nbsp; Total Cost: <span style="color:var(--red);">ETB ${totalCost.toFixed(2)}</span>`;
+}
+
+function removePurchaseItem(idx) {
+  purchaseList.splice(idx, 1);
+  renderPurchaseStaging();
+}
+
+function clearPurchaseList() {
+  purchaseList = [];
+  renderPurchaseStaging();
+}
+
+async function submitAllPurchases() {
+  if (!purchaseList.length) return showToast('No items in list', 'error');
+  const btn = document.querySelector('#purchase-staging-area .btn-primary');
+  btn.textContent = 'Submitting...';
+  btn.disabled = true;
+
+  let successCount = 0;
+  const purchases = getPurchases();
+  for (const purchase of purchaseList) {
+    purchases.push(purchase);
+    if (navigator.onLine) {
+      const ok = await sbUpsert('purchases', purchase.id, purchase);
+      if (ok) successCount++;
+      else addToOfflineQueue('purchase', purchase);
+    } else {
+      addToOfflineQueue('purchase', purchase);
+    }
+  }
+  setPurchases(purchases);
+
+  btn.textContent = 'Submit All to Owner →';
+  btn.disabled = false;
+
+  const queued = purchaseList.length - successCount;
+  if (!navigator.onLine || queued === purchaseList.length) {
+    showToast(`${purchaseList.length} items saved offline — tap Sync Now to send`, 'success');
+  } else if (queued > 0) {
+    showToast(`${successCount} submitted ✓, ${queued} queued for sync`, 'success');
+  } else {
+    showToast(`${purchaseList.length} purchase${purchaseList.length !== 1 ? 's' : ''} submitted to owner ✓`, 'success');
+  }
+
+  purchaseList = [];
+  renderPurchaseStaging();
+  updateOfflineBar();
+  if (currentTab === 'purchases-history') renderPurchasesHistory();
 }
 
 function toggleSaleLoan() {
