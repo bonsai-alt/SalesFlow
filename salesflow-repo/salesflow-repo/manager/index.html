@@ -1,0 +1,1506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="SalesFlow">
+<meta name="theme-color" content="#0f0e0d">
+<title>SalesFlow — Manager</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink: #0f0e0d;
+    --paper: #f5f0e8;
+    --cream: #ede7d9;
+    --accent: #c0392b;
+    --gold: #d4a012;
+    --muted: #7a7268;
+    --border: #d0c8b8;
+    --card: #faf7f2;
+    --red: #c0392b;
+    --green: #1a6b3a;
+    --safe: #e6f4ec;
+  }
+
+  html, body {
+    height: 100%;
+    font-family: 'DM Mono', monospace;
+    background: var(--paper);
+    color: var(--ink);
+    font-size: 14px;
+    overscroll-behavior: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* ── APP SHELL ── */
+  #app {
+    display: flex;
+    flex-direction: column;
+    height: 100dvh;
+    max-width: 480px;
+    margin: 0 auto;
+    background: var(--paper);
+    position: relative;
+  }
+
+  /* ── TOPBAR ── */
+  .topbar {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 0.75rem 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 10;
+  }
+  .topbar-logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.05rem; letter-spacing: -0.02em; }
+  .topbar-logo span { color: var(--gold); }
+  .topbar-right { display: flex; align-items: center; gap: 0.5rem; }
+
+  /* ── OFFLINE BAR ── */
+  #offline-bar {
+    display: none;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 1rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+  #offline-bar.offline { background: #fee2e2; color: #991b1b; }
+  #offline-bar.syncing { background: #fef9c3; color: #713f12; }
+  #offline-bar.synced  { background: #dcfce7; color: #166534; }
+  #offline-bar .ob-spacer { flex: 1; }
+  #sync-btn {
+    background: var(--ink); color: var(--paper);
+    border: none; border-radius: 3px;
+    padding: 0.2rem 0.6rem; font-size: 0.65rem;
+    font-family: 'DM Mono', monospace; cursor: pointer;
+  }
+
+  /* ── TABS ── */
+  .tabs {
+    display: flex;
+    background: var(--cream);
+    border-bottom: 2px solid var(--border);
+    flex-shrink: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab {
+    padding: 0.7rem 1rem;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    cursor: pointer;
+    white-space: nowrap;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    color: var(--muted);
+    transition: all 0.15s;
+  }
+  .tab.active { color: var(--ink); border-bottom-color: var(--ink); }
+
+  /* ── SCROLL AREA ── */
+  .scroll-area {
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 1rem;
+    padding-bottom: 2rem;
+  }
+
+  /* ── CARD ── */
+  .card {
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    border-radius: 5px;
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+  }
+  .card-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 0.95rem;
+    margin-bottom: 1rem;
+    letter-spacing: -0.01em;
+  }
+
+  /* ── FORM ── */
+  label {
+    display: block;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    margin-bottom: 0.35rem;
+  }
+  input[type=text], input[type=number], input[type=date], textarea {
+    width: 100%;
+    padding: 0.65rem 0.75rem;
+    border: 1.5px solid var(--border);
+    border-radius: 3px;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.82rem;
+    background: var(--paper);
+    color: var(--ink);
+    transition: border-color 0.15s;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  input:focus, textarea:focus { outline: none; border-color: var(--ink); }
+  textarea { resize: vertical; min-height: 60px; }
+
+  .form-row { display: grid; gap: 0.75rem; margin-bottom: 0.75rem; }
+  .form-row.two { grid-template-columns: 1fr 1fr; }
+  .form-row.three { grid-template-columns: 1fr 1fr 1fr; }
+  .form-row.single { grid-template-columns: 1fr; }
+
+  /* ── TOGGLE ── */
+  .toggle-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0.65rem 0.75rem;
+    border: 1.5px solid var(--border); border-radius: 3px;
+    cursor: pointer; background: var(--paper);
+  }
+  .toggle-row label { margin: 0; font-size: 0.78rem; text-transform: none; letter-spacing: 0; color: var(--ink); font-weight: 600; }
+  .toggle {
+    width: 38px; height: 22px; background: var(--border);
+    border-radius: 11px; position: relative; transition: background 0.2s; flex-shrink: 0;
+  }
+  .toggle::after {
+    content: ''; position: absolute; width: 16px; height: 16px;
+    background: white; border-radius: 50%; top: 3px; left: 3px; transition: left 0.2s;
+  }
+  .toggle.on { background: var(--ink); }
+  .toggle.on::after { left: 19px; }
+  .vat-rate-row { display: none; margin-top: 0.6rem; }
+  .vat-rate-row.visible { display: block; }
+
+  /* ── PREVIEW BOX ── */
+  .preview-box {
+    background: var(--cream);
+    border: 1.5px solid var(--border);
+    border-radius: 3px;
+    padding: 0.9rem 1rem;
+    margin: 0.75rem 0;
+  }
+  .p-row {
+    display: flex; justify-content: space-between;
+    padding: 0.28rem 0; font-size: 0.78rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .p-row:last-child { border-bottom: none; }
+  .p-row.total { font-weight: 800; font-size: 0.88rem; padding-top: 0.5rem; }
+  .p-row.profit { color: var(--green); }
+  .p-row.loss { color: var(--red); }
+
+  /* ── BUTTONS ── */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    padding: 0.7rem 1.25rem;
+    border: 2px solid var(--ink); border-radius: 3px;
+    font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.78rem;
+    letter-spacing: 0.05em; cursor: pointer; transition: all 0.15s;
+    text-transform: uppercase; text-decoration: none;
+    -webkit-appearance: none; appearance: none;
+  }
+  .btn-primary { background: var(--ink); color: var(--paper); }
+  .btn-primary:active { opacity: 0.8; }
+  .btn-ghost { background: transparent; color: var(--ink); }
+  .btn-ghost:active { background: var(--cream); }
+  .btn-danger { background: var(--red); color: white; border-color: var(--red); }
+  .btn-sm { padding: 0.35rem 0.75rem; font-size: 0.68rem; }
+  .btn-full { width: 100%; }
+  .btn-row { display: flex; gap: 0.6rem; flex-wrap: wrap; margin-top: 1rem; }
+
+  /* ── BADGES ── */
+  .status-badge {
+    display: inline-block; padding: 0.2rem 0.55rem;
+    border-radius: 2px; font-size: 0.62rem; font-weight: 700;
+    letter-spacing: 0.08em; text-transform: uppercase;
+  }
+  .status-pending  { background: #fef9c3; color: #713f12; }
+  .status-approved { background: #dcfce7; color: #166534; }
+  .status-rejected { background: #fee2e2; color: #991b1b; }
+  .vat-badge {
+    display: inline-block; padding: 0.15rem 0.45rem;
+    border-radius: 2px; font-size: 0.6rem; font-weight: 700; letter-spacing: 0.06em;
+  }
+  .vat-yes { background: #dbeafe; color: #1e40af; }
+  .vat-no  { background: var(--cream); color: var(--muted); }
+
+  /* ── HISTORY ITEMS ── */
+  .history-item {
+    border: 1.5px solid var(--border);
+    border-radius: 4px;
+    padding: 0.85rem 1rem;
+    margin-bottom: 0.6rem;
+    background: var(--paper);
+    display: flex;
+    gap: 0.75rem;
+    align-items: flex-start;
+  }
+  .history-item.approved { border-left: 4px solid var(--green); }
+  .history-item.rejected { border-left: 4px solid var(--red); }
+  .history-item.pending  { border-left: 4px solid var(--gold); }
+  .hi-info { flex: 1; min-width: 0; }
+  .hi-info h3 { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.85rem; margin-bottom: 0.25rem; }
+  .hi-info p { font-size: 0.72rem; color: var(--muted); margin-bottom: 0.15rem; line-height: 1.4; }
+  .hi-nums { text-align: right; flex-shrink: 0; }
+  .hi-amount { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 0.9rem; }
+  .hi-profit { font-size: 0.7rem; color: var(--green); margin-top: 0.15rem; }
+  .hi-delete { margin-top: 0.4rem; }
+
+  /* ── EMPTY STATE ── */
+  .empty { text-align: center; padding: 2.5rem 1rem; color: var(--muted); }
+  .empty .e-icon { font-size: 2rem; margin-bottom: 0.75rem; }
+  .empty p { font-size: 0.8rem; line-height: 1.6; }
+
+  /* ── STOCK BANNER ── */
+  #stock-banner {
+    display: none; padding: 0.6rem 0.85rem;
+    border-radius: 3px; font-size: 0.74rem;
+    border: 1.5px solid; margin-bottom: 0.75rem;
+  }
+
+  /* ── AUTOFILL HINT ── */
+  #autofill-hint {
+    display: none; padding: 0.6rem 1rem;
+    background: #f0fdf4; border: 1.5px solid #86efac;
+    border-radius: 3px; font-size: 0.74rem; color: #166534;
+    margin-bottom: 0.75rem; line-height: 1.5;
+  }
+
+  /* ── VAT BLOCKED MSG ── */
+  #vat-block-msg {
+    display: none; margin-top: 0.4rem; font-size: 0.72rem;
+    color: var(--red); padding: 0.5rem 0.75rem;
+    background: #fee2e2; border-radius: 3px;
+  }
+
+  /* ── TOAST ── */
+  #toast {
+    position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%) translateY(100px);
+    padding: 0.6rem 1.25rem; border-radius: 4px;
+    font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.78rem;
+    z-index: 9999; transition: transform 0.3s; white-space: nowrap;
+    max-width: 90vw; text-align: center;
+  }
+  #toast.show { transform: translateX(-50%) translateY(0); }
+  #toast.success { background: var(--ink); color: var(--paper); }
+  #toast.error   { background: var(--red); color: white; }
+
+  /* ── CONFIRM MODAL ── */
+  #confirm-modal {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.5); z-index: 9998;
+    align-items: center; justify-content: center; padding: 1rem;
+  }
+  .confirm-box {
+    background: var(--paper); border: 2px solid var(--border);
+    border-radius: 6px; padding: 1.5rem;
+    width: 100%; max-width: 320px;
+  }
+  #confirm-msg {
+    font-family: 'Syne', sans-serif; font-weight: 600; font-size: 0.9rem;
+    line-height: 1.5; margin-bottom: 1.25rem;
+  }
+  .confirm-btns { display: flex; gap: 0.6rem; justify-content: flex-end; }
+
+  /* ── LOADING ── */
+  #loading {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.5); z-index: 99999;
+    align-items: center; justify-content: center;
+  }
+  .loading-box {
+    background: var(--paper); border-radius: 6px;
+    padding: 1.5rem 2rem;
+    font-family: 'Syne', sans-serif; font-weight: 700;
+    display: flex; align-items: center; gap: 0.75rem;
+    font-size: 0.9rem;
+  }
+
+  /* ── TAB PANES ── */
+  .tab-pane { display: none; }
+  .tab-pane.active { display: block; }
+
+  /* ── DIVIDER ── */
+  .divider { border: none; border-top: 1.5px solid var(--border); margin: 1rem 0; }
+
+  /* ── FLAG BADGE ── */
+  .flag-badge {
+    display: inline-block; padding: 0.15rem 0.45rem;
+    border-radius: 2px; font-size: 0.6rem; font-weight: 700; letter-spacing: 0.06em;
+  }
+  .flag-stock { background: #fef9c3; color: #713f12; }
+  .flag-nostock { background: var(--cream); color: var(--muted); }
+
+  /* ── SPIN ANIMATION ── */
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .spin { display: inline-block; animation: spin 0.8s linear infinite; }
+
+  /* ── SECTION HEADER ── */
+  .section-header {
+    font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.72rem;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem; border-bottom: 1px solid var(--border);
+  }
+
+  /* ── PULL TO REFRESH HINT ── */
+  .refresh-hint {
+    text-align: center; padding: 0.5rem; font-size: 0.68rem;
+    color: var(--muted); margin-bottom: 0.5rem;
+  }
+</style>
+</head>
+<body>
+
+<div id="app">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-logo">Sales<span>Flow</span></div>
+    <div class="topbar-right">
+      <span style="font-size:0.65rem;color:rgba(255,255,255,0.5);font-weight:600;letter-spacing:0.08em;">MANAGER</span>
+    </div>
+  </div>
+
+  <!-- OFFLINE BAR -->
+  <div id="offline-bar">
+    <span id="ob-icon">📡</span>
+    <span id="ob-msg">Checking...</span>
+    <span id="ob-queue"></span>
+    <span class="ob-spacer"></span>
+    <button id="sync-btn" onclick="manualSync()" style="display:none;">↑ Sync</button>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('sale',this)">Log Sale</div>
+    <div class="tab" onclick="switchTab('purchase',this)">Log Purchase</div>
+    <div class="tab" onclick="switchTab('history',this)">My Sales</div>
+    <div class="tab" onclick="switchTab('purchases-history',this)">My Purchases</div>
+    <div class="tab" onclick="switchTab('loans',this)">💳 Loans</div>
+  </div>
+
+  <!-- SCROLL AREA -->
+  <div class="scroll-area">
+
+    <!-- LOG SALE TAB -->
+    <div class="tab-pane active" id="tab-sale">
+      <div class="card">
+        <div class="card-title">📦 New Sale Entry</div>
+
+        <div class="form-row two">
+          <div>
+            <label>Item Name</label>
+            <input type="text" id="s-name" placeholder="e.g. Coffee Bags" oninput="onItemNameChange()" list="stock-list-dl" autocomplete="off">
+            <datalist id="stock-list-dl"></datalist>
+          </div>
+          <div>
+            <label>Date</label>
+            <input type="date" id="s-date">
+          </div>
+        </div>
+
+        <!-- Autofill hint -->
+        <div id="autofill-hint"></div>
+
+        <!-- Stock banner -->
+        <div id="stock-banner"></div>
+
+        <div class="form-row three">
+          <div>
+            <label>Qty Sold</label>
+            <input type="number" id="s-qty" placeholder="0" min="1" oninput="calcPreview()">
+          </div>
+          <div>
+            <label>Sell Price/Unit</label>
+            <input type="number" id="s-price" placeholder="0.00" min="0" step="0.01" oninput="calcPreview()">
+          </div>
+          <div>
+            <label>Cost/Unit</label>
+            <input type="number" id="s-cost" placeholder="0.00" min="0" step="0.01" oninput="calcPreview()">
+          </div>
+        </div>
+
+        <div class="form-row single">
+          <div>
+            <label>Expenses / Unit (ETB) <span style="font-size:0.65rem;color:var(--muted);text-transform:none;letter-spacing:0;">transport, handling etc.</span></label>
+            <input type="number" id="s-expenses" placeholder="0.00" min="0" step="0.01" oninput="calcPreview()">
+          </div>
+        </div>
+
+        <!-- VAT Toggle -->
+        <div style="margin-bottom:0.75rem;">
+          <div class="toggle-row" onclick="toggleVAT()">
+            <label>VAT Applicable</label>
+            <div class="toggle" id="vat-toggle"></div>
+          </div>
+          <div id="vat-block-msg">⚠ Item not in stock or stock is zero — VAT cannot be applied.</div>
+          <div class="vat-rate-row" id="vat-rate-row">
+            <label style="margin-top:0.5rem;">VAT Rate (%)</label>
+            <input type="number" id="s-vat-rate" placeholder="15" min="0" max="100" step="0.01" oninput="calcPreview()" value="15">
+          </div>
+        </div>
+
+        <!-- Loan Toggle -->
+        <div style="margin-bottom:0.75rem;">
+          <div class="toggle-row" onclick="toggleSaleLoan()">
+            <div>
+              <div style="font-size:0.78rem;font-weight:600;">💳 Loan / Credit Sale</div>
+              <div style="font-size:0.68rem;color:var(--muted);margin-top:0.15rem;">Sold on credit or lent goods</div>
+            </div>
+            <div class="toggle" id="sale-loan-toggle"></div>
+          </div>
+          <div id="sale-loan-fields" style="display:none;margin-top:0.6rem;padding:0.85rem;background:#fef9c3;border:1.5px solid #fde047;border-radius:4px;">
+            <div style="margin-bottom:0.6rem;">
+              <label>Loan Type</label>
+              <select id="sale-loan-type" style="width:100%;padding:0.6rem 0.75rem;border:1.5px solid var(--border);border-radius:3px;font-family:'DM Mono',monospace;font-size:0.8rem;background:var(--paper);">
+                <option value="credit_sale">Sold on credit — customer hasn't paid yet</option>
+                <option value="lent_goods">Lent goods — expecting return</option>
+              </select>
+            </div>
+            <div class="form-row two" style="margin-bottom:0.6rem;">
+              <div>
+                <label>Person / Customer</label>
+                <input type="text" id="sale-loan-person" placeholder="e.g. Abebe Kebede">
+              </div>
+              <div>
+                <label>Amount Owed (ETB)</label>
+                <input type="number" id="sale-loan-amount" placeholder="0.00" min="0" step="0.01">
+              </div>
+            </div>
+            <div>
+              <label>Loan Notes (optional)</label>
+              <input type="text" id="sale-loan-notes" placeholder="e.g. Pay by end of month">
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row single">
+          <div>
+            <label>Notes (optional)</label>
+            <textarea id="s-notes" placeholder="Any remarks..."></textarea>
+          </div>
+        </div>
+
+        <!-- Preview -->
+        <div class="preview-box">
+          <div class="p-row"><span>Qty</span><span id="p-qty">—</span></div>
+          <div class="p-row"><span>Revenue</span><span id="p-revenue">ETB —</span></div>
+          <div class="p-row" id="p-vat-row" style="display:none"><span id="p-vat-label">VAT (0%)</span><span id="p-vat">ETB —</span></div>
+          <div class="p-row"><span>Cost (unit × qty)</span><span id="p-cost">ETB —</span></div>
+          <div class="p-row"><span>Expenses (unit × qty)</span><span id="p-exp">ETB —</span></div>
+          <div class="p-row total profit"><span>Profit</span><span id="p-profit">ETB —</span></div>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn btn-primary" onclick="submitSale()" style="flex:1;">Submit to Owner →</button>
+          <button class="btn btn-ghost btn-sm" onclick="clearSaleForm()">Clear</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- LOG PURCHASE TAB -->
+    <div class="tab-pane" id="tab-purchase">
+      <div class="card">
+        <div class="card-title">🛒 Log Purchase</div>
+        <p style="font-size:0.72rem;color:var(--muted);margin-bottom:1rem;line-height:1.5;">
+          <strong>With VAT</strong> → owner approves → added to stock.<br>
+          <strong>Without VAT</strong> → logged only, no stock change.
+        </p>
+
+        <div class="form-row single">
+          <div>
+            <label>Item Name</label>
+            <input type="text" id="pu-name" placeholder="e.g. Coffee Bags" autocomplete="off">
+          </div>
+        </div>
+
+        <div class="form-row three">
+          <div>
+            <label>Qty</label>
+            <input type="number" id="pu-qty" placeholder="0" min="1" step="1" oninput="calcPurchasePreview()">
+          </div>
+          <div>
+            <label>Cost/Unit</label>
+            <input type="number" id="pu-cost" placeholder="0.00" min="0" step="0.01" oninput="calcPurchasePreview()">
+          </div>
+          <div>
+            <label>Exp/Unit</label>
+            <input type="number" id="pu-exp" placeholder="0.00" min="0" step="0.01" oninput="calcPurchasePreview()">
+          </div>
+        </div>
+        <div style="font-size:0.68rem;color:var(--muted);margin:-0.25rem 0 0.75rem;">Expenses/unit × qty added to subtotal</div>
+
+        <div class="form-row single">
+          <div>
+            <label>Date</label>
+            <input type="date" id="pu-date">
+          </div>
+        </div>
+
+        <!-- VAT Toggle -->
+        <div style="margin-bottom:0.75rem;">
+          <div class="toggle-row" onclick="togglePurchaseVAT()">
+            <div>
+              <div style="font-size:0.78rem;font-weight:600;">Purchased with VAT</div>
+              <div style="font-size:0.68rem;color:var(--muted);margin-top:0.15rem;">Owner approves → added to stock</div>
+            </div>
+            <div class="toggle" id="pvat-toggle"></div>
+          </div>
+          <div class="vat-rate-row" id="pvat-rate-row">
+            <label style="margin-top:0.5rem;">VAT Rate (%)</label>
+            <input type="number" id="pu-vat-rate" placeholder="15" min="0" max="100" step="0.01" oninput="calcPurchasePreview()" value="15">
+          </div>
+          <div id="pvat-flag-info" style="display:none;margin-top:0.5rem;padding:0.5rem 0.75rem;background:#fef9c3;border:1.5px solid #fde047;border-radius:3px;font-size:0.7rem;color:#713f12;">
+            🚩 Owner will add <strong id="pvat-qty">0</strong> units to stock after approval.
+          </div>
+        </div>
+
+        <!-- Purchase Loan Toggle -->
+        <div style="margin-bottom:0.75rem;">
+          <div class="toggle-row" onclick="togglePurchaseLoan()">
+            <div>
+              <div style="font-size:0.78rem;font-weight:600;">💳 Bought on Credit</div>
+              <div style="font-size:0.68rem;color:var(--muted);margin-top:0.15rem;">Received goods but haven't paid yet</div>
+            </div>
+            <div class="toggle" id="pu-loan-toggle"></div>
+          </div>
+          <div id="pu-loan-fields" style="display:none;margin-top:0.6rem;padding:0.85rem;background:#fef9c3;border:1.5px solid #fde047;border-radius:4px;">
+            <div class="form-row two" style="margin-bottom:0.6rem;">
+              <div>
+                <label>Supplier Name</label>
+                <input type="text" id="pu-loan-person" placeholder="e.g. Supplier ABC">
+              </div>
+              <div>
+                <label>Amount Owed (ETB)</label>
+                <input type="number" id="pu-loan-amount" placeholder="0.00" min="0" step="0.01">
+              </div>
+            </div>
+            <div>
+              <label>Loan Notes (optional)</label>
+              <input type="text" id="pu-loan-notes" placeholder="e.g. Payment due in 30 days">
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row single">
+          <div>
+            <label>Notes (optional)</label>
+            <textarea id="pu-notes" placeholder="Supplier name, delivery info..."></textarea>
+          </div>
+        </div>
+
+        <!-- Preview -->
+        <div class="preview-box">
+          <div class="p-row"><span>Qty</span><span id="pu-p-qty">—</span></div>
+          <div class="p-row"><span>Cost/unit</span><span id="pu-p-unit">ETB —</span></div>
+          <div class="p-row"><span>Expenses (unit × qty)</span><span id="pu-p-exp">ETB —</span></div>
+          <div class="p-row"><span>Subtotal</span><span id="pu-p-sub">ETB —</span></div>
+          <div class="p-row" id="pu-p-vat-row" style="display:none"><span id="pu-p-vat-label">VAT (0%)</span><span id="pu-p-vat">ETB —</span></div>
+          <div class="p-row total"><span>Total Cost</span><span id="pu-p-total">ETB —</span></div>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn btn-primary" onclick="submitPurchase()" style="flex:1;">Submit to Owner →</button>
+          <button class="btn btn-ghost btn-sm" onclick="clearPurchaseForm()">Clear</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MY SALES HISTORY -->
+    <div class="tab-pane" id="tab-history">
+      <div class="refresh-hint">↻ Pull down or tap to refresh</div>
+      <div id="history-list"></div>
+    </div>
+
+    <!-- MY PURCHASES HISTORY -->
+    <div class="tab-pane" id="tab-purchases-history">
+      <div class="refresh-hint">↻ Pull down or tap to refresh</div>
+      <div id="purchases-history-list"></div>
+    </div>
+
+    <!-- LOANS TAB -->
+    <div class="tab-pane" id="tab-loans">
+      <div class="card" style="margin-bottom:0;">
+        <div class="card-title">💳 Loans</div>
+        <div style="margin-bottom:1rem;">
+          <input type="text" id="loan-search" placeholder="🔍 Search by person or customer name..." oninput="renderLoans()" style="width:100%;padding:0.6rem 0.75rem;border:1.5px solid var(--border);border-radius:3px;font-family:'DM Mono',monospace;font-size:0.8rem;background:var(--paper);">
+        </div>
+        <div id="loans-list"></div>
+      </div>
+    </div>
+
+  </div><!-- end scroll-area -->
+</div><!-- end app -->
+
+<!-- CONFIRM MODAL -->
+<div id="confirm-modal">
+  <div class="confirm-box">
+    <div id="confirm-msg"></div>
+    <div class="confirm-btns">
+      <button class="btn btn-ghost btn-sm" id="confirm-cancel">Cancel</button>
+      <button class="btn btn-danger btn-sm" id="confirm-ok">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<!-- LOADING -->
+<div id="loading">
+  <div class="loading-box">
+    <span style="font-size:1.3rem;">⏳</span>
+    <span id="loading-msg">Loading...</span>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<script>
+// ════════════════════════════════════════
+// CONFIG
+// ════════════════════════════════════════
+const SUPABASE_URL = 'https://fsmlzbwjcorhvtepjuur.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZzbWx6YndqY29yaHZ0ZXBqdXVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMyMDgxMzUsImV4cCI6MjA4ODc4NDEzNX0.vGyltIyQIpMFa66vIVBRuQqr3tZDrN8RFupRxSS7T-o';
+
+// ════════════════════════════════════════
+// STORAGE — localStorage
+// ════════════════════════════════════════
+function getS(k, def) {
+  try { const v = localStorage.getItem(k); return v !== null ? JSON.parse(v) : def; } catch { return def; }
+}
+function setS(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} }
+
+function getSales()     { return getS('sf_sales', []); }
+function setSales(s)    { setS('sf_sales', s); }
+function getPurchases() { return getS('sf_purchases', []); }
+function setPurchases(p){ setS('sf_purchases', p); }
+function getStock()     { return getS('sf_stock', []); }
+function setStock(s)    { setS('sf_stock', s); }
+function getSettings()  { return getS('sf_settings', { defaultVat: 15 }); }
+function getLoans()     { return getS('sf_loans', []); }
+function setLoans(l)    { setS('sf_loans', l); }
+function getOfflineQueue()  { return getS('sf_offline_queue', []); }
+function setOfflineQueue(q) { setS('sf_offline_queue', q); }
+
+// ════════════════════════════════════════
+// SUPABASE HELPERS
+// ════════════════════════════════════════
+async function sbUpsert(table, id, data) {
+  try {
+    await fetch(`${SUPABASE_URL}/rest/v1/${table}`, {
+      method: 'POST',
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_KEY,
+        'Content-Type': 'application/json',
+        'Prefer': 'resolution=merge-duplicates'
+      },
+      body: JSON.stringify({ id, data })
+    });
+    return true;
+  } catch { return false; }
+}
+
+async function sbDelete(table, id) {
+  try {
+    await fetch(`${SUPABASE_URL}/rest/v1/${table}?id=eq.${encodeURIComponent(id)}`, {
+      method: 'DELETE',
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
+    });
+  } catch {}
+}
+
+async function sbGet(table) {
+  try {
+    const r = await fetch(`${SUPABASE_URL}/rest/v1/${table}?select=*`, {
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
+    });
+    const rows = await r.json();
+    return Array.isArray(rows) ? rows.map(r => r.data || r) : [];
+  } catch { return []; }
+}
+
+async function sbGetKey(key) {
+  try {
+    const r = await fetch(`${SUPABASE_URL}/rest/v1/settings?key=eq.${encodeURIComponent(key)}&select=value`, {
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
+    });
+    const rows = await r.json();
+    return rows && rows[0] ? rows[0].value : null;
+  } catch { return null; }
+}
+
+function addToOfflineQueue(type, item) {
+  const q = getOfflineQueue();
+  q.push({ type, item, queuedAt: new Date().toISOString() });
+  setOfflineQueue(q);
+  updateOfflineBar();
+}
+
+// ════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════
+let vatOn = false;
+let purchaseVatOn = false;
+let saleLoanOn = false;
+let purchaseLoanOn = false;
+let currentTab = 'sale';
+
+window.addEventListener('load', async () => {
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('s-date').value = today;
+  document.getElementById('pu-date').value = today;
+
+  showLoading('Syncing with server...');
+  try {
+    const [settings, stock, sales, purchases, loans] = await Promise.all([
+      sbGetKey('config'),
+      sbGet('stock'),
+      sbGet('sales'),
+      sbGet('purchases'),
+      sbGet('loans')
+    ]);
+    if (settings) setS('sf_settings', settings);
+    if (stock.length) setStock(stock);
+    if (sales.length) setSales(sales);
+    if (purchases.length) setPurchases(purchases);
+    if (loans.length) setLoans(loans);
+  } catch {}
+  hideLoading();
+
+  const s = getSettings();
+  document.getElementById('s-vat-rate').value = s.defaultVat || 15;
+  document.getElementById('pu-vat-rate').value = s.defaultVat || 15;
+
+  refreshStockDatalist();
+  updateOfflineBar();
+  renderHistory();
+  renderPurchasesHistory();
+  renderLoans();
+  calcPreview();
+
+  if (navigator.onLine) autoSync();
+  registerSW();
+});
+
+window.addEventListener('online',  () => { updateOfflineBar(); setTimeout(autoSync, 1200); });
+window.addEventListener('offline', () => updateOfflineBar());
+
+function refreshStockDatalist() {
+  const dl = document.getElementById('stock-list-dl');
+  dl.innerHTML = '';
+  getStock().forEach(item => {
+    const opt = document.createElement('option');
+    opt.value = item.name;
+    dl.appendChild(opt);
+  });
+}
+
+// ════════════════════════════════════════
+// TABS
+// ════════════════════════════════════════
+function switchTab(tab, el) {
+  currentTab = tab;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  if (el) el.classList.add('active');
+  const pane = document.getElementById('tab-' + tab);
+  if (pane) pane.classList.add('active');
+  if (tab === 'history') renderHistory();
+  if (tab === 'purchases-history') renderPurchasesHistory();
+  if (tab === 'loans') renderLoans();
+}
+
+// ════════════════════════════════════════
+// SALE FORM
+// ════════════════════════════════════════
+function onItemNameChange() {
+  updateStockBanner();
+  const name = document.getElementById('s-name').value.trim();
+  const hint = document.getElementById('autofill-hint');
+  if (!name) { hint.style.display = 'none'; return; }
+
+  const vatPurchases = getPurchases().filter(p =>
+    p.status === 'approved' && p.name.toLowerCase() === name.toLowerCase()
+  ).sort((a, b) => new Date(b.date) - new Date(a.date));
+
+  const nonVatPurchases = getPurchases().filter(p =>
+    p.status === 'approved' && !p.flagForStock && p.name.toLowerCase() === name.toLowerCase()
+  ).sort((a, b) => new Date(b.date) - new Date(a.date));
+
+  const totalNonVatRemaining = nonVatPurchases.reduce((sum, p) => sum + (p.remainingQty !== undefined ? p.remainingQty : p.qty), 0);
+
+  if (!vatPurchases.length && !nonVatPurchases.length) { hint.style.display = 'none'; return; }
+
+  hint.style.display = 'block';
+  let html = '';
+
+  if (vatPurchases.length) {
+    const last = vatPurchases[0];
+    const expPerUnit = last.expensesPerUnit || 0;
+    const stockItem = getStock().find(s => s.name.toLowerCase() === name.toLowerCase());
+    const stockQty = stockItem ? stockItem.qty : 0;
+    html += `<div style="${nonVatPurchases.length ? 'margin-bottom:0.4rem;' : ''}">
+      📦 <strong>Stock item</strong> · Last purchase <strong>${last.date}</strong> · Cost: <strong>ETB ${last.costUnit.toFixed(2)}</strong>${expPerUnit ? ` · Exp: <strong>ETB ${expPerUnit.toFixed(2)}</strong>` : ''} · <span style="color:var(--green);font-weight:600;">${stockQty} in stock</span>
+      &nbsp;<button class="btn btn-sm" style="padding:0.15rem 0.6rem;font-size:0.68rem;background:var(--ink);color:#fff;border-radius:3px;" onclick="autofillFromPurchase('${last.id}')">↙ Use these</button>
+    </div>`;
+  }
+
+  if (nonVatPurchases.length) {
+    const last = nonVatPurchases[0];
+    const expPerUnit = last.expensesPerUnit || 0;
+    const remainColor = totalNonVatRemaining <= 0 ? '#991b1b' : totalNonVatRemaining < 5 ? '#713f12' : '#166534';
+    html += `<div>
+      🧾 <strong>Purchase log</strong> · Last purchase <strong>${last.date}</strong> · Cost: <strong>ETB ${last.costUnit.toFixed(2)}</strong>${expPerUnit ? ` · Exp: <strong>ETB ${expPerUnit.toFixed(2)}</strong>` : ''} · <span style="color:${remainColor};font-weight:600;">${totalNonVatRemaining} remaining</span>
+      &nbsp;<button class="btn btn-sm" style="padding:0.15rem 0.6rem;font-size:0.68rem;background:#1a6b3a;color:#fff;border-radius:3px;" onclick="autofillFromPurchase('${last.id}')">↙ Use these</button>
+    </div>`;
+  }
+
+  hint.innerHTML = html;
+}
+
+function autofillFromPurchase(id) {
+  const p = getPurchases().find(x => x.id === id);
+  if (!p) return;
+  document.getElementById('s-cost').value = p.costUnit.toFixed(2);
+  if (p.expensesPerUnit) document.getElementById('s-expenses').value = p.expensesPerUnit.toFixed(2);
+  calcPreview();
+  showToast('Values filled from purchase ✓', 'success');
+}
+
+function updateStockBanner() {
+  const name = document.getElementById('s-name').value.trim().toLowerCase();
+  const qty = parseFloat(document.getElementById('s-qty').value) || 0;
+  const stock = getStock();
+  const item = stock.find(s => s.name.toLowerCase() === name);
+  const banner = document.getElementById('stock-banner');
+  if (!name) { banner.style.display = 'none'; return; }
+
+  if (!item) {
+    banner.style.cssText = 'display:block;background:#fef9c3;border-color:#fde047;color:#713f12;padding:0.6rem 0.85rem;border-radius:3px;font-size:0.74rem;border:1.5px solid;margin-bottom:0.75rem;';
+    banner.textContent = '⚠ Item not in stock — VAT cannot be applied';
+    if (vatOn) { vatOn = true; toggleVAT(); }
+    return;
+  }
+
+  const available = item.qty;
+  if (available <= 0) {
+    banner.style.cssText = 'display:block;background:#fee2e2;border-color:#fca5a5;color:#991b1b;padding:0.6rem 0.85rem;border-radius:3px;font-size:0.74rem;border:1.5px solid;margin-bottom:0.75rem;';
+    banner.textContent = '✗ Out of stock — 0 units available. VAT blocked.';
+    if (vatOn) { vatOn = true; toggleVAT(); }
+    return;
+  }
+
+  if (vatOn && qty > 0 && qty > available) {
+    banner.style.cssText = 'display:block;background:#fee2e2;border-color:#fca5a5;color:#991b1b;padding:0.6rem 0.85rem;border-radius:3px;font-size:0.74rem;border:1.5px solid;margin-bottom:0.75rem;';
+    banner.textContent = `✗ Want to sell ${qty} but only ${available} in stock.`;
+    return;
+  }
+
+  if (vatOn && qty > 0) {
+    banner.style.cssText = 'display:block;background:#f0fdf4;border-color:#86efac;color:#166534;padding:0.6rem 0.85rem;border-radius:3px;font-size:0.74rem;border:1.5px solid;margin-bottom:0.75rem;';
+    banner.textContent = `✓ In stock: ${available} — selling ${qty}, ${available - qty} remaining`;
+    return;
+  }
+
+  banner.style.cssText = 'display:block;background:#f0fdf4;border-color:#86efac;color:#166534;padding:0.6rem 0.85rem;border-radius:3px;font-size:0.74rem;border:1.5px solid;margin-bottom:0.75rem;';
+  banner.textContent = `✓ ${available} units available`;
+}
+
+function toggleVAT() {
+  const name = document.getElementById('s-name').value.trim().toLowerCase();
+  const stock = getStock();
+  const item = stock.find(s => s.name.toLowerCase() === name);
+  if (!vatOn && (!item || item.qty <= 0)) {
+    document.getElementById('vat-block-msg').style.display = 'block';
+    return;
+  }
+  document.getElementById('vat-block-msg').style.display = 'none';
+  vatOn = !vatOn;
+  document.getElementById('vat-toggle').classList.toggle('on', vatOn);
+  document.getElementById('vat-rate-row').classList.toggle('visible', vatOn);
+  document.getElementById('p-vat-row').style.display = vatOn ? 'flex' : 'none';
+  updateStockBanner();
+  calcPreview();
+}
+
+function calcPreview() {
+  const qty       = parseFloat(document.getElementById('s-qty').value) || 0;
+  const price     = parseFloat(document.getElementById('s-price').value) || 0;
+  const cost      = parseFloat(document.getElementById('s-cost').value) || 0;
+  const expUnit   = parseFloat(document.getElementById('s-expenses').value) || 0;
+  const vatRate   = vatOn ? (parseFloat(document.getElementById('s-vat-rate').value) || 0) : 0;
+  const revenue   = qty * price;
+  const vatAmt    = vatOn ? (revenue * vatRate / 100) : 0;
+  const totalExp  = expUnit * qty;
+  const totalCost = (cost * qty) + totalExp;
+  const profit    = revenue - totalCost;
+
+  document.getElementById('p-qty').textContent = qty || '—';
+  document.getElementById('p-revenue').textContent = 'ETB ' + revenue.toFixed(2);
+  document.getElementById('p-vat-label').textContent = `VAT (${vatRate}%)`;
+  document.getElementById('p-vat').textContent = 'ETB ' + vatAmt.toFixed(2);
+  document.getElementById('p-cost').textContent = 'ETB ' + (cost * qty).toFixed(2);
+  document.getElementById('p-exp').textContent = 'ETB ' + totalExp.toFixed(2);
+  const profitEl = document.getElementById('p-profit');
+  profitEl.textContent = 'ETB ' + profit.toFixed(2);
+  profitEl.parentElement.className = 'p-row total ' + (profit >= 0 ? 'profit' : 'loss');
+
+  // Auto-fill loan amount with revenue if loan toggle is on
+  if (saleLoanOn && revenue > 0) {
+    const loanAmtEl = document.getElementById('sale-loan-amount');
+    if (loanAmtEl) loanAmtEl.value = revenue.toFixed(2);
+  }
+
+  updateStockBanner();
+}
+
+function toggleSaleLoan() {
+  saleLoanOn = !saleLoanOn;
+  document.getElementById('sale-loan-toggle').classList.toggle('on', saleLoanOn);
+  document.getElementById('sale-loan-fields').style.display = saleLoanOn ? 'block' : 'none';
+  if (saleLoanOn) calcPreview();
+}
+
+function togglePurchaseLoan() {
+  purchaseLoanOn = !purchaseLoanOn;
+  document.getElementById('pu-loan-toggle').classList.toggle('on', purchaseLoanOn);
+  document.getElementById('pu-loan-fields').style.display = purchaseLoanOn ? 'block' : 'none';
+  if (purchaseLoanOn) calcPurchasePreview();
+}
+
+async function submitSale() {
+  const name     = document.getElementById('s-name').value.trim();
+  const date     = document.getElementById('s-date').value;
+  const qty      = parseFloat(document.getElementById('s-qty').value);
+  const price    = parseFloat(document.getElementById('s-price').value);
+  const cost     = parseFloat(document.getElementById('s-cost').value);
+  const expUnit  = parseFloat(document.getElementById('s-expenses').value) || 0;
+  const notes    = document.getElementById('s-notes').value.trim();
+  const vatRate  = vatOn ? (parseFloat(document.getElementById('s-vat-rate').value) || 0) : 0;
+
+  if (!name)            return showToast('Enter item name', 'error');
+  if (!date)            return showToast('Select a date', 'error');
+  if (!qty || qty <= 0) return showToast('Enter valid quantity', 'error');
+  if (!price || price <= 0) return showToast('Enter selling price', 'error');
+  if (isNaN(cost) || cost < 0) return showToast('Enter cost price', 'error');
+
+  if (vatOn) {
+    const item = getStock().find(s => s.name.toLowerCase() === name.toLowerCase());
+    if (!item || item.qty <= 0) return showToast('Cannot submit — item has no stock. VAT blocked.', 'error');
+    if (qty > item.qty) return showToast(`Cannot submit — only ${item.qty} in stock.`, 'error');
+  }
+
+  if (saleLoanOn) {
+    if (!document.getElementById('sale-loan-person').value.trim()) return showToast('Enter person/customer name for the loan', 'error');
+    if (!document.getElementById('sale-loan-amount').value) return showToast('Enter the amount owed', 'error');
+  }
+
+  const revenue  = qty * price;
+  const vatAmt   = vatOn ? (revenue * vatRate / 100) : 0;
+  const totalExp = expUnit * qty;
+  const totalCost= (cost * qty) + totalExp;
+  const profit   = revenue - totalCost;
+
+  const loanInfo = saleLoanOn ? {
+    isLoan: true,
+    loanType: document.getElementById('sale-loan-type').value,
+    person: document.getElementById('sale-loan-person').value.trim(),
+    amountOwed: parseFloat(document.getElementById('sale-loan-amount').value) || 0,
+    loanNotes: document.getElementById('sale-loan-notes').value.trim()
+  } : { isLoan: false };
+
+  const sale = {
+    id: Date.now().toString(),
+    name, date, qty, price, cost,
+    expensesPerUnit: expUnit, expenses: totalExp,
+    notes, vatOn, vatRate, vatAmount: vatAmt,
+    revenue, totalCost, profit,
+    status: 'pending',
+    submittedAt: new Date().toISOString(),
+    ownerNote: '',
+    ...loanInfo
+  };
+
+  const sales = getSales();
+  sales.push(sale);
+  setSales(sales);
+
+  const ok = navigator.onLine ? await sbUpsert('sales', sale.id, sale) : false;
+  if (!ok) {
+    addToOfflineQueue('sale', sale);
+    showToast('Saved offline — syncs when online 📡', 'success');
+  } else {
+    showToast(saleLoanOn ? 'Sale submitted — loan logged after owner approval ✓' : 'Sale submitted to owner ✓', 'success');
+  }
+
+  clearSaleForm();
+  if (currentTab === 'history') renderHistory();
+}
+
+function clearSaleForm() {
+  ['s-name','s-qty','s-price','s-cost','s-expenses','s-notes','sale-loan-person','sale-loan-amount','sale-loan-notes'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  document.getElementById('stock-banner').style.display = 'none';
+  document.getElementById('autofill-hint').style.display = 'none';
+  document.getElementById('vat-block-msg').style.display = 'none';
+  if (vatOn) { vatOn = false; document.getElementById('vat-toggle').classList.remove('on'); document.getElementById('vat-rate-row').classList.remove('visible'); document.getElementById('p-vat-row').style.display = 'none'; }
+  if (saleLoanOn) { saleLoanOn = false; document.getElementById('sale-loan-toggle').classList.remove('on'); document.getElementById('sale-loan-fields').style.display = 'none'; }
+  calcPreview();
+}
+
+// ════════════════════════════════════════
+// PURCHASE FORM
+// ════════════════════════════════════════
+function togglePurchaseVAT() {
+  purchaseVatOn = !purchaseVatOn;
+  document.getElementById('pvat-toggle').classList.toggle('on', purchaseVatOn);
+  document.getElementById('pvat-rate-row').classList.toggle('visible', purchaseVatOn);
+  document.getElementById('pu-p-vat-row').style.display = purchaseVatOn ? 'flex' : 'none';
+  document.getElementById('pvat-flag-info').style.display = purchaseVatOn ? 'block' : 'none';
+  calcPurchasePreview();
+}
+
+function calcPurchasePreview() {
+  const qty     = parseFloat(document.getElementById('pu-qty').value) || 0;
+  const unit    = parseFloat(document.getElementById('pu-cost').value) || 0;
+  const expUnit = parseFloat(document.getElementById('pu-exp').value) || 0;
+  const vatRate = purchaseVatOn ? (parseFloat(document.getElementById('pu-vat-rate').value) || 0) : 0;
+  const totalExp= expUnit * qty;
+  const sub     = (qty * unit) + totalExp;
+  const vat     = purchaseVatOn ? (sub * vatRate / 100) : 0;
+  const total   = sub + vat;
+
+  document.getElementById('pu-p-qty').textContent   = qty || '—';
+  document.getElementById('pu-p-unit').textContent  = 'ETB ' + unit.toFixed(2);
+  document.getElementById('pu-p-exp').textContent   = 'ETB ' + totalExp.toFixed(2);
+  document.getElementById('pu-p-sub').textContent   = 'ETB ' + sub.toFixed(2);
+  document.getElementById('pu-p-vat-label').textContent = `VAT (${vatRate}%)`;
+  document.getElementById('pu-p-vat').textContent   = 'ETB ' + vat.toFixed(2);
+  document.getElementById('pu-p-total').textContent = 'ETB ' + total.toFixed(2);
+  document.getElementById('pvat-qty').textContent   = qty;
+
+  // Auto-fill loan amount with total cost if loan toggle is on
+  if (purchaseLoanOn && total > 0) {
+    const loanAmtEl = document.getElementById('pu-loan-amount');
+    if (loanAmtEl) loanAmtEl.value = total.toFixed(2);
+  }
+}
+
+async function submitPurchase() {
+  const name    = document.getElementById('pu-name').value.trim();
+  const qty     = parseInt(document.getElementById('pu-qty').value);
+  const costUnit= parseFloat(document.getElementById('pu-cost').value);
+  const expUnit = parseFloat(document.getElementById('pu-exp').value) || 0;
+  const date    = document.getElementById('pu-date').value;
+  const notes   = document.getElementById('pu-notes').value.trim();
+  const vatRate = purchaseVatOn ? (parseFloat(document.getElementById('pu-vat-rate').value) || 0) : 0;
+
+  if (!name)              return showToast('Enter item name', 'error');
+  if (!qty || qty <= 0)   return showToast('Enter valid quantity', 'error');
+  if (isNaN(costUnit) || costUnit < 0) return showToast('Enter cost per unit', 'error');
+  if (!date)              return showToast('Select a date', 'error');
+
+  if (purchaseLoanOn) {
+    if (!document.getElementById('pu-loan-person').value.trim()) return showToast('Enter the supplier name for the credit purchase', 'error');
+    if (!document.getElementById('pu-loan-amount').value) return showToast('Enter the amount owed to the supplier', 'error');
+  }
+
+  const totalExp = expUnit * qty;
+  const sub      = (qty * costUnit) + totalExp;
+  const vatAmt   = purchaseVatOn ? (sub * vatRate / 100) : 0;
+  const total    = sub + vatAmt;
+
+  const loanInfo = purchaseLoanOn ? {
+    isLoan: true,
+    loanType: 'credit_purchase',
+    person: document.getElementById('pu-loan-person').value.trim(),
+    amountOwed: parseFloat(document.getElementById('pu-loan-amount').value) || 0,
+    loanNotes: document.getElementById('pu-loan-notes').value.trim()
+  } : { isLoan: false };
+
+  const purchase = {
+    id: Date.now().toString(),
+    type: 'purchase', name, qty, costUnit,
+    expensesPerUnit: expUnit, totalExpenses: totalExp,
+    date, notes,
+    vatOn: purchaseVatOn, vatRate, vatAmount: vatAmt,
+    subtotal: sub, total,
+    status: 'pending',
+    flagForStock: purchaseVatOn,
+    stockAdded: false,
+    submittedAt: new Date().toISOString(),
+    ownerNote: '',
+    ...loanInfo
+  };
+
+  const purchases = getPurchases();
+  purchases.push(purchase);
+  setPurchases(purchases);
+
+  const ok = navigator.onLine ? await sbUpsert('purchases', purchase.id, purchase) : false;
+  if (!ok) {
+    addToOfflineQueue('purchase', purchase);
+    showToast('Saved offline — syncs when online 📡', 'success');
+  } else if (purchaseLoanOn) {
+    showToast('Purchase submitted — credit loan logged after owner approval ✓', 'success');
+  } else if (!purchaseVatOn) {
+    showToast('Purchase submitted to owner ✓', 'success');
+  } else {
+    showToast('Purchase submitted — owner will add to stock ✓', 'success');
+  }
+
+  clearPurchaseForm();
+  if (currentTab === 'purchases-history') renderPurchasesHistory();
+}
+
+function clearPurchaseForm() {
+  ['pu-name','pu-qty','pu-cost','pu-exp','pu-notes','pu-loan-person','pu-loan-amount','pu-loan-notes'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  document.getElementById('pvat-flag-info').style.display = 'none';
+  if (purchaseVatOn) { purchaseVatOn = false; document.getElementById('pvat-toggle').classList.remove('on'); document.getElementById('pvat-rate-row').classList.remove('visible'); document.getElementById('pu-p-vat-row').style.display = 'none'; }
+  if (purchaseLoanOn) { purchaseLoanOn = false; document.getElementById('pu-loan-toggle').classList.remove('on'); document.getElementById('pu-loan-fields').style.display = 'none'; }
+  calcPurchasePreview();
+}
+
+// ════════════════════════════════════════
+// LOANS
+// ════════════════════════════════════════
+function renderLoans() {
+  const container = document.getElementById('loans-list');
+  if (!container) return;
+  const query = (document.getElementById('loan-search')?.value || '').trim().toLowerCase();
+  let loans = getLoans().sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  if (query) loans = loans.filter(l => l.person.toLowerCase().includes(query) || l.itemName.toLowerCase().includes(query));
+
+  const allLoans = getLoans();
+  const totalOwedToUs = allLoans.filter(l => l.loanType !== 'credit_purchase' && !l.settled).reduce((s, l) => s + l.amountOwed, 0);
+  const totalWeOwe    = allLoans.filter(l => l.loanType === 'credit_purchase' && !l.settled).reduce((s, l) => s + l.amountOwed, 0);
+
+  let html = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.6rem;margin-bottom:1rem;">
+      <div style="padding:0.75rem;background:#eff6ff;border:1.5px solid #93c5fd;border-radius:4px;text-align:center;">
+        <div style="font-size:0.65rem;color:#1e40af;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.2rem;">Owed to Us</div>
+        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;color:#1e40af;">ETB ${totalOwedToUs.toFixed(2)}</div>
+      </div>
+      <div style="padding:0.75rem;background:#fff5f5;border:1.5px solid #fca5a5;border-radius:4px;text-align:center;">
+        <div style="font-size:0.65rem;color:#c0392b;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.2rem;">We Owe</div>
+        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;color:#c0392b;">ETB ${totalWeOwe.toFixed(2)}</div>
+      </div>
+    </div>
+  `;
+
+  const cardHtml = (loan) => {
+    const isOwe = loan.loanType === 'credit_purchase';
+    const accentColor = loan.settled ? '#1a6b3a' : isOwe ? '#c0392b' : '#1e40af';
+    const bgColor = loan.settled ? '#f0fdf4' : isOwe ? '#fff5f5' : '#eff6ff';
+    const borderColor = loan.settled ? '#86efac' : isOwe ? '#fca5a5' : '#93c5fd';
+    const loanTypeLabel = isOwe ? '🔴 We Owe' : loan.loanType === 'lent_goods' ? '🟡 Lent Goods' : '🔵 Owed to Us';
+    const statusBadge = loan.settled
+      ? `<span style="padding:0.15rem 0.5rem;background:#dcfce7;color:#166534;border-radius:2px;font-size:0.6rem;font-weight:700;">✓ SETTLED${loan.settledAt ? ' · ' + loan.settledAt.split('T')[0] : ''}</span>`
+      : `<span style="padding:0.15rem 0.5rem;background:#fee2e2;color:#991b1b;border-radius:2px;font-size:0.6rem;font-weight:700;">⏳ OUTSTANDING</span>`;
+    return `
+      <div style="border:1.5px solid ${borderColor};border-left:4px solid ${accentColor};border-radius:4px;padding:0.8rem 0.9rem;margin-bottom:0.6rem;background:${bgColor};">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.35rem;">
+          <span style="font-family:'Syne',sans-serif;font-weight:800;font-size:0.85rem;">${loan.itemName}</span>
+          <span style="font-family:'Syne',sans-serif;font-weight:800;font-size:0.95rem;color:${accentColor};">ETB ${loan.amountOwed.toFixed(2)}</span>
+        </div>
+        <div style="font-size:0.7rem;color:#374151;margin-bottom:0.2rem;">👤 <strong>${loan.person}</strong> · 📅 ${loan.date}</div>
+        <div style="font-size:0.65rem;color:#6b7280;margin-bottom:0.2rem;">${loanTypeLabel}</div>
+        ${loan.loanNotes ? `<div style="font-size:0.68rem;color:#6b7280;margin-bottom:0.3rem;">📝 ${loan.loanNotes}</div>` : ''}
+        ${statusBadge}
+      </div>
+    `;
+  };
+
+  if (!loans.length) {
+    html += query
+      ? `<div class="empty"><div class="e-icon">🔍</div><p>No loans found for "<strong>${query}</strong>".</p></div>`
+      : `<div class="empty"><div class="e-icon">💳</div><p>No loans yet. Toggle the loan switch on a sale or purchase to log it here after owner approval.</p></div>`;
+    container.innerHTML = html;
+    return;
+  }
+
+  const weAreOwed = loans.filter(l => l.loanType !== 'credit_purchase');
+  const weOwe     = loans.filter(l => l.loanType === 'credit_purchase');
+
+  if (query) {
+    html += `<div style="font-size:0.7rem;color:#6b7280;margin-bottom:0.75rem;">Showing ${loans.length} result${loans.length!==1?'s':''} for "<strong>${query}</strong>"</div>`;
+    html += loans.map(cardHtml).join('');
+  } else {
+    if (weAreOwed.length) {
+      html += `<div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.1em;color:#1e40af;margin-bottom:0.5rem;padding-bottom:0.35rem;border-bottom:2px solid #93c5fd;">🔵 Owed to Us</div>`;
+      html += weAreOwed.map(cardHtml).join('');
+    }
+    if (weOwe.length) {
+      html += `<div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.1em;color:#c0392b;margin:1rem 0 0.5rem;padding-bottom:0.35rem;border-bottom:2px solid #fca5a5;">🔴 We Owe</div>`;
+      html += weOwe.map(cardHtml).join('');
+    }
+  }
+
+  container.innerHTML = html;
+}
+
+// ════════════════════════════════════════
+// HISTORY RENDERS
+// ════════════════════════════════════════
+function renderHistory() {
+  const container = document.getElementById('history-list');
+  const sales = getSales().sort((a, b) => new Date(b.submittedAt) - new Date(a.submittedAt));
+  if (!sales.length) {
+    container.innerHTML = `<div class="empty"><div class="e-icon">📭</div><p>No sales logged yet.</p></div>`;
+    return;
+  }
+  container.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.75rem;">
+      <span style="font-size:0.7rem;color:var(--muted);font-weight:600;">${sales.length} entries</span>
+      <button class="btn btn-danger btn-sm" onclick="clearAllSalesHistory()">🗑 Clear All</button>
+    </div>
+  ` + sales.map(s => `
+    <div class="history-item ${s.status}">
+      <div class="hi-info">
+        <h3>${s.name} <span class="vat-badge ${s.vatOn ? 'vat-yes' : 'vat-no'}">${s.vatOn ? 'VAT ' + s.vatRate + '%' : 'No VAT'}</span></h3>
+        <p>${s.date} · Qty: ${s.qty}</p>
+        <p>Sell: ETB ${s.price.toFixed(2)}/unit · Cost: ETB ${s.cost.toFixed(2)}/unit</p>
+        ${s.expensesPerUnit ? `<p>Exp: ETB ${s.expensesPerUnit.toFixed(2)}/unit</p>` : ''}
+        ${s.ownerNote ? `<p>📝 Owner: ${s.ownerNote}</p>` : ''}
+        <span class="status-badge status-${s.status}">${s.status.toUpperCase()}</span>
+      </div>
+      <div class="hi-nums">
+        <div class="hi-amount">ETB ${s.revenue.toFixed(2)}</div>
+        <div class="hi-profit">+ETB ${s.profit.toFixed(2)}</div>
+        <div class="hi-delete">
+          <button class="btn btn-danger btn-sm" onclick="deleteSale('${s.id}')">Delete</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderPurchasesHistory() {
+  const container = document.getElementById('purchases-history-list');
+  const purchases = getPurchases().sort((a, b) => new Date(b.submittedAt) - new Date(a.submittedAt));
+  if (!purchases.length) {
+    container.innerHTML = `<div class="empty"><div class="e-icon">🛒</div><p>No purchases logged yet.</p></div>`;
+    return;
+  }
+  container.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.75rem;">
+      <span style="font-size:0.7rem;color:var(--muted);font-weight:600;">${purchases.length} entries</span>
+      <button class="btn btn-danger btn-sm" onclick="clearAllPurchasesHistory()">🗑 Clear All</button>
+    </div>
+  ` + purchases.map(p => `
+    <div class="history-item ${p.status}">
+      <div class="hi-info">
+        <h3>${p.name} <span class="flag-badge ${p.flagForStock ? 'flag-stock' : 'flag-nostock'}">${p.flagForStock ? '🚩 VAT→Stock' : '✓ Log Only'}</span></h3>
+        <p>${p.date} · Qty: ${p.qty}</p>
+        <p>Cost: ETB ${p.costUnit.toFixed(2)}/unit${p.expensesPerUnit ? ` · Exp: ETB ${p.expensesPerUnit.toFixed(2)}/unit` : ''}</p>
+        ${p.ownerNote ? `<p>📝 Owner: ${p.ownerNote}</p>` : ''}
+        <span class="status-badge status-${p.status}">${p.status.toUpperCase()}${p.flagForStock && p.stockAdded ? ' · STOCK ADDED' : ''}</span>
+      </div>
+      <div class="hi-nums">
+        <div class="hi-amount">ETB ${p.total.toFixed(2)}</div>
+        <div class="hi-delete">
+          <button class="btn btn-danger btn-sm" onclick="deletePurchase('${p.id}')">Delete</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ════════════════════════════════════════
+// DELETE HISTORY (local only)
+// ════════════════════════════════════════
+function deleteSale(id) {
+  askConfirm('Delete this sale from your history?', () => {
+    setSales(getSales().filter(s => s.id !== id));
+    sbDelete('sales', id);
+    renderHistory();
+    showToast('Deleted ✓', 'error');
+  });
+}
+
+function clearAllSalesHistory() {
+  askConfirm('Clear ALL sales history? This cannot be undone.', () => {
+    const toDelete = getSales();
+    setSales([]);
+    toDelete.forEach(s => sbDelete('sales', s.id));
+    renderHistory();
+    showToast('History cleared', 'error');
+  });
+}
+
+function deletePurchase(id) {
+  askConfirm('Delete this purchase from your history?', () => {
+    setPurchases(getPurchases().filter(p => p.id !== id));
+    sbDelete('purchases', id);
+    renderPurchasesHistory();
+    showToast('Deleted ✓', 'error');
+  });
+}
+
+function clearAllPurchasesHistory() {
+  askConfirm('Clear ALL purchase history? This cannot be undone.', () => {
+    const toDelete = getPurchases();
+    setPurchases([]);
+    toDelete.forEach(p => sbDelete('purchases', p.id));
+    renderPurchasesHistory();
+    showToast('History cleared', 'error');
+  });
+}
+
+// ════════════════════════════════════════
+// OFFLINE SYNC
+// ════════════════════════════════════════
+function updateOfflineBar() {
+  const bar    = document.getElementById('offline-bar');
+  const icon   = document.getElementById('ob-icon');
+  const msg    = document.getElementById('ob-msg');
+  const qLabel = document.getElementById('ob-queue');
+  const btn    = document.getElementById('sync-btn');
+  const queue  = getOfflineQueue();
+  bar.style.display = 'flex';
+
+  if (!navigator.onLine) {
+    bar.className = 'offline';
+    icon.textContent = '✈️';
+    msg.textContent = 'Offline — entries saved to phone';
+    qLabel.textContent = queue.length ? queue.length + ' waiting' : '';
+    btn.style.display = 'none';
+  } else if (queue.length > 0) {
+    bar.className = 'syncing';
+    icon.textContent = '🔄';
+    msg.textContent = `${queue.length} item(s) ready to sync`;
+    qLabel.textContent = '';
+    btn.style.display = 'inline-block';
+    btn.textContent = '↑ Sync Now';
+    btn.disabled = false;
+  } else {
+    bar.className = 'synced';
+    icon.textContent = '✅';
+    msg.textContent = 'Online — all synced';
+    qLabel.textContent = '';
+    btn.style.display = 'none';
+    setTimeout(() => { if (!getOfflineQueue().length) bar.style.display = 'none'; }, 3000);
+  }
+}
+
+async function manualSync() {
+  const btn = document.getElementById('sync-btn');
+  btn.innerHTML = '<span class="spin">⟳</span>';
+  btn.disabled = true;
+  const queue = getOfflineQueue();
+  let synced = 0;
+  for (const entry of queue) {
+    try {
+      const ok = entry.type === 'sale'
+        ? await sbUpsert('sales', entry.item.id, entry.item)
+        : await sbUpsert('purchases', entry.item.id, entry.item);
+      if (ok) synced++;
+    } catch {}
+  }
+  setOfflineQueue([]);
+  updateOfflineBar();
+  showToast(synced > 0 ? synced + ' item(s) synced ✓' : 'All up to date ✓', 'success');
+}
+
+async function autoSync() {
+  const queue = getOfflineQueue();
+  if (!queue.length || !navigator.onLine) return;
+  let synced = 0;
+  for (const entry of queue) {
+    try {
+      const ok = entry.type === 'sale'
+        ? await sbUpsert('sales', entry.item.id, entry.item)
+        : await sbUpsert('purchases', entry.item.id, entry.item);
+      if (ok) synced++;
+    } catch {}
+  }
+  if (synced > 0) {
+    setOfflineQueue([]);
+    updateOfflineBar();
+    showToast(synced + ' offline item(s) synced ✓', 'success');
+  }
+}
+
+// ════════════════════════════════════════
+// UI HELPERS
+// ════════════════════════════════════════
+function askConfirm(msg, onYes) {
+  const modal = document.getElementById('confirm-modal');
+  document.getElementById('confirm-msg').textContent = msg;
+  document.getElementById('confirm-ok').textContent = 'Confirm';
+  document.getElementById('confirm-cancel').textContent = 'Cancel';
+  modal.style.display = 'flex';
+  const ok = document.getElementById('confirm-ok');
+  const cancel = document.getElementById('confirm-cancel');
+  function cleanup() { modal.style.display = 'none'; ok.onclick = null; cancel.onclick = null; }
+  ok.onclick = () => { cleanup(); onYes(); };
+  cancel.onclick = () => cleanup();
+}
+
+function showLoading(msg) {
+  document.getElementById('loading-msg').textContent = msg;
+  document.getElementById('loading').style.display = 'flex';
+}
+function hideLoading() {
+  document.getElementById('loading').style.display = 'none';
+}
+
+let toastTimer;
+function showToast(msg, type = 'success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'show ' + type;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { t.className = ''; }, 3000);
+}
+
+// ════════════════════════════════════════
+// SERVICE WORKER (PWA offline)
+// ════════════════════════════════════════
+function registerSW() {
+  if (!('serviceWorker' in navigator)) return;
+  const swCode = `
+const CACHE='salesflow-manager-v1';
+self.addEventListener('install', e => { self.skipWaiting(); });
+self.addEventListener('activate', e => { e.waitUntil(clients.claim()); });
+self.addEventListener('fetch', e => {
+  if (e.request.method !== 'GET') return;
+  e.respondWith(
+    caches.match(e.request).then(cached => {
+      const net = fetch(e.request).then(res => {
+        if (res && res.status === 200) {
+          const c = res.clone();
+          caches.open(CACHE).then(cache => cache.put(e.request, c));
+        }
+        return res;
+      }).catch(() => cached || new Response('Offline', { status: 503 }));
+      return cached || net;
+    })
+  );
+});`;
+  const blob = new Blob([swCode], { type: 'application/javascript' });
+  navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(() => {});
+}
+</script>
+</body>
+</html>

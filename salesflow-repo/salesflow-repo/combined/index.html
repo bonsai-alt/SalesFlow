@@ -1,0 +1,4450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0f0e0d">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="SalesFlow">
+<meta name="description" content="SalesFlow — Business Sales Tracker">
+<title>SalesFlow — Business Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink: #0f0e0d;
+    --paper: #f5f0e8;
+    --cream: #ede7d9;
+    --accent: #c8410a;
+    --accent2: #1a6b3a;
+    --gold: #d4a012;
+    --muted: #7a7268;
+    --border: #d0c8b8;
+    --card: #faf7f2;
+    --red: #c0392b;
+    --green: #1a6b3a;
+  }
+
+  html, body {
+    height: 100%;
+    font-family: 'DM Mono', monospace;
+    background: var(--paper);
+    color: var(--ink);
+    overflow-x: hidden;
+  }
+
+  /* ── LANDING ── */
+  #landing {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3rem;
+    padding: 2rem;
+    background: var(--ink);
+    position: relative;
+    overflow: hidden;
+  }
+  #landing::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(255,255,255,0.03) 40px, rgba(255,255,255,0.03) 41px),
+                repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(255,255,255,0.03) 40px, rgba(255,255,255,0.03) 41px);
+  }
+  .landing-logo {
+    text-align: center;
+    position: relative;
+    z-index: 1;
+  }
+  .landing-logo h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(2.5rem, 8vw, 5rem);
+    font-weight: 800;
+    color: var(--paper);
+    letter-spacing: -0.02em;
+    line-height: 1;
+  }
+  .landing-logo h1 span { color: var(--accent); }
+  .landing-logo p {
+    color: var(--muted);
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .landing-cards {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    position: relative;
+    z-index: 1;
+  }
+  .role-card {
+    background: var(--card);
+    border: 2px solid var(--border);
+    border-radius: 4px;
+    padding: 2.5rem 2rem;
+    width: 260px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+  }
+  .role-card:hover { transform: translateY(-4px); border-color: var(--accent); }
+  .role-card .icon { font-size: 2.5rem; margin-bottom: 1rem; }
+  .role-card h2 { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.2rem; margin-bottom: 0.5rem; }
+  .role-card p { font-size: 0.75rem; color: var(--muted); line-height: 1.6; }
+  .role-badge {
+    display: inline-block;
+    margin-top: 1rem;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    border-radius: 2px;
+  }
+  .badge-manager { background: var(--accent); color: white; }
+  .badge-owner { background: var(--ink); color: var(--paper); }
+
+  /* ── PIN SCREEN ── */
+  #pin-screen {
+    display: none;
+    min-height: 100vh;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 2rem;
+    background: var(--ink);
+    padding: 2rem;
+  }
+  .pin-box {
+    background: var(--card);
+    border: 2px solid var(--border);
+    border-radius: 4px;
+    padding: 3rem 2.5rem;
+    width: 100%;
+    max-width: 360px;
+    text-align: center;
+  }
+  .pin-box h2 { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.4rem; margin-bottom: 0.4rem; }
+  .pin-box p { font-size: 0.75rem; color: var(--muted); margin-bottom: 2rem; }
+  .pin-dots {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-bottom: 2rem;
+  }
+  .pin-dot {
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    background: transparent;
+    transition: all 0.15s;
+  }
+  .pin-dot.filled { background: var(--accent); border-color: var(--accent); }
+  .pin-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+  }
+  .pin-btn {
+    aspect-ratio: 1;
+    border: 1.5px solid var(--border);
+    background: var(--paper);
+    border-radius: 4px;
+    font-family: 'Syne', sans-serif;
+    font-size: 1.3rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.1s;
+  }
+  .pin-btn:hover { background: var(--ink); color: var(--paper); }
+  .pin-btn:active { transform: scale(0.95); }
+  .pin-btn.wide { grid-column: span 2; aspect-ratio: auto; padding: 0.75rem; }
+  .pin-btn.del { font-size: 1rem; }
+  .pin-error { color: var(--red); font-size: 0.75rem; margin-top: 1rem; min-height: 1rem; }
+  .pin-back { color: var(--muted); font-size: 0.75rem; cursor: pointer; text-decoration: underline; }
+
+  /* ── SHARED UI ── */
+  .screen { display: none; min-height: 100vh; }
+  .screen.active { display: block; }
+
+  .topbar {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 1rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .topbar-logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.1rem; }
+  .topbar-logo span { color: var(--accent); }
+  .topbar-role {
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 0.25rem 0.75rem;
+    border-radius: 2px;
+  }
+  .role-m { background: var(--accent); }
+  .role-o { background: var(--gold); color: var(--ink); }
+  .topbar-logout { font-size: 0.7rem; color: var(--muted); cursor: pointer; text-decoration: underline; }
+
+  .content { padding: 1.5rem; max-width: 900px; margin: 0 auto; }
+
+  /* ── TABS ── */
+  .tabs { display: flex; gap: 0; border-bottom: 2px solid var(--border); margin-bottom: 2rem; overflow-x: auto; }
+  .tab {
+    padding: 0.75rem 1.25rem;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    white-space: nowrap;
+    color: var(--muted);
+    transition: all 0.15s;
+  }
+  .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .tab-pane { display: none; }
+  .tab-pane.active { display: block; }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    border-radius: 4px;
+    padding: 1.5rem;
+    margin-bottom: 1.25rem;
+  }
+  .card-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.9rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  /* ── FORM ── */
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+  .form-row.single { grid-template-columns: 1fr; }
+  .form-row.triple { grid-template-columns: 1fr 1fr 1fr; }
+  label { display: block; font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.4rem; }
+  input[type=text], input[type=number], select, textarea {
+    width: 100%;
+    padding: 0.7rem 0.9rem;
+    border: 1.5px solid var(--border);
+    border-radius: 3px;
+    background: var(--paper);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.85rem;
+    color: var(--ink);
+    transition: border-color 0.15s;
+    outline: none;
+  }
+  input:focus, select:focus, textarea:focus { border-color: var(--accent); }
+  textarea { resize: vertical; min-height: 70px; }
+
+  .toggle-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem 0.9rem;
+    border: 1.5px solid var(--border);
+    border-radius: 3px;
+    background: var(--paper);
+    cursor: pointer;
+  }
+  .toggle-row label { margin: 0; cursor: pointer; flex: 1; }
+  .toggle {
+    width: 44px; height: 24px;
+    background: var(--border);
+    border-radius: 12px;
+    position: relative;
+    transition: background 0.2s;
+    flex-shrink: 0;
+  }
+  .toggle::after {
+    content: '';
+    position: absolute;
+    width: 18px; height: 18px;
+    background: white;
+    border-radius: 50%;
+    top: 3px; left: 3px;
+    transition: transform 0.2s;
+  }
+  .toggle.on { background: var(--accent); }
+  .toggle.on::after { transform: translateX(20px); }
+
+  .vat-rate-row { display: none; margin-top: 0.5rem; }
+  .vat-rate-row.visible { display: block; }
+
+  /* ── BUTTONS ── */
+  .btn {
+    padding: 0.8rem 1.5rem;
+    border: none;
+    border-radius: 3px;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .btn-primary { background: var(--accent); color: white; }
+  .btn-primary:hover { background: #a33508; }
+  .btn-secondary { background: var(--ink); color: var(--paper); }
+  .btn-secondary:hover { background: #2a2a2a; }
+  .btn-success { background: var(--green); color: white; }
+  .btn-danger { background: var(--red); color: white; }
+  .btn-ghost { background: transparent; border: 1.5px solid var(--border); color: var(--ink); }
+  .btn-ghost:hover { border-color: var(--ink); }
+  .btn-sm { padding: 0.4rem 0.9rem; font-size: 0.7rem; }
+  .btn-full { width: 100%; }
+
+  /* ── SUMMARY PREVIEW ── */
+  .summary-box {
+    background: var(--ink);
+    color: var(--paper);
+    border-radius: 4px;
+    padding: 1.25rem;
+    margin-top: 1rem;
+    font-size: 0.8rem;
+    line-height: 2;
+  }
+  .summary-box .s-row { display: flex; justify-content: space-between; }
+  .summary-box .s-row.total { border-top: 1px solid var(--muted); margin-top: 0.5rem; padding-top: 0.5rem; font-family: 'Syne', sans-serif; font-weight: 700; }
+  .summary-box .s-row.profit { color: var(--gold); }
+
+  /* ── SALES LIST ── */
+  .sale-item {
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    border-radius: 4px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 0.75rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  .sale-item-info h3 { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.9rem; margin-bottom: 0.2rem; }
+  .sale-item-info p { font-size: 0.72rem; color: var(--muted); line-height: 1.6; }
+  .sale-item-nums { text-align: right; flex-shrink: 0; }
+  .sale-item-nums .amount { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem; }
+  .sale-item-nums .profit-label { font-size: 0.7rem; color: var(--green); }
+  .vat-badge {
+    display: inline-block;
+    padding: 0.15rem 0.5rem;
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border-radius: 2px;
+    margin-left: 0.5rem;
+  }
+  .vat-yes { background: #fef3c7; color: #92400e; }
+  .vat-no { background: #f0fdf4; color: #166534; }
+
+  .status-badge {
+    display: inline-block;
+    padding: 0.15rem 0.5rem;
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border-radius: 2px;
+  }
+  .status-pending { background: #fef9c3; color: #713f12; }
+  .status-approved { background: #dcfce7; color: #166534; }
+  .status-rejected { background: #fee2e2; color: #991b1b; }
+
+  /* ── STATS GRID ── */
+  .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+  .stat-box {
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    border-radius: 4px;
+    padding: 1.25rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .stat-box::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--accent);
+  }
+  .stat-box.green::before { background: var(--green); }
+  .stat-box.gold::before { background: var(--gold); }
+  .stat-box.blue::before { background: #2563eb; }
+  .stat-label { font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.5rem; }
+  .stat-value { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.5rem; line-height: 1; }
+  .stat-sub { font-size: 0.7rem; color: var(--muted); margin-top: 0.25rem; }
+
+  /* ── REVIEW PANEL ── */
+  .review-card {
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    border-radius: 4px;
+    margin-bottom: 1rem;
+    overflow: hidden;
+  }
+  .review-card-head {
+    padding: 1rem 1.25rem;
+    background: var(--cream);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+  }
+  .review-card-head h3 { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.9rem; }
+  .review-card-body { padding: 1rem 1.25rem; font-size: 0.78rem; line-height: 1.9; }
+  .review-card-body .row { display: flex; justify-content: space-between; }
+  .review-card-body .row strong { color: var(--ink); }
+  .review-actions { padding: 1rem 1.25rem; display: flex; gap: 0.75rem; border-top: 1px solid var(--border); }
+
+  /* ── MONTHLY REPORT ── */
+  .month-selector { display: flex; gap: 0.75rem; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; }
+  .month-selector select { width: auto; }
+
+  .top-items { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem; }
+  .top-item {
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    border-radius: 4px;
+    padding: 1rem;
+  }
+  .top-item .label { font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.3rem; }
+  .top-item .name { font-family: 'Syne', sans-serif; font-weight: 700; }
+  .top-item .val { font-size: 0.8rem; color: var(--muted); }
+
+  .report-table { width: 100%; border-collapse: collapse; font-size: 0.78rem; }
+  .report-table th { text-align: left; padding: 0.6rem 0.8rem; font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); border-bottom: 2px solid var(--border); }
+  .report-table td { padding: 0.75rem 0.8rem; border-bottom: 1px solid var(--border); }
+  .report-table tr:last-child td { border-bottom: none; }
+  .report-table tr:hover td { background: var(--cream); }
+
+  /* ── SETTINGS (owner) ── */
+  .settings-section { margin-bottom: 2rem; }
+  .settings-section h3 { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.85rem; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 1rem; color: var(--muted); }
+
+  /* ── EMPTY STATE ── */
+  .empty { text-align: center; padding: 3rem 1rem; color: var(--muted); }
+  .empty .e-icon { font-size: 2.5rem; margin-bottom: 1rem; opacity: 0.4; }
+  .empty p { font-size: 0.8rem; }
+
+  /* ── TOAST ── */
+  #toast {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    background: var(--ink);
+    color: var(--paper);
+    padding: 0.9rem 1.5rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-family: 'DM Mono', monospace;
+    z-index: 9999;
+    transform: translateY(100px);
+    opacity: 0;
+    transition: all 0.3s;
+    max-width: 300px;
+  }
+  #toast.show { transform: translateY(0); opacity: 1; }
+  #toast.success { border-left: 4px solid var(--green); }
+  #toast.error { border-left: 4px solid var(--red); }
+
+  /* ── MOBILE ADJUSTMENTS ── */
+  @media (max-width: 600px) {
+    .form-row { grid-template-columns: 1fr; }
+    .form-row.triple { grid-template-columns: 1fr 1fr; }
+    .stats-grid { grid-template-columns: 1fr 1fr; }
+    .top-items { grid-template-columns: 1fr; }
+    .sale-item { flex-direction: column; }
+    .sale-item-nums { text-align: left; }
+  }
+  @media (min-width: 900px) {
+    .content { padding: 2rem; }
+  }
+
+  /* ── EXPORT GRID ── */
+  .export-grid { display: flex; flex-direction: column; gap: 1rem; }
+  .export-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    border: 1.5px solid var(--border);
+    border-radius: 4px;
+    background: var(--paper);
+  }
+  .export-icon { font-size: 1.8rem; flex-shrink: 0; }
+  .export-info { flex: 1; }
+  .export-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.9rem; margin-bottom: 0.2rem; }
+  .export-desc { font-size: 0.72rem; color: var(--muted); }
+
+  /* ── PRINT STYLES ── */
+  @media print {
+    body * { visibility: hidden; }
+    #print-zone, #print-zone * { visibility: visible; }
+    #print-zone {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      color: #000;
+      background: white;
+      padding: 2rem;
+    }
+    #print-zone table { width: 100%; border-collapse: collapse; font-size: 10px; }
+    #print-zone th { background: #f0f0f0; padding: 6px 8px; text-align: left; border-bottom: 2px solid #ccc; }
+    #print-zone td { padding: 5px 8px; border-bottom: 1px solid #eee; }
+    #print-zone .print-header { margin-bottom: 1.5rem; }
+    #print-zone .print-header h1 { font-size: 20px; font-weight: 800; margin-bottom: 0.2rem; }
+    #print-zone .print-header p { font-size: 11px; color: #555; }
+    #print-zone .print-stats { display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+    #print-zone .print-stat { border: 1px solid #ccc; padding: 0.6rem 1rem; border-radius: 3px; flex: 1; min-width: 120px; }
+    #print-zone .print-stat .label { font-size: 9px; text-transform: uppercase; letter-spacing: 0.1em; color: #777; }
+    #print-zone .print-stat .value { font-size: 16px; font-weight: 800; margin-top: 0.2rem; }
+    #print-zone .section-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; margin: 1.2rem 0 0.5rem; border-bottom: 1px solid #ccc; padding-bottom: 0.3rem; }
+  }
+
+  .divider { height: 1px; background: var(--border); margin: 1.5rem 0; }
+  .text-muted { color: var(--muted); }
+  .text-sm { font-size: 0.75rem; }
+  .mt-1 { margin-top: 0.5rem; }
+  .flex { display: flex; }
+  .gap-1 { gap: 0.5rem; }
+  .items-center { align-items: center; }
+  .justify-between { justify-content: space-between; }
+  .w-full { width: 100%; }
+
+  /* ── LOW STOCK ALERT ── */
+  .low-stock-banner {
+    background: #fff7ed;
+    border: 1.5px solid #fed7aa;
+    border-left: 4px solid #f97316;
+    border-radius: 4px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1rem;
+  }
+  .low-stock-banner .ls-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: #9a3412;
+    margin-bottom: 0.6rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .ls-items { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .ls-item {
+    padding: 0.25rem 0.75rem;
+    background: #ffedd5;
+    border: 1px solid #fed7aa;
+    border-radius: 3px;
+    font-size: 0.72rem;
+    color: #9a3412;
+    font-weight: 600;
+  }
+  .ls-item.critical { background: #fee2e2; border-color: #fca5a5; color: #991b1b; }
+
+  /* ── PURCHASE CARDS ── */
+  .flag-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.2rem 0.6rem;
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border-radius: 2px;
+    font-weight: 700;
+  }
+  .flag-stock { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+  .flag-nostock { background: #f0fdf4; color: #166534; border: 1px solid #86efac; }
+
+  /* ── TAX INPUT ROWS ── */
+  .tax-input-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.9rem 1rem;
+    border: 1.5px solid var(--border);
+    border-radius: 4px;
+    background: var(--paper);
+    flex-wrap: wrap;
+  }
+  .tax-input-label { flex: 1; min-width: 180px; }
+  .tax-input-label label { font-weight: 600; font-size: 0.82rem; display: block; margin-bottom: 0.2rem; }
+  .tax-input-controls { display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; }
+  .tax-sel {
+    padding: 0.55rem 0.75rem;
+    border: 1.5px solid var(--border);
+    border-radius: 3px;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    background: var(--cream);
+    min-width: 180px;
+    color: var(--ink);
+  }
+  .tax-num {
+    width: 150px;
+    padding: 0.55rem 0.75rem;
+    border: 1.5px solid var(--border);
+    border-radius: 3px;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.82rem;
+  }
+  .tax-num:focus, .tax-sel:focus { outline: none; border-color: var(--ink); }
+
+  /* ── TAX LOG CARDS ── */
+  .tax-log-card {
+    border: 1.5px solid var(--border);
+    border-radius: 4px;
+    margin-bottom: 1rem;
+    overflow: hidden;
+    background: var(--paper);
+  }
+  .tax-log-card.paid { border-color: #86efac; }
+  .tax-log-card.unpaid { border-color: #fca5a5; }
+  .tax-log-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1.25rem;
+    background: var(--cream);
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .tax-log-card.paid .tax-log-head { background: #f0fdf4; }
+  .tax-log-card.unpaid .tax-log-head { background: #fff1f2; }
+  .tax-log-head h3 { font-family: 'Syne', sans-serif; font-size: 0.88rem; font-weight: 700; }
+  .tax-log-body { padding: 0.75rem 1.25rem; }
+  .tax-log-body .row { display: flex; justify-content: space-between; padding: 0.3rem 0; font-size: 0.8rem; border-bottom: 1px solid var(--border); }
+  .tax-log-body .row:last-child { border-bottom: none; }
+  .tax-log-foot {
+    padding: 0.75rem 1.25rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+  .tax-paid-label {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    padding: 0.3rem 0.75rem;
+    border-radius: 3px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+  }
+  .tax-paid-label.paid { background: #dcfce7; color: #166534; }
+  .tax-paid-label.unpaid { background: #fee2e2; color: #991b1b; }
+
+  /* ── ARCHIVE CHECKBOXES ── */
+  .archive-checks {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+  .archive-check-item {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.45rem 0.9rem;
+    border: 1.5px solid var(--border);
+    border-radius: 3px;
+    background: var(--paper);
+    font-size: 0.78rem;
+    cursor: pointer;
+    user-select: none;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .archive-check-item:has(input:checked) {
+    border-color: var(--ink);
+    background: var(--ink);
+    color: var(--paper);
+  }
+  .archive-check-item input[type="checkbox"] { display: none; }
+
+  /* ── OFFLINE STATUS BAR ── */
+  #offline-bar {
+    display: none;
+    position: sticky;
+    top: 57px;
+    z-index: 99;
+    padding: 0.5rem 1.5rem;
+    font-size: 0.72rem;
+    font-family: 'DM Mono', monospace;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    transition: all 0.3s;
+  }
+  #offline-bar.offline {
+    background: #fee2e2;
+    border-bottom: 2px solid #fca5a5;
+    color: #991b1b;
+  }
+  #offline-bar.syncing {
+    background: #fef9c3;
+    border-bottom: 2px solid #fde047;
+    color: #713f12;
+  }
+  #offline-bar.synced {
+    background: #dcfce7;
+    border-bottom: 2px solid #86efac;
+    color: #166534;
+  }
+  #offline-bar .ob-left { display: flex; align-items: center; gap: 0.5rem; font-weight: 600; }
+  #offline-bar .ob-right { display: flex; align-items: center; gap: 0.75rem; }
+  #sync-btn {
+    padding: 0.25rem 0.75rem;
+    border: 1.5px solid currentColor;
+    background: transparent;
+    border-radius: 3px;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    color: inherit;
+  }
+  #sync-btn:hover { opacity: 0.75; }
+  .spin { display: inline-block; animation: spin 1s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<!-- LANDING -->
+<div id="landing">
+  <div class="landing-logo">
+    <h1>Sales<span>Flow</span></h1>
+    <p>Business Sales Tracker · ETB</p>
+  </div>
+  <div class="landing-cards">
+    <div class="role-card" onclick="goToPin('manager')">
+      <div class="icon">📱</div>
+      <h2>Sales Manager</h2>
+      <p>Log daily sales, track items, submit reports to owner</p>
+      <span class="role-badge badge-manager">Mobile View</span>
+    </div>
+    <div class="role-card" onclick="goToPin('owner')">
+      <div class="icon">🖥️</div>
+      <h2>Owner</h2>
+      <p>Review sales, approve entries, view monthly reports & analytics</p>
+      <span class="role-badge badge-owner">Desktop View</span>
+    </div>
+  </div>
+</div>
+
+<!-- PIN SCREEN -->
+<div id="pin-screen" style="display:none; flex-direction:column; align-items:center; justify-content:center; min-height:100vh; background:var(--ink); padding:2rem;">
+  <div class="pin-box">
+    <h2 id="pin-title">Enter PIN</h2>
+    <p id="pin-sub">Enter your 4-digit PIN to continue</p>
+    <div class="pin-dots">
+      <div class="pin-dot" id="d0"></div>
+      <div class="pin-dot" id="d1"></div>
+      <div class="pin-dot" id="d2"></div>
+      <div class="pin-dot" id="d3"></div>
+    </div>
+    <div class="pin-grid">
+      <button class="pin-btn" onclick="pinPress('1')">1</button>
+      <button class="pin-btn" onclick="pinPress('2')">2</button>
+      <button class="pin-btn" onclick="pinPress('3')">3</button>
+      <button class="pin-btn" onclick="pinPress('4')">4</button>
+      <button class="pin-btn" onclick="pinPress('5')">5</button>
+      <button class="pin-btn" onclick="pinPress('6')">6</button>
+      <button class="pin-btn" onclick="pinPress('7')">7</button>
+      <button class="pin-btn" onclick="pinPress('8')">8</button>
+      <button class="pin-btn" onclick="pinPress('9')">9</button>
+      <button class="pin-btn wide" onclick="pinPress('0')">0</button>
+      <button class="pin-btn del" onclick="pinBack()">⌫</button>
+    </div>
+    <div class="pin-error" id="pin-error"></div>
+  </div>
+  <div class="pin-back" onclick="backToLanding()">← Back to role selection</div>
+</div>
+
+<!-- SALES MANAGER SCREEN -->
+<div id="manager-screen" class="screen">
+  <div class="topbar">
+    <div class="topbar-logo">Sales<span>Flow</span></div>
+    <span class="topbar-role role-m">Sales Manager</span>
+    <span class="topbar-logout" onclick="logout()">Logout</span>
+  </div>
+  <!-- OFFLINE STATUS BAR -->
+  <div id="offline-bar">
+    <div class="ob-left">
+      <span id="ob-icon">📡</span>
+      <span id="ob-msg">Checking connection...</span>
+    </div>
+    <div class="ob-right">
+      <span id="ob-queue"></span>
+      <button id="sync-btn" onclick="manualSync()" style="display:none;">↑ Sync Now</button>
+    </div>
+  </div>
+  <div class="content">
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('manager','log',this)">Log Sale</div>
+      <div class="tab" onclick="switchTab('manager','purchase',this)">Log Purchase</div>
+      <div class="tab" onclick="switchTab('manager','history',this)">My Sales</div>
+      <div class="tab" onclick="switchTab('manager','loans',this)">💳 Loans</div>
+    </div>
+
+    <!-- LOG SALE TAB -->
+    <div class="tab-pane active" id="m-tab-log">
+      <div class="card">
+        <div class="card-title">📦 New Sale Entry</div>
+
+        <div class="form-row">
+          <div>
+            <label>Item / Product Name</label>
+            <input type="text" id="m-item-name" placeholder="e.g. Coffee Bags" oninput="onItemNameChange()" list="stock-items-list">
+            <datalist id="stock-items-list"></datalist>
+          </div>
+          <div>
+            <label>Date of Sale</label>
+            <input type="date" id="m-date">
+          </div>
+        </div>
+
+        <div class="form-row triple">
+          <div>
+            <label>Qty Sold</label>
+            <input type="number" id="m-qty" placeholder="0" min="1" oninput="calcPreview()">
+          </div>
+          <div>
+            <label>Selling Price / Unit (ETB)</label>
+            <input type="number" id="m-price" placeholder="0.00" min="0" step="0.01" oninput="calcPreview()">
+          </div>
+          <div>
+            <label>Cost Price / Unit (ETB)</label>
+            <input type="number" id="m-cost" placeholder="0.00" min="0" step="0.01" oninput="calcPreview()">
+          </div>
+        </div>
+
+        <!-- Autofill hint from purchase history -->
+        <div id="m-autofill-hint" style="display:none;margin-bottom:0.75rem;padding:0.6rem 1rem;background:#f0fdf4;border:1.5px solid #86efac;border-radius:3px;font-size:0.74rem;color:#166534;"></div>
+
+        <div class="form-row single">
+          <div>
+            <label>Expenses / Unit (ETB) <span style="font-size:0.7rem;color:var(--muted);">— transport, handling, etc. per unit sold</span></label>
+            <input type="number" id="m-expenses" placeholder="0.00" min="0" step="0.01" oninput="calcPreview()">
+          </div>
+        </div>
+
+        <!-- Stock Info Banner -->
+        <div id="stock-info-banner" style="display:none; margin-bottom:1rem; padding:0.75rem 1rem; border-radius:3px; font-size:0.78rem; border:1.5px solid var(--border); background:var(--cream);"></div>
+
+        <!-- VAT Toggle -->
+        <div style="margin-bottom:1rem;">
+          <label>VAT</label>
+          <div class="toggle-row" id="vat-toggle-row" onclick="toggleVAT()">
+            <label>This sale is VAT applicable</label>
+            <div class="toggle" id="vat-toggle"></div>
+          </div>
+          <div id="vat-no-stock-msg" style="display:none; margin-top:0.4rem; font-size:0.72rem; color:var(--red); padding:0.5rem 0.75rem; background:#fee2e2; border-radius:3px;">
+            ⚠ Cannot apply VAT — item not found in stock or stock is zero. Ask owner to update stock.
+          </div>
+          <div class="vat-rate-row" id="vat-rate-row">
+            <label style="margin-top:0.5rem;">VAT Rate (%)</label>
+            <input type="number" id="m-vat-rate" placeholder="e.g. 15" min="0" max="100" step="0.01" oninput="calcPreview()" value="15">
+          </div>
+        </div>
+
+        <!-- Loan Toggle -->
+        <div style="margin-bottom:1rem;">
+          <label>💳 Loan / Credit</label>
+          <div class="toggle-row" id="loan-toggle-row" onclick="toggleSaleLoan()">
+            <div style="flex:1">
+              <div style="font-size:0.8rem;font-weight:600;">This sale involves a loan or credit</div>
+              <div style="font-size:0.7rem;color:var(--muted);margin-top:0.15rem;">Sold on credit (not yet paid) or lent goods</div>
+            </div>
+            <div class="toggle" id="sale-loan-toggle"></div>
+          </div>
+          <div id="sale-loan-fields" style="display:none;margin-top:0.75rem;padding:0.9rem;background:#fef9c3;border:1.5px solid #fde047;border-radius:4px;">
+            <div class="form-row" style="margin-bottom:0.75rem;">
+              <div>
+                <label>Loan Type</label>
+                <select id="sale-loan-type" style="width:100%;padding:0.65rem 0.75rem;border:1.5px solid var(--border);border-radius:3px;font-family:'DM Mono',monospace;font-size:0.82rem;background:var(--paper);">
+                  <option value="credit_sale">Sold on credit — customer hasn't paid yet</option>
+                  <option value="lent_goods">Lent goods — expecting return</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-row two" style="margin-bottom:0.75rem;">
+              <div>
+                <label>Person / Customer Name</label>
+                <input type="text" id="sale-loan-person" placeholder="e.g. Abebe Kebede">
+              </div>
+              <div>
+                <label>Amount Owed (ETB)</label>
+                <input type="number" id="sale-loan-amount" placeholder="0.00" min="0" step="0.01">
+              </div>
+            </div>
+            <div>
+              <label>Loan Notes (optional)</label>
+              <input type="text" id="sale-loan-notes" placeholder="e.g. To be paid by end of month">
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row single">
+          <div>
+            <label>Notes (optional)</label>
+            <textarea id="m-notes" placeholder="Any remarks about this sale..."></textarea>
+          </div>
+        </div>
+        <div class="summary-box" id="sale-preview">
+          <div class="s-row"><span>Items sold</span><span id="p-qty">—</span></div>
+          <div class="s-row"><span>Revenue (gross)</span><span id="p-revenue">ETB —</span></div>
+          <div class="s-row" id="p-vat-row" style="display:none"><span id="p-vat-label">VAT (0%)</span><span id="p-vat">ETB —</span></div>
+          <div class="s-row"><span>Cost (unit × qty)</span><span id="p-cost">ETB —</span></div>
+          <div class="s-row"><span>Expenses (per unit × qty)</span><span id="p-exp">ETB —</span></div>
+          <div class="s-row total profit"><span>Profit</span><span id="p-profit">ETB —</span></div>
+        </div>
+
+        <div style="margin-top:1rem; display:flex; gap:0.75rem; flex-wrap:wrap;">
+          <button class="btn btn-primary" onclick="submitSale()">Submit to Owner →</button>
+          <button class="btn btn-ghost" onclick="clearSaleForm()">Clear</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MY SALES TAB -->
+    <div class="tab-pane" id="m-tab-history">
+      <div id="m-sales-list"></div>
+    </div>
+
+    <!-- PURCHASE TAB -->
+    <div class="tab-pane" id="m-tab-purchase">
+      <div class="card">
+        <div class="card-title">🛒 Log Purchase</div>
+        <p style="font-size:0.75rem;color:var(--muted);margin-bottom:1.25rem;">
+          All purchases go to the owner for review. <strong>With VAT</strong> = owner approves and adds qty to stock. <strong>Without VAT</strong> = owner approves as a purchase log only, no stock change.
+        </p>
+
+        <div class="form-row single">
+          <div>
+            <label>Item / Product Name</label>
+            <input type="text" id="pu-item-name" placeholder="e.g. Coffee Bags">
+          </div>
+        </div>
+
+        <div class="form-row triple">
+          <div>
+            <label>Qty Purchased</label>
+            <input type="number" id="pu-qty" placeholder="0" min="1" step="1" oninput="calcPurchasePreview()">
+          </div>
+          <div>
+            <label>Cost per Unit (ETB)</label>
+            <input type="number" id="pu-cost-unit" placeholder="0.00" min="0" step="0.01" oninput="calcPurchasePreview()">
+          </div>
+          <div>
+            <label>Expenses / Unit (ETB)</label>
+            <input type="number" id="pu-expenses" placeholder="0.00" min="0" step="0.01" oninput="calcPurchasePreview()">
+          </div>
+        </div>
+        <div class="form-row single" style="margin-top:-0.25rem;">
+          <div style="font-size:0.7rem;color:var(--muted);">Expenses per unit: transport, handling, etc. Multiplied by qty in totals.</div>
+        </div>
+
+        <div class="form-row single">
+          <div>
+            <label>Date</label>
+            <input type="date" id="pu-date">
+          </div>
+        </div>
+
+        <!-- Purchase VAT Toggle -->
+        <div style="margin-bottom:1rem;">
+          <label>Was this purchase VAT applicable?</label>
+          <div class="toggle-row" onclick="togglePurchaseVAT()">
+            <div style="flex:1">
+              <div style="font-size:0.8rem;font-weight:600;">Purchased with VAT</div>
+              <div style="font-size:0.7rem;color:var(--muted);margin-top:0.15rem;">Owner will approve and add this qty to stock</div>
+            </div>
+            <div class="toggle" id="pvat-toggle"></div>
+          </div>
+          <div class="vat-rate-row" id="pvat-rate-row">
+            <label style="margin-top:0.5rem;">VAT Rate (%)</label>
+            <input type="number" id="pu-vat-rate" placeholder="e.g. 15" min="0" max="100" step="0.01" oninput="calcPurchasePreview()" value="15">
+          </div>
+          <div id="pvat-flag-info" style="display:none;margin-top:0.5rem;padding:0.6rem 0.9rem;background:#fef9c3;border:1.5px solid #fde047;border-radius:3px;font-size:0.72rem;color:#713f12;">
+            🚩 Owner will be asked to add <strong id="pvat-flag-qty">0</strong> units of this item to stock after approval.
+          </div>
+        </div>
+
+        <!-- Purchase Loan Toggle -->
+        <div style="margin-bottom:1rem;">
+          <label>💳 Bought on Credit</label>
+          <div class="toggle-row" onclick="togglePurchaseLoan()">
+            <div style="flex:1">
+              <div style="font-size:0.8rem;font-weight:600;">Purchased on credit — not yet paid</div>
+              <div style="font-size:0.7rem;color:var(--muted);margin-top:0.15rem;">You received goods but haven't paid the supplier yet</div>
+            </div>
+            <div class="toggle" id="pu-loan-toggle"></div>
+          </div>
+          <div id="pu-loan-fields" style="display:none;margin-top:0.75rem;padding:0.9rem;background:#fef9c3;border:1.5px solid #fde047;border-radius:4px;">
+            <div class="form-row two" style="margin-bottom:0.75rem;">
+              <div>
+                <label>Supplier Name</label>
+                <input type="text" id="pu-loan-person" placeholder="e.g. Supplier ABC">
+              </div>
+              <div>
+                <label>Amount Owed (ETB)</label>
+                <input type="number" id="pu-loan-amount" placeholder="0.00" min="0" step="0.01">
+              </div>
+            </div>
+            <div>
+              <label>Loan Notes (optional)</label>
+              <input type="text" id="pu-loan-notes" placeholder="e.g. Payment due in 30 days">
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row single">
+          <div>
+            <label>Notes (optional)</label>
+            <textarea id="pu-notes" placeholder="Supplier name, delivery info, etc."></textarea>
+          </div>
+        </div>
+        <div class="summary-box">
+          <div class="s-row"><span>Qty purchased</span><span id="pu-prev-qty">—</span></div>
+          <div class="s-row"><span>Unit cost</span><span id="pu-prev-unit">ETB —</span></div>
+          <div class="s-row"><span>Expenses (per unit × qty)</span><span id="pu-prev-exp">ETB —</span></div>
+          <div class="s-row"><span>Subtotal</span><span id="pu-prev-sub">ETB —</span></div>
+          <div class="s-row" id="pu-prev-vat-row" style="display:none"><span id="pu-prev-vat-label">VAT (0%)</span><span id="pu-prev-vat">ETB —</span></div>
+          <div class="s-row total"><span>Total Cost</span><span id="pu-prev-total">ETB —</span></div>
+        </div>
+
+        <div style="margin-top:1rem;display:flex;gap:0.75rem;flex-wrap:wrap;">
+          <button class="btn btn-primary" onclick="submitPurchase()">Submit Purchase →</button>
+          <button class="btn btn-ghost" onclick="clearPurchaseForm()">Clear</button>
+        </div>
+      </div>
+
+      <!-- Purchase History -->
+      <div class="card" style="margin-top:1rem;">
+        <div class="card-title">📋 My Purchase Log</div>
+        <div id="m-purchase-list"></div>
+      </div>
+    </div>
+    <!-- LOANS TAB (Manager) -->
+    <div class="tab-pane" id="m-tab-loans">
+      <div class="card">
+        <div class="card-title">💳 My Loans</div>
+        <div style="margin-bottom:1rem;">
+          <input type="text" id="m-loan-search" placeholder="🔍 Search by person or customer name..." oninput="renderManagerLoans()" style="width:100%;padding:0.65rem 0.85rem;border:1.5px solid var(--border);border-radius:3px;font-family:'DM Mono',monospace;font-size:0.82rem;background:var(--paper);">
+        </div>
+        <div id="m-loans-list"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- OWNER SCREEN -->
+<div id="owner-screen" class="screen">
+  <div class="topbar">
+    <div class="topbar-logo">Sales<span>Flow</span></div>
+    <span class="topbar-role role-o">Owner Dashboard</span>
+    <span class="topbar-logout" onclick="logout()">Logout</span>
+  </div>
+  <div class="content">
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('owner','review',this)">Review</div>
+      <div class="tab" onclick="switchTab('owner','records',this)">Records</div>
+      <div class="tab" onclick="switchTab('owner','monthly',this)">Monthly Report</div>
+      <div class="tab" onclick="switchTab('owner','stock',this)">Stock</div>
+      <div class="tab" onclick="switchTab('owner','purchases',this)">Purchases</div>
+      <div class="tab" onclick="switchTab('owner','loans',this)">💳 Loans</div>
+      <div class="tab" onclick="switchTab('owner','export',this)">Export & Print</div>
+      <div class="tab" onclick="switchTab('owner','tax',this)">Tax Calculator</div>
+      <div class="tab" onclick="switchTab('owner','settings',this)">Settings</div>
+    </div>
+
+    <!-- REVIEW TAB -->
+    <div class="tab-pane active" id="o-tab-review">
+      <!-- Low Stock Alerts -->
+      <div id="o-low-stock-alerts"></div>
+      <!-- Pending Purchases needing stock action -->
+      <div id="o-purchase-review"></div>
+      <!-- Pending Sales -->
+      <div id="o-review-list"></div>
+    </div>
+
+    <!-- RECORDS TAB -->
+    <div class="tab-pane" id="o-tab-records">
+      <div class="stats-grid" id="o-stats"></div>
+      <div class="card">
+        <div class="card-title">📋 All Approved Sales</div>
+        <div id="o-records-list"></div>
+      </div>
+    </div>
+
+      <!-- STOCK TAB -->
+    <div class="tab-pane" id="o-tab-stock">
+      <div class="card">
+        <div class="card-title">📦 Stock Management</div>
+        <p style="font-size:0.75rem;color:var(--muted);margin-bottom:1.25rem;">Items with stock > 0 allow the Sales Manager to apply VAT. Items with zero or no stock block VAT.</p>
+
+        <!-- Manual add -->
+        <div class="form-row triple" style="margin-bottom:0.5rem">
+          <div>
+            <label>Item Name</label>
+            <input type="text" id="stock-add-name" placeholder="e.g. Coffee Bags">
+          </div>
+          <div>
+            <label>Qty in Stock</label>
+            <input type="number" id="stock-add-qty" placeholder="0" min="0">
+          </div>
+          <div style="display:flex;align-items:flex-end;">
+            <button class="btn btn-primary btn-sm" style="width:100%;padding:0.7rem" onclick="addStockItem()">+ Add / Update</button>
+          </div>
+        </div>
+
+        <!-- Excel upload -->
+        <div style="margin-top:1.25rem;padding:1rem;background:var(--cream);border:1.5px dashed var(--border);border-radius:4px;">
+          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.8rem;margin-bottom:0.5rem;">📊 Bulk Import from Excel</div>
+          <p style="font-size:0.72rem;color:var(--muted);margin-bottom:0.75rem;line-height:1.5;">Upload an <strong>.xlsx</strong> or <strong>.csv</strong> file with two columns: <strong>Item Name</strong> and <strong>Qty</strong>. Existing items will be updated, new ones added. Header row is skipped automatically.</p>
+          <div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;">
+            <label for="stock-excel-input" class="btn btn-ghost btn-sm" style="cursor:pointer;margin:0;">📁 Choose File</label>
+            <input type="file" id="stock-excel-input" accept=".xlsx,.xls,.csv" style="display:none;" onchange="importStockFromExcel(this)">
+            <span id="stock-excel-filename" style="font-size:0.72rem;color:var(--muted);">No file chosen</span>
+            <button class="btn btn-sm" style="background:var(--green);color:#fff;border-color:var(--green);" onclick="downloadStockTemplate()">⬇ Download Template</button>
+          </div>
+          <div id="stock-import-result" style="display:none;margin-top:0.75rem;padding:0.6rem 0.85rem;border-radius:3px;font-size:0.75rem;"></div>
+        </div>
+
+        <div id="stock-list" style="margin-top:1.25rem;"></div>
+      </div>
+    </div>
+
+    <!-- PURCHASES TAB -->
+    <div class="tab-pane" id="o-tab-purchases">
+      <div class="card">
+        <div class="card-title">🧾 Purchase Log — Non-VAT</div>
+        <p style="font-size:0.75rem;color:var(--muted);margin-bottom:1.25rem;">All approved purchases that were <strong>not VAT applicable</strong>. These are logged here only and do not affect stock.</p>
+        <div id="o-purchases-list"></div>
+      </div>
+    </div>
+
+    <!-- LOANS TAB (Owner) -->
+    <div class="tab-pane" id="o-tab-loans">
+      <div class="card">
+        <div class="card-title">💳 Loan Tracker</div>
+        <p style="font-size:0.75rem;color:var(--muted);margin-bottom:1rem;">Track all credit sales, lent goods, and purchases made on credit. Mark entries as settled when payment is received or made.</p>
+        <div style="display:flex;gap:0.6rem;margin-bottom:1rem;align-items:center;">
+          <input type="text" id="o-loan-search" placeholder="🔍 Search by person or customer name..." oninput="renderOwnerLoans()" style="flex:1;padding:0.65rem 0.85rem;border:1.5px solid var(--border);border-radius:3px;font-family:'DM Mono',monospace;font-size:0.82rem;background:var(--paper);">
+          <button class="btn btn-danger btn-sm" onclick="clearSettledLoans()" style="white-space:nowrap;flex-shrink:0;">🗑 Clear Settled</button>
+        </div>
+        <div id="o-loans-list"></div>
+      </div>
+    </div>
+
+    <!-- MONTHLY REPORT TAB -->
+    <div class="tab-pane" id="o-tab-monthly">
+      <div class="card">
+        <div class="card-title">📅 Monthly Report</div>
+        <div class="month-selector">
+          <div>
+            <label>Month</label>
+            <select id="report-month" onchange="renderMonthly()">
+              <option value="0">January</option><option value="1">February</option>
+              <option value="2">March</option><option value="3">April</option>
+              <option value="4">May</option><option value="5">June</option>
+              <option value="6">July</option><option value="7">August</option>
+              <option value="8">September</option><option value="9">October</option>
+              <option value="10">November</option><option value="11">December</option>
+            </select>
+          </div>
+          <div>
+            <label>Year</label>
+            <select id="report-year" onchange="renderMonthly()"></select>
+          </div>
+        </div>
+        <div id="monthly-content"></div>
+      </div>
+    </div>
+
+    <!-- EXPORT & PRINT TAB -->
+    <div class="tab-pane" id="o-tab-export">
+      <div class="card">
+        <div class="card-title">📥 Download Data</div>
+        <p style="font-size:0.75rem;color:var(--muted);margin-bottom:1.5rem;">All CSV files open directly in Excel or Google Sheets. Use filters and print from there if needed.</p>
+
+        <div class="export-grid">
+          <div class="export-item">
+            <div class="export-icon">📊</div>
+            <div class="export-info">
+              <div class="export-title">All Sales</div>
+              <div class="export-desc">Every approved sale — date, item, qty, price, VAT, cost, profit</div>
+            </div>
+            <button class="btn btn-secondary btn-sm" onclick="downloadAllSales()">⬇ Download CSV</button>
+          </div>
+          <div class="export-item">
+            <div class="export-icon">🧾</div>
+            <div class="export-info">
+              <div class="export-title">All Purchases</div>
+              <div class="export-desc">Every approved purchase — VAT and non-VAT, with stock notes</div>
+            </div>
+            <button class="btn btn-secondary btn-sm" onclick="downloadAllPurchases()">⬇ Download CSV</button>
+          </div>
+          <div class="export-item">
+            <div class="export-icon">🏦</div>
+            <div class="export-info">
+              <div class="export-title">VAT Report</div>
+              <div class="export-desc">Only VAT-applicable sales — for tax filing purposes</div>
+            </div>
+            <button class="btn btn-secondary btn-sm" onclick="downloadVatSheet()">⬇ Download CSV</button>
+          </div>
+          <div class="export-item">
+            <div class="export-icon">📦</div>
+            <div class="export-info">
+              <div class="export-title">Stock Snapshot</div>
+              <div class="export-desc">Current stock levels for all items</div>
+            </div>
+            <button class="btn btn-secondary btn-sm" onclick="downloadStock()">⬇ Download CSV</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🖨️ Print Monthly Report</div>
+        <p style="font-size:0.75rem;color:var(--muted);margin-bottom:1.25rem;">Select a month and year, then print a clean formatted report with all figures.</p>
+        <div class="month-selector">
+          <div>
+            <label>Month</label>
+            <select id="print-month">
+              <option value="0">January</option><option value="1">February</option>
+              <option value="2">March</option><option value="3">April</option>
+              <option value="4">May</option><option value="5">June</option>
+              <option value="6">July</option><option value="7">August</option>
+              <option value="8">September</option><option value="9">October</option>
+              <option value="10">November</option><option value="11">December</option>
+            </select>
+          </div>
+          <div>
+            <label>Year</label>
+            <select id="print-year"></select>
+          </div>
+          <div style="display:flex;align-items:flex-end;gap:0.5rem;flex-wrap:wrap;">
+            <button class="btn btn-primary btn-sm" onclick="previewPrintReport()">👁 Preview</button>
+            <button class="btn btn-secondary btn-sm" onclick="printMonthlyReport()">🖨️ Print</button>
+            <button class="btn btn-ghost btn-sm" onclick="downloadMonthlyCSV()">⬇ CSV</button>
+          </div>
+        </div>
+        <div id="print-preview-area" style="display:none; margin-top:1.5rem; border:1.5px solid var(--border); border-radius:4px; padding:2rem; background:white;"></div>
+      </div>
+    </div>
+
+    <!-- TAX CALCULATOR TAB -->
+    <div class="tab-pane" id="o-tab-tax">
+      <div class="card">
+        <div class="card-title">🇪🇹 Ethiopian Tax Calculator</div>
+        <p style="font-size:0.75rem;color:var(--muted);margin-bottom:1.5rem;">
+          Based on Ethiopian tax law — <strong>VAT: 15%</strong> · <strong>Business Income Tax: 30%</strong> (flat rate for bodies) · <strong>MAT: 2.5% of turnover</strong> if calculated tax is lower. Quarterly advance = 25% of prior year's tax. Always verify with your accountant or ERCA.
+        </p>
+
+        <!-- Period Selector -->
+        <div class="form-row triple" style="margin-bottom:1.25rem;">
+          <div>
+            <label>Month</label>
+            <select id="tax-period" onchange="updateTaxFromData()" style="width:100%;padding:0.7rem;border:1.5px solid var(--border);border-radius:3px;font-family:'DM Mono',monospace;font-size:0.82rem;background:var(--paper);">
+              <option value="01">January</option>
+              <option value="02">February</option>
+              <option value="03">March</option>
+              <option value="04">April</option>
+              <option value="05">May</option>
+              <option value="06">June</option>
+              <option value="07">July</option>
+              <option value="08">August</option>
+              <option value="09">September</option>
+              <option value="10">October</option>
+              <option value="11">November</option>
+              <option value="12">December</option>
+            </select>
+          </div>
+          <div>
+            <label>Year</label>
+            <select id="tax-year" onchange="updateTaxFromData()" style="width:100%;padding:0.7rem;border:1.5px solid var(--border);border-radius:3px;font-family:'DM Mono',monospace;font-size:0.82rem;background:var(--paper);"></select>
+          </div>
+          <div style="display:flex;align-items:flex-end;">
+            <button class="btn btn-secondary btn-sm" style="width:100%;padding:0.7rem;" onclick="updateTaxFromData()">↻ Recalculate</button>
+          </div>
+        </div>
+
+        <!-- Auto-filled from app data -->
+        <div id="tax-autofill-hint" style="padding:0.8rem 1rem;background:#f0fdf4;border:1.5px solid #86efac;border-radius:3px;font-size:0.74rem;color:#166534;margin-bottom:1.25rem;">
+          ✅ Use the dropdowns to pick a pre-calculated figure from your data, or type a custom amount manually in the number field.
+        </div>
+
+        <!-- Tax input rows with dropdown + manual -->
+        <div style="display:flex;flex-direction:column;gap:1rem;margin-bottom:1rem;">
+
+          <div class="tax-input-row">
+            <div class="tax-input-label">
+              <label>Total Revenue / Turnover (ETB)</label>
+              <div style="font-size:0.68rem;color:var(--muted);">All income from approved sales</div>
+            </div>
+            <div class="tax-input-controls">
+              <select id="tax-revenue-sel" onchange="onTaxDropdown('revenue')" class="tax-sel">
+                <option value="">— pick from data —</option>
+              </select>
+              <input type="number" id="tax-revenue" placeholder="or type amount" oninput="calcTax()" min="0" step="0.01" class="tax-num">
+            </div>
+          </div>
+
+          <div class="tax-input-row">
+            <div class="tax-input-label">
+              <label>Total Allowable Costs (ETB)</label>
+              <div style="font-size:0.68rem;color:var(--muted);">Cost of goods + expenses from approved records</div>
+            </div>
+            <div class="tax-input-controls">
+              <select id="tax-costs-sel" onchange="onTaxDropdown('costs')" class="tax-sel">
+                <option value="">— pick from data —</option>
+              </select>
+              <input type="number" id="tax-costs" placeholder="or type amount" oninput="calcTax()" min="0" step="0.01" class="tax-num">
+            </div>
+          </div>
+
+          <div class="tax-input-row">
+            <div class="tax-input-label">
+              <label>VAT Collected on Sales (ETB)</label>
+              <div style="font-size:0.68rem;color:var(--muted);">Total VAT charged to customers</div>
+            </div>
+            <div class="tax-input-controls">
+              <select id="tax-vat-collected-sel" onchange="onTaxDropdown('vat-collected')" class="tax-sel">
+                <option value="">— pick from data —</option>
+              </select>
+              <input type="number" id="tax-vat-collected" placeholder="or type amount" oninput="calcTax()" min="0" step="0.01" class="tax-num">
+            </div>
+          </div>
+
+          <div class="tax-input-row">
+            <div class="tax-input-label">
+              <label>Input VAT Paid on Purchases (ETB)</label>
+              <div style="font-size:0.68rem;color:var(--muted);">VAT you paid when buying stock — deducted from VAT owed</div>
+            </div>
+            <div class="tax-input-controls">
+              <select id="tax-vat-input-sel" onchange="onTaxDropdown('vat-input')" class="tax-sel">
+                <option value="">— pick from data —</option>
+              </select>
+              <input type="number" id="tax-vat-input" placeholder="or type amount" oninput="calcTax()" min="0" step="0.01" class="tax-num">
+            </div>
+          </div>
+
+          <div class="tax-input-row">
+            <div class="tax-input-label">
+              <label>Prior Year's Annual Tax (ETB)</label>
+              <div style="font-size:0.68rem;color:var(--muted);">Used to calculate monthly advance (1/12 of prior year). Leave 0 if first year.</div>
+            </div>
+            <div class="tax-input-controls">
+              <div class="tax-sel" style="display:flex;align-items:center;font-size:0.72rem;color:var(--muted);padding:0 0.5rem;">Enter manually →</div>
+              <input type="number" id="tax-prior-year" placeholder="0.00" oninput="calcTax()" min="0" step="0.01" class="tax-num">
+            </div>
+          </div>
+
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Results -->
+        <div id="tax-results"></div>
+
+        <div style="margin-top:1.25rem;display:flex;gap:0.75rem;flex-wrap:wrap;">
+          <button class="btn btn-primary btn-sm" onclick="saveTaxLog()">💾 Save to Tax Log</button>
+          <button class="btn btn-secondary btn-sm" onclick="downloadTaxReport()">⬇ Download CSV</button>
+          <button class="btn btn-ghost btn-sm" onclick="printTaxReport()">🖨️ Print</button>
+        </div>
+
+        <div style="margin-top:1.25rem;padding:0.8rem 1rem;background:#fef9c3;border:1.5px solid #fde047;border-radius:3px;font-size:0.72rem;color:#713f12;">
+          ⚠️ <strong>Disclaimer:</strong> This calculator is for estimation only. Always confirm with a licensed accountant or ERCA before filing.
+        </div>
+      </div>
+
+      <!-- TAX PAYMENT HISTORY -->
+      <div class="card" style="margin-top:1.25rem;">
+        <div class="card-title">📋 Tax Payment Log</div>
+        <p style="font-size:0.75rem;color:var(--muted);margin-bottom:1.25rem;">
+          Saved tax calculations. Mark as paid when settled with ERCA. Download individual records anytime.
+        </p>
+        <div id="tax-log-list"></div>
+      </div>
+    </div>
+
+    <!-- SETTINGS TAB -->
+    <div class="tab-pane" id="o-tab-settings">
+      <div class="card">
+        <div class="card-title">⚙️ Settings</div>
+        <div class="settings-section">
+          <h3>PIN Management</h3>
+          <div class="form-row">
+            <div>
+              <label>New Sales Manager PIN</label>
+              <input type="number" id="set-mgr-pin" placeholder="4 digits" maxlength="4">
+            </div>
+            <div>
+              <label>New Owner PIN</label>
+              <input type="number" id="set-own-pin" placeholder="4 digits" maxlength="4">
+            </div>
+          </div>
+          <button class="btn btn-secondary btn-sm" onclick="savePins()">Save PINs</button>
+        </div>
+        <div class="divider"></div>
+        <div class="settings-section">
+          <h3>Default VAT Rate</h3>
+          <div class="form-row">
+            <div>
+              <label>Default VAT % (applied if manager doesn't change)</label>
+              <input type="number" id="set-vat" placeholder="e.g. 15" min="0" max="100" step="0.01">
+            </div>
+          </div>
+          <button class="btn btn-secondary btn-sm" onclick="saveVat()">Save VAT</button>
+        </div>
+        <div class="divider"></div>
+        <div class="settings-section">
+          <h3>🗄️ Archive & Clear</h3>
+          <p style="font-size:0.75rem;color:var(--muted);margin-bottom:1.25rem;">
+            Select a date range and what to archive. A CSV backup is <strong>always downloaded first</strong> before anything is deleted.
+          </p>
+          <div class="form-row" style="margin-bottom:1rem;">
+            <div>
+              <label>From Date</label>
+              <input type="date" id="archive-from">
+            </div>
+            <div>
+              <label>To Date</label>
+              <input type="date" id="archive-to">
+            </div>
+          </div>
+
+          <label style="font-size:0.72rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);display:block;margin-bottom:0.6rem;">What to include in archive</label>
+          <div class="archive-checks">
+            <label class="archive-check-item">
+              <input type="checkbox" id="arch-records" checked>
+              <span>📋 Records</span>
+            </label>
+            <label class="archive-check-item">
+              <input type="checkbox" id="arch-purchases" checked>
+              <span>🧾 Purchases</span>
+            </label>
+            <label class="archive-check-item">
+              <input type="checkbox" id="arch-vat" checked>
+              <span>🏦 VAT Report</span>
+            </label>
+            <label class="archive-check-item">
+              <input type="checkbox" id="arch-stock" checked>
+              <span>📦 Stock Snapshot</span>
+            </label>
+            <label class="archive-check-item">
+              <input type="checkbox" id="arch-tax" checked>
+              <span>🇪🇹 Tax Summary</span>
+            </label>
+          </div>
+          <p style="font-size:0.68rem;color:var(--muted);margin-top:0.5rem;margin-bottom:1rem;">Records = all approved sales. Stock snapshot is current levels at time of export. Tax is calculated from the date range.</p>
+
+          <div id="archive-preview" style="display:none;margin-bottom:1rem;padding:0.9rem 1rem;background:#fef9c3;border:1.5px solid #fde047;border-radius:3px;font-size:0.78rem;color:#713f12;"></div>
+          <div style="display:flex;gap:0.75rem;flex-wrap:wrap;">
+            <button class="btn btn-secondary btn-sm" onclick="previewArchive()">👁 Preview</button>
+            <button class="btn btn-danger btn-sm" id="archive-confirm-btn" style="display:none;" onclick="confirmArchive()">⬇ Download & Delete</button>
+          </div>
+          <p style="font-size:0.68rem;color:var(--muted);margin-top:0.75rem;">The CSV downloads automatically before deletion. Only approved records are archived & removed.</p>
+        </div>
+        <div class="divider"></div>
+        <div class="settings-section">
+          <h3>Danger Zone</h3>
+          <button class="btn btn-danger btn-sm" onclick="clearAllData()">Clear All Data</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CUSTOM CONFIRM MODAL -->
+<div id="confirm-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:9999;align-items:center;justify-content:center;">
+  <div style="background:var(--paper);border:2px solid var(--border);border-radius:6px;padding:1.75rem 2rem;max-width:360px;width:90%;box-shadow:0 8px 32px rgba(0,0,0,0.18);">
+    <div id="confirm-modal-msg" style="font-family:'Syne',sans-serif;font-size:0.95rem;font-weight:600;margin-bottom:1.25rem;line-height:1.5;"></div>
+    <div style="display:flex;gap:0.75rem;justify-content:flex-end;">
+      <button class="btn btn-ghost btn-sm" id="confirm-modal-cancel" style="min-width:80px;">Cancel</button>
+      <button class="btn btn-danger btn-sm" id="confirm-modal-ok" style="min-width:80px;">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<!-- PRINT ZONE (hidden, used for printing) -->
+<div id="print-zone" style="display:none;"></div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+// ════════════════════════════════════════
+// CUSTOM CONFIRM (replaces browser confirm() blocked in iframes)
+// ════════════════════════════════════════
+function askConfirm(msg, onYes) {
+  const modal = document.getElementById('confirm-modal');
+  document.getElementById('confirm-modal-msg').textContent = msg;
+  modal.style.display = 'flex';
+  const ok = document.getElementById('confirm-modal-ok');
+  const cancel = document.getElementById('confirm-modal-cancel');
+  function cleanup() { modal.style.display = 'none'; ok.onclick = null; cancel.onclick = null; }
+  ok.onclick = () => { cleanup(); onYes(); };
+  cancel.onclick = () => cleanup();
+}
+
+// ════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════
+let currentRole = null;
+let pinBuffer = '';
+let pendingRole = null;
+let vatOn = false;
+let saleLoanOn = false;
+let purchaseLoanOn = false;
+
+const SUPABASE_URL = 'https://fsmlzbwjcorhvtepjuur.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZzbWx6YndqY29yaHZ0ZXBqdXVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMyMDgxMzUsImV4cCI6MjA4ODc4NDEzNX0.vGyltIyQIpMFa66vIVBRuQqr3tZDrN8RFupRxSS7T-o';
+
+const DEFAULTS = {
+  managerPin: '1234',
+  ownerPin: '5678',
+  defaultVat: 15
+};
+
+// ── Local storage helpers (manager phone data) ──
+function getS(k, def) {
+  try { const v = localStorage.getItem(k); return v !== null ? JSON.parse(v) : def; } catch { return def; }
+}
+function setS(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} }
+
+// ── Supabase REST helper ──
+async function sbGet(table) {
+  try {
+    const r = await fetch(`${SUPABASE_URL}/rest/v1/${table}?select=*`, {
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
+    });
+    const rows = await r.json();
+    if (!Array.isArray(rows)) return [];
+    return rows.map(row => row.data || row);
+  } catch { return []; }
+}
+
+async function sbUpsert(table, id, data) {
+  try {
+    await fetch(`${SUPABASE_URL}/rest/v1/${table}`, {
+      method: 'POST',
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_KEY,
+        'Content-Type': 'application/json',
+        'Prefer': 'resolution=merge-duplicates'
+      },
+      body: JSON.stringify({ id, data })
+    });
+  } catch {}
+}
+
+async function sbDelete(table, id) {
+  try {
+    await fetch(`${SUPABASE_URL}/rest/v1/${table}?id=eq.${encodeURIComponent(id)}`, {
+      method: 'DELETE',
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
+    });
+  } catch {}
+}
+
+async function sbUpsertKey(table, key, value) {
+  try {
+    await fetch(`${SUPABASE_URL}/rest/v1/${table}`, {
+      method: 'POST',
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_KEY,
+        'Content-Type': 'application/json',
+        'Prefer': 'resolution=merge-duplicates'
+      },
+      body: JSON.stringify({ key, value })
+    });
+  } catch {}
+}
+
+async function sbGetKey(table, key) {
+  try {
+    const r = await fetch(`${SUPABASE_URL}/rest/v1/${table}?key=eq.${encodeURIComponent(key)}&select=value`, {
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
+    });
+    const rows = await r.json();
+    return rows && rows[0] ? rows[0].value : null;
+  } catch { return null; }
+}
+
+// ── Data access — Manager uses localStorage, Owner uses Supabase ──
+// Sales: manager writes to localStorage, also pushes to Supabase for owner to see
+function getSales() { return getS('sf_sales', []); }
+function setSales(s) { setS('sf_sales', s); }
+
+async function getSalesRemote() { return await sbGet('sales'); }
+async function upsertSaleRemote(sale) { await sbUpsert('sales', sale.id, sale); }
+async function deleteSaleRemote(id) { await sbDelete('sales', id); }
+
+// Purchases
+function getPurchases() { return getS('sf_purchases', []); }
+function setPurchases(p) { setS('sf_purchases', p); }
+
+async function getPurchasesRemote() { return await sbGet('purchases'); }
+async function upsertPurchaseRemote(p) { await sbUpsert('purchases', p.id, p); }
+async function deletePurchaseRemote(id) { await sbDelete('purchases', id); }
+
+// Stock — owner manages, stored in Supabase; manager reads cached copy
+function getStock() { return getS('sf_stock', []); }
+function setStock(s) { setS('sf_stock', s); }
+
+async function getStockRemote() { return await sbGet('stock'); }
+async function upsertStockRemote(item) { await sbUpsert('stock', item.name, item); }
+async function deleteStockRemote(name) { await sbDelete('stock', name); }
+
+// Tax logs — owner only, Supabase
+async function getTaxLogsRemote() { return await sbGet('tax_logs'); }
+async function upsertTaxLogRemote(log) { await sbUpsert('tax_logs', log.id, log); }
+async function deleteTaxLogRemote(id) { await sbDelete('tax_logs', id); }
+function getTaxLogs() { return getS('sf_tax_logs', []); }
+
+// Loans — owner + manager, Supabase
+function getLoans() { return getS('sf_loans', []); }
+function setLoans(l) { setS('sf_loans', l); }
+async function getLoansRemote() { return await sbGet('loans'); }
+async function upsertLoanRemote(loan) { await sbUpsert('loans', loan.id, loan); }
+async function deleteLoanRemote(id) { await sbDelete('loans', id); }
+function setTaxLogs(l) { setS('sf_tax_logs', l); }
+
+// Settings — Supabase, with localStorage fallback
+function getSettings() { return getS('sf_settings', { managerPin: DEFAULTS.managerPin, ownerPin: DEFAULTS.ownerPin, defaultVat: DEFAULTS.defaultVat }); }
+function saveSettings(s) {
+  setS('sf_settings', s);
+  sbUpsertKey('settings', 'config', s);
+}
+
+// ── Push a sale/purchase to Supabase (called after local save) ──
+async function pushToSupabase(type, item) {
+  if (type === 'sale') await upsertSaleRemote(item);
+  else if (type === 'purchase') await upsertPurchaseRemote(item);
+}
+
+// ── Pull latest data from Supabase into localStorage (for manager stock list) ──
+async function pullStockFromSupabase() {
+  const stock = await getStockRemote();
+  if (stock.length) setStock(stock);
+}
+
+// ── Loading overlay helpers ──
+function showLoading(msg) {
+  let el = document.getElementById('sb-loading');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'sb-loading';
+    el.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:99999;display:flex;align-items:center;justify-content:center;';
+    el.innerHTML = `<div style="background:#fff;border-radius:6px;padding:1.5rem 2rem;font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;display:flex;align-items:center;gap:0.75rem;"><span style="font-size:1.4rem">⏳</span><span id="sb-loading-msg">${msg}</span></div>`;
+    document.body.appendChild(el);
+  } else {
+    document.getElementById('sb-loading-msg').textContent = msg;
+    el.style.display = 'flex';
+  }
+}
+function hideLoading() {
+  const el = document.getElementById('sb-loading');
+  if (el) el.style.display = 'none';
+}
+
+// ════════════════════════════════════════
+// LANDING & PIN
+// ════════════════════════════════════════
+function show(id) {
+  document.getElementById('landing').style.display = 'none';
+  document.getElementById('pin-screen').style.display = 'none';
+  document.getElementById('manager-screen').classList.remove('active');
+  document.getElementById('owner-screen').classList.remove('active');
+  const el = document.getElementById(id);
+  if (id === 'pin-screen') {
+    el.style.display = 'flex';
+  } else if (id === 'landing') {
+    document.getElementById('landing').style.display = 'flex';
+  } else {
+    el.classList.add('active');
+  }
+}
+
+function goToPin(role) {
+  pendingRole = role;
+  pinBuffer = '';
+  updateDots();
+  document.getElementById('pin-error').textContent = '';
+  document.getElementById('pin-title').textContent = role === 'manager' ? 'Sales Manager Login' : 'Owner Login';
+  document.getElementById('pin-sub').textContent = 'Enter your 4-digit PIN';
+  show('pin-screen');
+}
+
+function pinPress(d) {
+  if (pinBuffer.length >= 4) return;
+  pinBuffer += d;
+  updateDots();
+  if (pinBuffer.length === 4) {
+    setTimeout(checkPin, 200);
+  }
+}
+function pinBack() {
+  pinBuffer = pinBuffer.slice(0, -1);
+  updateDots();
+  document.getElementById('pin-error').textContent = '';
+}
+function updateDots() {
+  for (let i = 0; i < 4; i++) {
+    document.getElementById('d' + i).classList.toggle('filled', i < pinBuffer.length);
+  }
+}
+function checkPin() {
+  const settings = getSettings();
+  const correctPin = pendingRole === 'manager' ? settings.managerPin : settings.ownerPin;
+  if (pinBuffer === String(correctPin)) {
+    currentRole = pendingRole;
+    if (currentRole === 'manager') {
+      initManager();
+      show('manager-screen');
+    } else {
+      initOwner();
+      show('owner-screen');
+    }
+  } else {
+    document.getElementById('pin-error').textContent = '✗ Incorrect PIN. Try again.';
+    pinBuffer = '';
+    updateDots();
+  }
+}
+function backToLanding() {
+  pinBuffer = '';
+  show('landing');
+  document.getElementById('landing').style.display = 'flex';
+}
+function logout() {
+  currentRole = null;
+  pinBuffer = '';
+  show('landing');
+  document.getElementById('landing').style.display = 'flex';
+}
+
+// ════════════════════════════════════════
+// TABS
+// ════════════════════════════════════════
+function switchTab(role, tab, el) {
+  const prefix = role === 'manager' ? 'm' : 'o';
+  const screen = document.getElementById(role === 'manager' ? 'manager-screen' : 'owner-screen');
+  if (screen) {
+    screen.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    screen.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  }
+  if (el) el.classList.add('active');
+  const pane = document.getElementById(prefix + '-tab-' + tab);
+  if (pane) pane.classList.add('active');
+  if (role === 'manager' && tab === 'history') renderManagerHistory();
+  if (role === 'manager' && tab === 'purchase') renderPurchaseHistory();
+  if (role === 'manager' && tab === 'loans') renderManagerLoans();
+  if (role === 'owner' && tab === 'review') renderOwnerReview();
+  if (role === 'owner' && tab === 'records') renderOwnerRecords();
+  if (role === 'owner' && tab === 'monthly') renderMonthly();
+  if (role === 'owner' && tab === 'stock') renderStockList();
+  if (role === 'owner' && tab === 'purchases') renderOwnerPurchases();
+  if (role === 'owner' && tab === 'loans') renderOwnerLoans();
+  if (role === 'owner' && tab === 'export') initExportTab();
+  if (role === 'owner' && tab === 'tax') initTaxTab();
+  if (role === 'owner' && tab === 'settings') loadSettings();
+}
+
+// ════════════════════════════════════════
+// MANAGER — LOG SALE
+// ════════════════════════════════════════
+async function initManager() {
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('m-date').value = today;
+  document.getElementById('pu-date').value = today;
+
+  showLoading('Loading...');
+  try {
+    const remoteSettings = await sbGetKey('settings', 'config');
+    if (remoteSettings) { setS('sf_settings', remoteSettings); }
+    await pullStockFromSupabase();
+    const remoteSales = await getSalesRemote();
+    if (remoteSales.length) setSales(remoteSales);
+    const remotePurchases = await getPurchasesRemote();
+    if (remotePurchases.length) setPurchases(remotePurchases);
+    const remoteLoans = await getLoansRemote();
+    if (remoteLoans.length) setLoans(remoteLoans);
+  } catch {}
+  hideLoading();
+
+  const settings = getSettings();
+  document.getElementById('m-vat-rate').value = settings.defaultVat || 15;
+  document.getElementById('pu-vat-rate').value = settings.defaultVat || 15;
+
+  const dl = document.getElementById('stock-items-list');
+  dl.innerHTML = '';
+  getStock().forEach(item => {
+    const opt = document.createElement('option');
+    opt.value = item.name;
+    dl.appendChild(opt);
+  });
+  calcPreview();
+  renderManagerHistory();
+  renderPurchaseHistory();
+  renderManagerLoans();
+  updateOfflineBar();
+}
+
+async function initOwner() {
+  showLoading('Loading data from cloud...');
+  try {
+    const [sales, purchases, stock, taxLogs, loans, settings] = await Promise.all([
+      getSalesRemote(),
+      getPurchasesRemote(),
+      getStockRemote(),
+      getTaxLogsRemote(),
+      getLoansRemote(),
+      sbGetKey('settings', 'config')
+    ]);
+    if (sales.length) setSales(sales);
+    if (purchases.length) setPurchases(purchases);
+    if (stock.length) setStock(stock);
+    if (taxLogs.length) setTaxLogs(taxLogs);
+    if (loans.length) setLoans(loans);
+    if (settings) setS('sf_settings', settings);
+  } catch {}
+  hideLoading();
+
+  renderOwnerReview();
+  renderOwnerRecords();
+  populateYears();
+  renderMonthly();
+  loadSettings();
+  renderStockList();
+  renderLowStockAlerts();
+  renderPurchaseReview();
+  renderOwnerPurchases();
+  renderOwnerLoans();
+}function toggleVAT() {
+  const name = document.getElementById('m-item-name').value.trim().toLowerCase();
+  const qtyToSell = parseFloat(document.getElementById('m-qty').value) || 0;
+  const stock = getStock();
+  const stockItem = stock.find(s => s.name.toLowerCase() === name);
+
+  if (!vatOn) {
+    // Trying to turn ON — validate first
+    if (!name) {
+      showToast('Enter item name first to check stock', 'error');
+      return;
+    }
+    if (!stockItem || stockItem.qty <= 0) {
+      document.getElementById('vat-no-stock-msg').style.display = 'block';
+      return;
+    }
+    if (qtyToSell > 0 && qtyToSell > stockItem.qty) {
+      document.getElementById('vat-no-stock-msg').style.display = 'block';
+      document.getElementById('vat-no-stock-msg').textContent = '⚠ Cannot apply VAT — want to sell ' + qtyToSell + ' but only ' + stockItem.qty + ' in stock.';
+      return;
+    }
+    document.getElementById('vat-no-stock-msg').style.display = 'none';
+  } else {
+    document.getElementById('vat-no-stock-msg').style.display = 'none';
+  }
+
+  vatOn = !vatOn;
+  document.getElementById('vat-toggle').classList.toggle('on', vatOn);
+  document.getElementById('vat-rate-row').classList.toggle('visible', vatOn);
+  document.getElementById('p-vat-row').style.display = vatOn ? 'flex' : 'none';
+  updateStockBanner();
+  calcPreview();
+}
+
+function onItemNameChange() {
+  const name = document.getElementById('m-item-name').value.trim();
+  updateStockBanner();
+
+  const hint = document.getElementById('m-autofill-hint');
+
+  if (!name) { hint.style.display = 'none'; return; }
+
+  // Find most recent approved VAT purchase (for stock autofill)
+  const vatPurchases = getPurchases().filter(p =>
+    p.status === 'approved' &&
+    p.name.toLowerCase() === name.toLowerCase()
+  ).sort((a, b) => new Date(b.date) - new Date(a.date));
+
+  // Find most recent approved non-VAT purchase with remaining qty
+  const nonVatPurchases = getPurchases().filter(p =>
+    p.status === 'approved' &&
+    !p.flagForStock &&
+    p.name.toLowerCase() === name.toLowerCase()
+  ).sort((a, b) => new Date(b.date) - new Date(a.date));
+
+  const totalNonVatRemaining = nonVatPurchases.reduce((sum, p) => sum + (p.remainingQty !== undefined ? p.remainingQty : p.qty), 0);
+
+  if (!vatPurchases.length && !nonVatPurchases.length) { hint.style.display = 'none'; return; }
+
+  hint.style.display = 'block';
+  let html = '';
+
+  // Stock/VAT purchase hint
+  if (vatPurchases.length) {
+    const last = vatPurchases[0];
+    const expPerUnit = last.expensesPerUnit || 0;
+    const stockItem = getStock().find(s => s.name.toLowerCase() === name.toLowerCase());
+    const stockQty = stockItem ? stockItem.qty : 0;
+    html += `<div style="margin-bottom:${nonVatPurchases.length ? '0.5rem' : '0'};">
+      📦 <strong>Stock item</strong> — Last purchase: <strong>${last.date}</strong> · Cost: <strong>ETB ${last.costUnit.toFixed(2)}/unit</strong>${expPerUnit ? ` · Exp: <strong>ETB ${expPerUnit.toFixed(2)}/unit</strong>` : ''} · <span style="color:var(--green);font-weight:600;">${stockQty} in stock</span>
+      &nbsp;<button class="btn btn-sm" style="padding:0.15rem 0.6rem;font-size:0.7rem;background:var(--ink);color:#fff;border-radius:3px;" onclick="autofillFromPurchase('${last.id}')">↙ Use these values</button>
+    </div>`;
+  }
+
+  // Non-VAT purchase hint
+  if (nonVatPurchases.length) {
+    const last = nonVatPurchases[0];
+    const expPerUnit = last.expensesPerUnit || 0;
+    const remainingQty = totalNonVatRemaining;
+    const remainColor = remainingQty <= 0 ? 'var(--red)' : remainingQty < 5 ? 'var(--gold)' : 'var(--green)';
+    html += `<div>
+      🧾 <strong>Purchase log item</strong> — Last purchase: <strong>${last.date}</strong> · Cost: <strong>ETB ${last.costUnit.toFixed(2)}/unit</strong>${expPerUnit ? ` · Exp: <strong>ETB ${expPerUnit.toFixed(2)}/unit</strong>` : ''} · <span style="color:${remainColor};font-weight:600;">${remainingQty} remaining</span>
+      &nbsp;<button class="btn btn-sm" style="padding:0.15rem 0.6rem;font-size:0.7rem;background:#1a6b3a;color:#fff;border-radius:3px;" onclick="autofillFromPurchase('${last.id}')">↙ Use these values</button>
+    </div>`;
+  }
+
+  hint.innerHTML = html;
+}
+
+function autofillFromPurchase(id) {
+  const p = getPurchases().find(x => x.id === id);
+  if (!p) return;
+  document.getElementById('m-cost').value = p.costUnit.toFixed(2);
+  if (p.expensesPerUnit) document.getElementById('m-expenses').value = p.expensesPerUnit.toFixed(2);
+  calcPreview();
+  showToast('Cost & expenses filled from purchase ✓', 'success');
+}
+
+function updateStockBanner() {
+  const name = document.getElementById('m-item-name').value.trim().toLowerCase();
+  const qtyToSell = parseFloat(document.getElementById('m-qty').value) || 0;
+  const stock = getStock();
+  const stockItem = stock.find(s => s.name.toLowerCase() === name);
+  const banner = document.getElementById('stock-info-banner');
+
+  if (!name) { banner.style.display = 'none'; return; }
+
+  if (!stockItem) {
+    banner.style.display = 'block';
+    banner.style.background = '#fef9c3';
+    banner.style.borderColor = '#fde047';
+    banner.style.color = '#713f12';
+    banner.innerHTML = '&#9888; Item not found in stock list &mdash; VAT cannot be applied';
+    if (vatOn) { vatOn = true; toggleVAT(); }
+    return;
+  }
+
+  const available = stockItem.qty;
+
+  if (available <= 0) {
+    banner.style.display = 'block';
+    banner.style.background = '#fee2e2';
+    banner.style.borderColor = '#fca5a5';
+    banner.style.color = '#991b1b';
+    banner.innerHTML = '&#10007; <strong>Out of stock</strong> &mdash; 0 units available. VAT cannot be applied.';
+    if (vatOn) { vatOn = true; toggleVAT(); }
+    return;
+  }
+
+  if (vatOn && qtyToSell > 0 && qtyToSell > available) {
+    banner.style.display = 'block';
+    banner.style.background = '#fee2e2';
+    banner.style.borderColor = '#fca5a5';
+    banner.style.color = '#991b1b';
+    banner.innerHTML = '&#10007; <strong>Not enough stock for VAT sale</strong> &mdash; want to sell <strong>' + qtyToSell + '</strong> but only <strong>' + available + '</strong> available. Reduce qty or remove VAT.';
+    return;
+  }
+
+  if (vatOn && qtyToSell > 0) {
+    const remaining = available - qtyToSell;
+    banner.style.display = 'block';
+    banner.style.background = '#f0fdf4';
+    banner.style.borderColor = '#86efac';
+    banner.style.color = '#166534';
+    banner.innerHTML = '&#10003; In stock: <strong>' + available + ' units</strong> &mdash; selling <strong>' + qtyToSell + '</strong>, leaving <strong>' + remaining + '</strong> after this sale';
+    return;
+  }
+
+  banner.style.display = 'block';
+  banner.style.background = '#f0fdf4';
+  banner.style.borderColor = '#86efac';
+  banner.style.color = '#166534';
+  banner.innerHTML = '&#10003; In stock: <strong>' + available + ' units</strong> available &mdash; VAT can be applied';
+}
+
+function calcPreview() {
+  const qty = parseFloat(document.getElementById('m-qty').value) || 0;
+  const price = parseFloat(document.getElementById('m-price').value) || 0;
+  const cost = parseFloat(document.getElementById('m-cost').value) || 0;
+  const expPerUnit = parseFloat(document.getElementById('m-expenses').value) || 0;
+  const vatRate = vatOn ? (parseFloat(document.getElementById('m-vat-rate').value) || 0) : 0;
+
+  const revenue = qty * price;
+  const vatAmount = vatOn ? (revenue * vatRate / 100) : 0;
+  const totalExpenses = expPerUnit * qty;
+  const totalCost = (cost * qty) + totalExpenses;
+  const profit = revenue - totalCost;
+
+  document.getElementById('p-qty').textContent = qty || '—';
+  document.getElementById('p-revenue').textContent = 'ETB ' + revenue.toFixed(2);
+  document.getElementById('p-vat-label').textContent = 'VAT (' + vatRate + '%)';
+  document.getElementById('p-vat').textContent = 'ETB ' + vatAmount.toFixed(2);
+  document.getElementById('p-vat-row').style.display = vatOn ? 'flex' : 'none';
+  document.getElementById('p-cost').textContent = 'ETB ' + (cost * qty).toFixed(2);
+  document.getElementById('p-exp').textContent = 'ETB ' + totalExpenses.toFixed(2);
+  document.getElementById('p-profit').textContent = 'ETB ' + profit.toFixed(2);
+
+  // Auto-fill loan amount with revenue if loan toggle is on
+  if (saleLoanOn && revenue > 0) {
+    const loanAmtEl = document.getElementById('sale-loan-amount');
+    if (loanAmtEl) loanAmtEl.value = revenue.toFixed(2);
+  }
+
+  updateStockBanner();
+}
+
+function submitSale() {
+  const name = document.getElementById('m-item-name').value.trim();
+  const date = document.getElementById('m-date').value;
+  const qty = parseFloat(document.getElementById('m-qty').value);
+  const price = parseFloat(document.getElementById('m-price').value);
+  const cost = parseFloat(document.getElementById('m-cost').value);
+  const expPerUnit = parseFloat(document.getElementById('m-expenses').value) || 0;
+  const notes = document.getElementById('m-notes').value.trim();
+  const vatRate = vatOn ? (parseFloat(document.getElementById('m-vat-rate').value) || 0) : 0;
+
+  if (!name) return showToast('Enter item name', 'error');
+  if (!date) return showToast('Select a date', 'error');
+  if (!qty || qty <= 0) return showToast('Enter valid quantity', 'error');
+  if (!price || price <= 0) return showToast('Enter selling price', 'error');
+  if (isNaN(cost) || cost < 0) return showToast('Enter cost price', 'error');
+
+  if (vatOn) {
+    const stock = getStock();
+    const stockItem = stock.find(s => s.name.toLowerCase() === name.toLowerCase());
+    if (!stockItem || stockItem.qty <= 0) return showToast('Cannot submit — item has no stock. VAT sale blocked.', 'error');
+    if (qty > stockItem.qty) return showToast('Cannot submit — selling ' + qty + ' but only ' + stockItem.qty + ' in stock.', 'error');
+  }
+
+  // Loan validation
+  if (saleLoanOn) {
+    if (!document.getElementById('sale-loan-person').value.trim()) return showToast('Enter the person/customer name for the loan', 'error');
+    if (!document.getElementById('sale-loan-amount').value) return showToast('Enter the amount owed for the loan', 'error');
+  }
+
+  const revenue = qty * price;
+  const vatAmount = vatOn ? (revenue * vatRate / 100) : 0;
+  const totalExpenses = expPerUnit * qty;
+  const totalCost = (cost * qty) + totalExpenses;
+  const profit = revenue - totalCost;
+
+  // Build loan info if applicable
+  const loanInfo = saleLoanOn ? {
+    isLoan: true,
+    loanType: document.getElementById('sale-loan-type').value,
+    person: document.getElementById('sale-loan-person').value.trim(),
+    amountOwed: parseFloat(document.getElementById('sale-loan-amount').value) || 0,
+    loanNotes: document.getElementById('sale-loan-notes').value.trim()
+  } : { isLoan: false };
+
+  const sale = {
+    id: Date.now().toString(),
+    name, date, qty, price, cost,
+    expensesPerUnit: expPerUnit,
+    expenses: totalExpenses,
+    notes, vatOn, vatRate, vatAmount,
+    revenue, totalCost, profit,
+    status: 'pending',
+    submittedAt: new Date().toISOString(),
+    ownerNote: '',
+    ...loanInfo
+  };
+
+  const sales = getSales();
+  sales.push(sale);
+  setSales(sales);
+
+  upsertSaleRemote(sale).catch(() => addToOfflineQueue('sale', sale));
+
+  if (!navigator.onLine) {
+    addToOfflineQueue('sale', sale);
+    showToast('Saved offline — will sync when back online 📡', 'success');
+  } else {
+    showToast(saleLoanOn ? 'Sale submitted — loan will be logged after owner approval ✓' : 'Sale submitted to owner ✓', 'success');
+  }
+
+  clearSaleForm();
+  renderManagerHistory();
+}
+
+function clearSaleForm() {
+  document.getElementById('m-item-name').value = '';
+  document.getElementById('m-qty').value = '';
+  document.getElementById('m-price').value = '';
+  document.getElementById('m-cost').value = '';
+  document.getElementById('m-expenses').value = '';
+  document.getElementById('m-notes').value = '';
+  document.getElementById('sale-loan-person').value = '';
+  document.getElementById('sale-loan-amount').value = '';
+  document.getElementById('sale-loan-notes').value = '';
+  document.getElementById('stock-info-banner').style.display = 'none';
+  document.getElementById('vat-no-stock-msg').style.display = 'none';
+  if (vatOn) { vatOn = true; toggleVAT(); }
+  if (saleLoanOn) { saleLoanOn = false; document.getElementById('sale-loan-toggle').classList.remove('on'); document.getElementById('sale-loan-fields').style.display = 'none'; }
+  calcPreview();
+}
+
+function renderManagerHistory() {
+  const sales = getSales();
+  const container = document.getElementById('m-sales-list');
+  if (!sales.length) {
+    container.innerHTML = `<div class="empty"><div class="e-icon">📭</div><p>No sales logged yet.</p></div>`;
+    return;
+  }
+  const sorted = [...sales].sort((a,b) => new Date(b.submittedAt) - new Date(a.submittedAt));
+  container.innerHTML = `
+    <div style="display:flex;justify-content:flex-end;margin-bottom:0.75rem;">
+      <button class="btn btn-danger btn-sm" onclick="clearManagerSalesHistory()">🗑 Clear All History</button>
+    </div>
+  ` + sorted.map(s => `
+    <div class="sale-item">
+      <div class="sale-item-info">
+        <h3>${s.name} <span class="vat-badge ${s.vatOn ? 'vat-yes' : 'vat-no'}">${s.vatOn ? 'VAT ' + s.vatRate + '%' : 'No VAT'}</span></h3>
+        <p>${s.date} · Qty: ${s.qty}</p>
+        <p>Sell: ETB ${s.price.toFixed(2)} · Cost: ETB ${s.cost.toFixed(2)}/unit</p>
+        ${s.expenses ? `<p>Expenses: ETB ${s.expenses.toFixed(2)}</p>` : ''}
+        ${s.ownerNote ? `<p>Owner note: ${s.ownerNote}</p>` : ''}
+        <span class="status-badge status-${s.status}">${s.status.toUpperCase()}</span>
+      </div>
+      <div class="sale-item-nums">
+        <div class="amount">ETB ${s.revenue.toFixed(2)}</div>
+        <div class="profit-label">Profit: ETB ${s.profit.toFixed(2)}</div>
+        <button class="btn btn-danger btn-sm" style="margin-top:0.5rem;font-size:0.65rem;padding:0.2rem 0.6rem;" onclick="deleteManagerSale('${s.id}')">Delete</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function deleteManagerSale(id) {
+  askConfirm('Delete this sale entry from your history?', () => {
+    setSales(getSales().filter(s => s.id !== id));
+    deleteSaleRemote(id);
+    renderManagerHistory();
+    showToast('Entry deleted', 'error');
+  });
+}
+
+function clearManagerSalesHistory() {
+  askConfirm('Clear your entire sales history? This cannot be undone.', () => {
+    const toDelete = getSales();
+    setSales([]);
+    toDelete.forEach(s => deleteSaleRemote(s.id));
+    renderManagerHistory();
+    showToast('Sales history cleared', 'error');
+  });
+}
+
+// ════════════════════════════════════════
+// OWNER — REVIEW
+// ════════════════════════════════════════
+function renderOwnerReview() {
+  const sales = getSales().filter(s => s.status === 'pending' && s.type !== 'purchase');
+  const container = document.getElementById('o-review-list');
+  if (!sales.length) {
+    container.innerHTML = `<div class="empty"><div class="e-icon">✅</div><p>No pending sales to review.</p></div>`;
+    return;
+  }
+  container.innerHTML = `<div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.8rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:1rem;padding-bottom:0.5rem;border-bottom:1px solid var(--border);">📊 Pending Sales</div>` +
+  sales.map(s => `
+    <div class="review-card">
+      <div class="review-card-head">
+        <h3>${s.name} <span class="vat-badge ${s.vatOn ? 'vat-yes' : 'vat-no'}">${s.vatOn ? 'VAT ' + s.vatRate + '%' : 'No VAT'}</span></h3>
+        <span class="status-badge status-pending">PENDING REVIEW</span>
+      </div>
+      <div class="review-card-body">
+        <div class="row"><span>Date</span><strong>${s.date}</strong></div>
+        <div class="row"><span>Quantity Sold</span><strong>${s.qty}</strong></div>
+        <div class="row"><span>Selling Price / Unit</span><strong>ETB ${s.price.toFixed(2)}</strong></div>
+        <div class="row"><span>Cost Price / Unit</span><strong>ETB ${s.cost.toFixed(2)}</strong></div>
+        <div class="row"><span>Expenses</span><strong>ETB ${s.expenses.toFixed(2)}</strong></div>
+        ${s.vatOn ? `<div class="row"><span>VAT (${s.vatRate}%)</span><strong>ETB ${s.vatAmount.toFixed(2)}</strong></div>` : ''}
+        <div class="row"><span>Gross Revenue</span><strong>ETB ${s.revenue.toFixed(2)}</strong></div>
+        <div class="row"><span>Total Cost</span><strong>ETB ${s.totalCost.toFixed(2)}</strong></div>
+        <div class="row"><span style="font-weight:700">NET PROFIT</span><strong style="color:var(--green)">ETB ${s.profit.toFixed(2)}</strong></div>
+        ${s.notes ? `<div class="row"><span>Notes</span><strong>${s.notes}</strong></div>` : ''}
+      </div>
+      <div style="padding:0.75rem 1.25rem; border-top:1px solid var(--border);">
+        <label>Owner note (optional)</label>
+        <input type="text" id="onote-${s.id}" placeholder="Add a note for records..." style="margin-top:0.4rem">
+      </div>
+      <div class="review-actions">
+        <button class="btn btn-success btn-sm" onclick="approveSale('${s.id}')">✓ Approve</button>
+        <button class="btn btn-danger btn-sm" onclick="rejectSale('${s.id}')">✗ Reject</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function approveSale(id) {
+  const note = document.getElementById('onote-' + id)?.value || '';
+  const sales = getSales();
+  const sale = sales.find(s => s.id === id);
+
+  if (sale && sale.vatOn) {
+    // VAT sale → deduct from Stock
+    const stock = getStock();
+    const si = stock.findIndex(s => s.name.toLowerCase() === sale.name.toLowerCase());
+    if (si > -1) {
+      if (stock[si].qty < sale.qty) {
+        return showToast('Cannot approve — only ' + stock[si].qty + ' in stock but sale is for ' + sale.qty + '. Reject and ask manager to re-submit.', 'error');
+      }
+      stock[si].qty = Math.max(0, stock[si].qty - sale.qty);
+      const remaining = stock[si].qty;
+      setStock(stock);
+      upsertStockRemote(stock[si]);
+      updateSaleStatus(id, 'approved', note);
+      renderLowStockAlerts();
+      renderStockList();
+      const lowWarn = remaining <= 10 ? (' ⚠ Only ' + remaining + ' left!') : (' ' + remaining + ' remaining.');
+      showToast('Sale approved ✓ — stock updated.' + lowWarn, remaining <= 10 ? 'error' : 'success');
+      return;
+    }
+  }
+
+  if (sale && !sale.vatOn) {
+    // Non-VAT sale → deduct from approved non-VAT purchases (FIFO by date)
+    const purchases = getPurchases()
+      .filter(p => p.status === 'approved' && !p.flagForStock && p.name.toLowerCase() === sale.name.toLowerCase())
+      .sort((a, b) => new Date(a.date) - new Date(b.date));
+
+    const totalAvailable = purchases.reduce((sum, p) => sum + (p.remainingQty !== undefined ? p.remainingQty : p.qty), 0);
+
+    const doApprove = () => {
+      // Deduct FIFO from purchases
+      let toDeduct = sale.qty;
+      const updatedPurchases = getPurchases();
+      purchases.forEach(p => {
+        if (toDeduct <= 0) return;
+        const pi = updatedPurchases.findIndex(x => x.id === p.id);
+        if (pi === -1) return;
+        const available = updatedPurchases[pi].remainingQty !== undefined ? updatedPurchases[pi].remainingQty : updatedPurchases[pi].qty;
+        const deduct = Math.min(toDeduct, available);
+        updatedPurchases[pi].remainingQty = available - deduct;
+        toDeduct -= deduct;
+        upsertPurchaseRemote(updatedPurchases[pi]);
+      });
+      setPurchases(updatedPurchases);
+      updateSaleStatus(id, 'approved', note);
+      renderOwnerPurchases();
+      const leftover = totalAvailable - sale.qty;
+      if (totalAvailable === 0) {
+        showToast('Sale approved ✓ (no matching purchase found to deduct from)', 'success');
+      } else if (leftover < 0) {
+        showToast('Sale approved ✓ ⚠ Sold more than purchased — ' + Math.abs(leftover) + ' units over purchase record.', 'error');
+      } else {
+        showToast('Sale approved ✓ — deducted from purchase log. ' + leftover + ' units remaining.', 'success');
+      }
+    };
+
+    if (totalAvailable < sale.qty && totalAvailable > 0) {
+      askConfirm(
+        'Warning: Sale qty (' + sale.qty + ') exceeds available purchase record (' + totalAvailable + ' units of "' + sale.name + '"). Approve anyway?',
+        doApprove
+      );
+      return;
+    }
+
+    doApprove();
+    return;
+  }
+
+  updateSaleStatus(id, 'approved', note);
+  showToast('Sale approved ✓', 'success');
+}
+
+function rejectSale(id) {
+  const note = document.getElementById('onote-' + id)?.value || '';
+  updateSaleStatus(id, 'rejected', note);
+  showToast('Sale rejected', 'error');
+}
+
+function updateSaleStatus(id, status, note) {
+  const sales = getSales();
+  const i = sales.findIndex(s => s.id === id);
+  if (i > -1) {
+    sales[i].status = status;
+    sales[i].ownerNote = note;
+    sales[i].reviewedAt = new Date().toISOString();
+    upsertSaleRemote(sales[i]);
+
+    // Create loan record when a loan sale is approved
+    if (status === 'approved' && sales[i].isLoan) {
+      createLoanRecord(sales[i], 'sale');
+    }
+  }
+  setSales(sales);
+  renderOwnerReview();
+  renderOwnerRecords();
+  renderLowStockAlerts();
+  renderPurchaseReview();
+  renderOwnerLoans();
+}
+
+// ════════════════════════════════════════
+// OWNER — RECORDS
+// ════════════════════════════════════════
+function renderOwnerRecords() {
+  const approved = getSales().filter(s => s.status === 'approved');
+  const totalRev = approved.reduce((a, s) => a + s.revenue, 0);
+  const totalProfit = approved.reduce((a, s) => a + s.profit, 0);
+  const totalVat = approved.reduce((a, s) => a + s.vatAmount, 0);
+  const totalCost = approved.reduce((a, s) => a + s.totalCost, 0);
+
+  document.getElementById('o-stats').innerHTML = `
+    <div class="stat-box"><div class="stat-label">Total Revenue</div><div class="stat-value">ETB ${fmtNum(totalRev)}</div><div class="stat-sub">${approved.length} entries</div></div>
+    <div class="stat-box green"><div class="stat-label">Net Profit</div><div class="stat-value">ETB ${fmtNum(totalProfit)}</div></div>
+    <div class="stat-box gold"><div class="stat-label">VAT Collected</div><div class="stat-value">ETB ${fmtNum(totalVat)}</div><div class="stat-sub" style="margin-top:0.5rem"><button class="btn btn-sm" style="background:var(--gold);color:var(--ink);padding:0.25rem 0.6rem;font-size:0.6rem;" onclick="downloadVatSheet()">⬇ Download Sheet</button></div></div>
+    <div class="stat-box blue"><div class="stat-label">Total Costs</div><div class="stat-value">ETB ${fmtNum(totalCost)}</div></div>
+  `;
+
+  const container = document.getElementById('o-records-list');
+  if (!approved.length) {
+    container.innerHTML = `<div class="empty"><div class="e-icon">📭</div><p>No approved records yet.</p></div>`;
+    return;
+  }
+  const sorted = [...approved].sort((a,b) => new Date(b.date) - new Date(a.date));
+  container.innerHTML = `
+    <div style="display:flex;justify-content:flex-end;margin-bottom:0.75rem;">
+      <button class="btn btn-danger btn-sm" onclick="clearOwnerRecords()">🗑 Clear All Records</button>
+    </div>
+    <table class="report-table">
+      <thead><tr>
+        <th>Date</th><th>Item</th><th>Qty</th><th>Revenue</th><th>VAT</th><th>Cost</th><th>Profit</th><th></th>
+      </tr></thead>
+      <tbody>
+        ${sorted.map(s => `<tr>
+          <td>${s.date}</td>
+          <td>${s.name}</td>
+          <td>${s.qty}</td>
+          <td>ETB ${s.revenue.toFixed(2)}</td>
+          <td>${s.vatOn ? 'ETB ' + s.vatAmount.toFixed(2) + ' (' + s.vatRate + '%)' : '—'}</td>
+          <td>ETB ${s.totalCost.toFixed(2)}</td>
+          <td style="color:var(--green);font-weight:600">ETB ${s.profit.toFixed(2)}</td>
+          <td><button class="btn btn-danger btn-sm" style="font-size:0.65rem;padding:0.2rem 0.5rem;" onclick="deleteOwnerRecord('${s.id}')">Delete</button></td>
+        </tr>`).join('')}
+      </tbody>
+    </table>
+  `;
+}
+
+function deleteOwnerRecord(id) {
+  askConfirm('Delete this record?', () => {
+    setSales(getSales().filter(s => s.id !== id));
+    deleteSaleRemote(id);
+    renderOwnerRecords();
+    showToast('Record deleted', 'error');
+  });
+}
+
+function clearOwnerRecords() {
+  askConfirm('Clear ALL approved records? This cannot be undone.', () => {
+    const toDelete = getSales().filter(s => s.status === 'approved');
+    setSales(getSales().filter(s => s.status !== 'approved'));
+    toDelete.forEach(s => deleteSaleRemote(s.id));
+    renderOwnerRecords();
+    renderMonthly();
+    showToast('All records cleared', 'error');
+  });
+}
+
+// ════════════════════════════════════════
+// OWNER — MONTHLY REPORT
+// ════════════════════════════════════════
+function populateYears() {
+  const sales = getSales();
+  const years = new Set();
+  const now = new Date();
+  years.add(now.getFullYear());
+  sales.forEach(s => { if (s.date) years.add(new Date(s.date).getFullYear()); });
+  const sel = document.getElementById('report-year');
+  sel.innerHTML = '';
+  [...years].sort((a,b) => b-a).forEach(y => {
+    const o = document.createElement('option');
+    o.value = y; o.textContent = y; sel.appendChild(o);
+  });
+  const m = document.getElementById('report-month');
+  m.value = now.getMonth();
+}
+
+function renderMonthly() {
+  const month = parseInt(document.getElementById('report-month').value);
+  const year = parseInt(document.getElementById('report-year').value);
+  const approved = getSales().filter(s => {
+    if (s.status !== 'approved') return false;
+    const d = new Date(s.date);
+    return d.getFullYear() === year && d.getMonth() === month;
+  });
+
+  const container = document.getElementById('monthly-content');
+  if (!approved.length) {
+    container.innerHTML = `<div class="empty"><div class="e-icon">📅</div><p>No approved sales for this month.</p></div>`;
+    return;
+  }
+
+  const totalRev = approved.reduce((a,s) => a+s.revenue, 0);
+  const totalProfit = approved.reduce((a,s) => a+s.profit, 0);
+  const totalVat = approved.reduce((a,s) => a+s.vatAmount, 0);
+  const totalCost = approved.reduce((a,s) => a+s.totalCost, 0);
+  const margin = totalRev ? ((totalProfit/totalRev)*100).toFixed(1) : 0;
+
+  // Best & worst sellers by revenue
+  const byItem = {};
+  approved.forEach(s => {
+    if (!byItem[s.name]) byItem[s.name] = { revenue: 0, profit: 0, qty: 0 };
+    byItem[s.name].revenue += s.revenue;
+    byItem[s.name].profit += s.profit;
+    byItem[s.name].qty += s.qty;
+  });
+  const items = Object.entries(byItem).sort((a,b) => b[1].revenue - a[1].revenue);
+  const best = items[0];
+  const worst = items[items.length - 1];
+
+  container.innerHTML = `
+    <div class="stats-grid" style="margin-bottom:1.5rem">
+      <div class="stat-box"><div class="stat-label">Total Revenue</div><div class="stat-value">ETB ${fmtNum(totalRev)}</div><div class="stat-sub">${approved.length} sales</div></div>
+      <div class="stat-box green"><div class="stat-label">Net Profit</div><div class="stat-value">ETB ${fmtNum(totalProfit)}</div><div class="stat-sub">Margin: ${margin}%</div></div>
+      <div class="stat-box gold"><div class="stat-label">VAT Collected</div><div class="stat-value">ETB ${fmtNum(totalVat)}</div></div>
+      <div class="stat-box blue"><div class="stat-label">Total Costs</div><div class="stat-value">ETB ${fmtNum(totalCost)}</div></div>
+    </div>
+    <div class="top-items" style="margin-bottom:1.5rem">
+      <div class="top-item">
+        <div class="label">🏆 Best Seller</div>
+        <div class="name">${best[0]}</div>
+        <div class="val">ETB ${best[1].revenue.toFixed(2)} revenue · ${best[1].qty} units</div>
+      </div>
+      <div class="top-item">
+        <div class="label">📉 Lowest Seller</div>
+        <div class="name">${worst[0]}</div>
+        <div class="val">ETB ${worst[1].revenue.toFixed(2)} revenue · ${worst[1].qty} units</div>
+      </div>
+    </div>
+    <table class="report-table">
+      <thead><tr><th>Item</th><th>Units</th><th>Revenue</th><th>VAT</th><th>Profit</th></tr></thead>
+      <tbody>
+        ${items.map(([name, d]) => `<tr>
+          <td>${name}</td>
+          <td>${d.qty}</td>
+          <td>ETB ${d.revenue.toFixed(2)}</td>
+          <td>ETB ${approved.filter(s=>s.name===name).reduce((a,s)=>a+s.vatAmount,0).toFixed(2)}</td>
+          <td style="color:var(--green)">ETB ${d.profit.toFixed(2)}</td>
+        </tr>`).join('')}
+        <tr style="font-weight:700; border-top:2px solid var(--border)">
+          <td>TOTAL</td>
+          <td>${approved.reduce((a,s)=>a+s.qty,0)}</td>
+          <td>ETB ${totalRev.toFixed(2)}</td>
+          <td>ETB ${totalVat.toFixed(2)}</td>
+          <td style="color:var(--green)">ETB ${totalProfit.toFixed(2)}</td>
+        </tr>
+      </tbody>
+    </table>
+  `;
+}
+
+// ════════════════════════════════════════
+// SETTINGS
+// ════════════════════════════════════════
+function savePins() {
+  const mgr = document.getElementById('set-mgr-pin').value.trim();
+  const own = document.getElementById('set-own-pin').value.trim();
+  if (mgr && (mgr.length !== 4 || isNaN(mgr))) return showToast('PIN must be 4 digits', 'error');
+  if (own && (own.length !== 4 || isNaN(own))) return showToast('PIN must be 4 digits', 'error');
+  const s = getSettings();
+  if (mgr) s.managerPin = mgr;
+  if (own) s.ownerPin = own;
+  saveSettings(s);
+  showToast('PINs saved ✓', 'success');
+}
+function saveVat() {
+  const v = parseFloat(document.getElementById('set-vat').value);
+  if (isNaN(v) || v < 0 || v > 100) return showToast('Invalid VAT rate', 'error');
+  const s = getSettings();
+  s.defaultVat = v;
+  saveSettings(s);
+  showToast('Default VAT saved ✓', 'success');
+}
+function clearAllData() {
+  askConfirm('Clear ALL data? This cannot be undone.', () => {
+    setSales([]); setPurchases([]); setStock([]);
+    showToast('All data cleared', 'success');
+    renderOwnerReview(); renderOwnerRecords(); renderMonthly();
+  });
+}
+
+// ════════════════════════════════════════
+// ARCHIVE & CLEAR
+// ════════════════════════════════════════
+function initArchiveDates() {
+  const from = document.getElementById('archive-from');
+  const to = document.getElementById('archive-to');
+  if (!from.value) {
+    // Default: start of last year to end of last year
+    const lastYear = new Date().getFullYear() - 1;
+    from.value = lastYear + '-01-01';
+    to.value = lastYear + '-12-31';
+  }
+}
+
+function loadSettings() {
+  const s = getSettings();
+  document.getElementById('set-mgr-pin').value = s.managerPin || '';
+  document.getElementById('set-own-pin').value = s.ownerPin || '';
+  document.getElementById('set-vat').value = s.defaultVat || 15;
+  initArchiveDates();
+}
+
+function getArchiveRange() {
+  const from = document.getElementById('archive-from').value;
+  const to = document.getElementById('archive-to').value;
+  if (!from || !to) { showToast('Select both dates', 'error'); return null; }
+  if (from > to) { showToast('From date must be before To date', 'error'); return null; }
+  const checks = {
+    records:   document.getElementById('arch-records').checked,
+    purchases: document.getElementById('arch-purchases').checked,
+    vat:       document.getElementById('arch-vat').checked,
+    stock:     document.getElementById('arch-stock').checked,
+    tax:       document.getElementById('arch-tax').checked,
+  };
+  if (!Object.values(checks).some(Boolean)) { showToast('Select at least one category', 'error'); return null; }
+  return { from, to, checks };
+}
+
+function filterByRange(items, from, to) {
+  return items.filter(i => i.date >= from && i.date <= to && i.status === 'approved');
+}
+
+function previewArchive() {
+  const range = getArchiveRange();
+  if (!range) return;
+  const { from, to, checks } = range;
+
+  const sales = checks.records || checks.vat ? filterByRange(getSales(), from, to) : [];
+  const purchases = checks.purchases ? filterByRange(getPurchases(), from, to) : [];
+  const stock = getStock();
+
+  const preview = document.getElementById('archive-preview');
+  const confirmBtn = document.getElementById('archive-confirm-btn');
+  preview.style.display = 'block';
+
+  const lines = [];
+  if (checks.records && sales.length)     lines.push(`• ${sales.length} records — ETB ${fmtNum(sales.reduce((a,s)=>a+s.revenue,0))} revenue`);
+  if (checks.purchases && purchases.length) lines.push(`• ${purchases.length} purchases — ETB ${fmtNum(purchases.reduce((a,p)=>a+p.total,0))} spent`);
+  if (checks.vat)   lines.push(`• VAT report — ETB ${fmtNum(sales.filter(s=>s.vatOn).reduce((a,s)=>a+s.vatAmount,0))} collected`);
+  if (checks.stock) lines.push(`• Stock snapshot — ${stock.length} item(s) currently in stock`);
+  if (checks.tax)   lines.push(`• Tax summary calculated for ${from} to ${to}`);
+
+  if (!lines.length) {
+    preview.style.background = '#f0fdf4'; preview.style.borderColor = '#86efac'; preview.style.color = '#166534';
+    preview.innerHTML = '✅ No records found for the selected categories in this date range.';
+    confirmBtn.style.display = 'none';
+    return;
+  }
+
+  preview.style.background = '#fef9c3'; preview.style.borderColor = '#fde047'; preview.style.color = '#713f12';
+  preview.innerHTML = `<strong>Archive will include (${from} to ${to}):</strong><br>${lines.join('<br>')}<br><br>Clicking <strong>Download & Delete</strong> will save a CSV then remove records & purchases from the app.`;
+  confirmBtn.style.display = 'inline-block';
+}
+
+function confirmArchive() {
+  const range = getArchiveRange();
+  if (!range) return;
+  const { from, to, checks } = range;
+
+  const allSales = filterByRange(getSales(), from, to);
+  const allPurchases = filterByRange(getPurchases(), from, to);
+  const stock = getStock();
+
+  const rows = [['SalesFlow Archive — ' + from + ' to ' + to], ['Generated: ' + new Date().toLocaleDateString()], []];
+
+  // RECORDS (approved sales)
+  if (checks.records && allSales.length) {
+    rows.push(['RECORDS (Approved Sales)']);
+    rows.push(['Date','Item','Qty','Revenue (ETB)','VAT Amount (ETB)','Cost (ETB)','Expenses (ETB)','Profit (ETB)','Notes','Owner Note']);
+    allSales.sort((a,b)=>a.date.localeCompare(b.date)).forEach(s =>
+      rows.push([s.date,s.name,s.qty,s.revenue.toFixed(2),s.vatAmount.toFixed(2),s.totalCost.toFixed(2),s.expenses.toFixed(2),s.profit.toFixed(2),s.notes||'',s.ownerNote||''])
+    );
+    rows.push(['TOTALS','','',allSales.reduce((a,s)=>a+s.revenue,0).toFixed(2),allSales.reduce((a,s)=>a+s.vatAmount,0).toFixed(2),'','',allSales.reduce((a,s)=>a+s.profit,0).toFixed(2),'','']);
+    rows.push([]);
+  }
+
+  // PURCHASES
+  if (checks.purchases && allPurchases.length) {
+    rows.push(['PURCHASES']);
+    rows.push(['Date','Item','Qty','Unit Cost (ETB)','Total (ETB)','VAT?','Added to Stock?','Notes','Owner Note']);
+    allPurchases.sort((a,b)=>a.date.localeCompare(b.date)).forEach(p =>
+      rows.push([p.date,p.name,p.qty,p.costUnit.toFixed(2),p.total.toFixed(2),p.vatOn?'Yes':'No',p.stockAdded?'Yes':'No',p.notes||'',p.ownerNote||''])
+    );
+    rows.push(['TOTALS','','','',allPurchases.reduce((a,p)=>a+p.total,0).toFixed(2),'','','','']);
+    rows.push([]);
+  }
+
+  // VAT REPORT
+  if (checks.vat) {
+    const vatSales = allSales.filter(s => s.vatOn);
+    rows.push(['VAT REPORT']);
+    rows.push(['Date','Item','Qty','Revenue (ETB)','VAT Rate (%)','VAT Amount (ETB)']);
+    vatSales.sort((a,b)=>a.date.localeCompare(b.date)).forEach(s =>
+      rows.push([s.date,s.name,s.qty,s.revenue.toFixed(2),s.vatRate,s.vatAmount.toFixed(2)])
+    );
+    rows.push(['TOTAL VAT COLLECTED','','','','',vatSales.reduce((a,s)=>a+s.vatAmount,0).toFixed(2)]);
+    rows.push([]);
+  }
+
+  // STOCK SNAPSHOT
+  if (checks.stock) {
+    rows.push(['STOCK SNAPSHOT (at time of archive)']);
+    rows.push(['Item','Qty in Stock','VAT Eligible']);
+    stock.forEach(s => rows.push([s.name, s.qty, s.qty > 0 ? 'Yes' : 'No']));
+    rows.push([]);
+  }
+
+  // TAX SUMMARY
+  if (checks.tax) {
+    const rev = allSales.reduce((a,s)=>a+s.revenue,0);
+    const costs = allSales.reduce((a,s)=>a+s.totalCost,0) + allPurchases.reduce((a,p)=>a+p.subtotal,0);
+    const vatCollected = allSales.filter(s=>s.vatOn).reduce((a,s)=>a+s.vatAmount,0);
+    const vatPaid = allPurchases.filter(p=>p.vatOn).reduce((a,p)=>a+p.vatAmount,0);
+    const vatPayable = Math.max(0, vatCollected - vatPaid);
+    const profit = Math.max(0, rev - costs);
+    const standardTax = profit * 0.30;
+    const mat = rev * 0.025;
+    const incomeTax = Math.max(standardTax, mat);
+    rows.push(['TAX SUMMARY']);
+    rows.push(['Period', from + ' to ' + to]);
+    rows.push(['Total Revenue (ETB)', rev.toFixed(2)]);
+    rows.push(['Total Costs (ETB)', costs.toFixed(2)]);
+    rows.push(['Taxable Profit (ETB)', profit.toFixed(2)]);
+    rows.push(['Income Tax Due 30% (ETB)', standardTax.toFixed(2)]);
+    rows.push(['MAT 2.5% of turnover (ETB)', mat.toFixed(2)]);
+    rows.push(['Income Tax Payable (ETB)', incomeTax.toFixed(2), incomeTax === mat && mat > standardTax ? 'MAT Applied' : '']);
+    rows.push(['VAT Collected (ETB)', vatCollected.toFixed(2)]);
+    rows.push(['Input VAT Paid (ETB)', vatPaid.toFixed(2)]);
+    rows.push(['Net VAT Payable (ETB)', vatPayable.toFixed(2)]);
+    rows.push(['TOTAL TAX OBLIGATION (ETB)', (vatPayable + incomeTax).toFixed(2)]);
+    rows.push([]);
+  }
+
+  if (rows.length <= 3) return showToast('No data to archive for selected categories', 'error');
+
+  const doArchive = () => {
+    const csv = rows.map(r => r.map(c => '"' + String(c == null ? '' : c).replace(/"/g,'""') + '"').join(',')).join('\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'SalesFlow_Archive_' + from + '_to_' + to + '.csv';
+  a.click();
+  URL.revokeObjectURL(url);
+
+  // Delete records from app (records + purchases — stock/tax are snapshots only)
+    let deleted = 0;
+    if (checks.records || checks.vat) {
+      const ids = new Set(allSales.map(s => s.id));
+      setSales(getSales().filter(s => !ids.has(s.id)));
+      deleted += allSales.length;
+    }
+    if (checks.purchases) {
+      const ids = new Set(allPurchases.map(p => p.id));
+      setPurchases(getPurchases().filter(p => !ids.has(p.id)));
+      deleted += allPurchases.length;
+    }
+
+    document.getElementById('archive-preview').style.display = 'none';
+    document.getElementById('archive-confirm-btn').style.display = 'none';
+
+    showToast('Archive saved & ' + deleted + ' records removed ✓', 'success');
+    renderOwnerReview(); renderOwnerRecords(); renderMonthly(); renderOwnerPurchases();
+  };
+
+  askConfirm(`Download archive CSV and permanently delete records from ${from} to ${to}?`, doArchive);
+}
+
+// ════════════════════════════════════════
+// MANAGER — PURCHASE LOG
+// ════════════════════════════════════════
+// ── Loan toggles ──
+function toggleSaleLoan() {
+  saleLoanOn = !saleLoanOn;
+  document.getElementById('sale-loan-toggle').classList.toggle('on', saleLoanOn);
+  document.getElementById('sale-loan-fields').style.display = saleLoanOn ? 'block' : 'none';
+  if (saleLoanOn) calcPreview();
+}
+
+function togglePurchaseLoan() {
+  purchaseLoanOn = !purchaseLoanOn;
+  document.getElementById('pu-loan-toggle').classList.toggle('on', purchaseLoanOn);
+  document.getElementById('pu-loan-fields').style.display = purchaseLoanOn ? 'block' : 'none';
+  if (purchaseLoanOn) calcPurchasePreview();
+}
+
+let purchaseVatOn = false;
+
+
+function togglePurchaseVAT() {
+  purchaseVatOn = !purchaseVatOn;
+  document.getElementById('pvat-toggle').classList.toggle('on', purchaseVatOn);
+  document.getElementById('pvat-rate-row').classList.toggle('visible', purchaseVatOn);
+  document.getElementById('pu-prev-vat-row').style.display = purchaseVatOn ? 'flex' : 'none';
+  document.getElementById('pvat-flag-info').style.display = purchaseVatOn ? 'block' : 'none';
+  calcPurchasePreview();
+}
+
+function calcPurchasePreview() {
+  const qty = parseFloat(document.getElementById('pu-qty').value) || 0;
+  const unit = parseFloat(document.getElementById('pu-cost-unit').value) || 0;
+  const expPerUnit = parseFloat(document.getElementById('pu-expenses').value) || 0;
+  const vatRate = purchaseVatOn ? (parseFloat(document.getElementById('pu-vat-rate').value) || 0) : 0;
+  const totalExp = expPerUnit * qty;
+  const sub = (qty * unit) + totalExp;
+  const vat = purchaseVatOn ? (sub * vatRate / 100) : 0;
+  const total = sub + vat;
+  document.getElementById('pu-prev-qty').textContent = qty || '—';
+  document.getElementById('pu-prev-unit').textContent = 'ETB ' + unit.toFixed(2);
+  document.getElementById('pu-prev-exp').textContent = 'ETB ' + totalExp.toFixed(2);
+  document.getElementById('pu-prev-sub').textContent = 'ETB ' + sub.toFixed(2);
+  document.getElementById('pu-prev-vat-label').textContent = `VAT (${vatRate}%)`;
+  document.getElementById('pu-prev-vat').textContent = 'ETB ' + vat.toFixed(2);
+  document.getElementById('pu-prev-total').textContent = 'ETB ' + total.toFixed(2);
+  document.getElementById('pu-prev-vat-row').style.display = purchaseVatOn ? 'flex' : 'none';
+  document.getElementById('pvat-flag-qty').textContent = qty;
+
+  // Auto-fill loan amount with total cost if loan toggle is on
+  if (purchaseLoanOn && total > 0) {
+    const loanAmtEl = document.getElementById('pu-loan-amount');
+    if (loanAmtEl) loanAmtEl.value = total.toFixed(2);
+  }
+}
+
+function submitPurchase() {
+  const name = document.getElementById('pu-item-name').value.trim();
+  const qty = parseInt(document.getElementById('pu-qty').value);
+  const costUnit = parseFloat(document.getElementById('pu-cost-unit').value);
+  const expPerUnit = parseFloat(document.getElementById('pu-expenses').value) || 0;
+  const date = document.getElementById('pu-date').value;
+  const notes = document.getElementById('pu-notes').value.trim();
+  const vatRate = purchaseVatOn ? (parseFloat(document.getElementById('pu-vat-rate').value) || 0) : 0;
+
+  if (!name) return showToast('Enter item name', 'error');
+  if (!qty || qty <= 0) return showToast('Enter valid quantity', 'error');
+  if (isNaN(costUnit) || costUnit < 0) return showToast('Enter cost per unit', 'error');
+  if (!date) return showToast('Select a date', 'error');
+
+  if (purchaseLoanOn) {
+    if (!document.getElementById('pu-loan-person').value.trim()) return showToast('Enter the supplier name for the credit purchase', 'error');
+    if (!document.getElementById('pu-loan-amount').value) return showToast('Enter the amount owed to the supplier', 'error');
+  }
+
+  const totalExp = expPerUnit * qty;
+  const sub = (qty * costUnit) + totalExp;
+  const vatAmount = purchaseVatOn ? (sub * vatRate / 100) : 0;
+  const total = sub + vatAmount;
+
+  const loanInfo = purchaseLoanOn ? {
+    isLoan: true,
+    loanType: 'credit_purchase',
+    person: document.getElementById('pu-loan-person').value.trim(),
+    amountOwed: parseFloat(document.getElementById('pu-loan-amount').value) || 0,
+    loanNotes: document.getElementById('pu-loan-notes').value.trim()
+  } : { isLoan: false };
+
+  const purchase = {
+    id: Date.now().toString(),
+    type: 'purchase',
+    name, qty, costUnit,
+    expensesPerUnit: expPerUnit,
+    totalExpenses: totalExp,
+    date, notes,
+    vatOn: purchaseVatOn, vatRate, vatAmount,
+    subtotal: sub, total,
+    status: 'pending',
+    flagForStock: purchaseVatOn,
+    stockAdded: false,
+    submittedAt: new Date().toISOString(),
+    ownerNote: '',
+    ...loanInfo
+  };
+
+  const purchases = getPurchases();
+  purchases.push(purchase);
+  setPurchases(purchases);
+
+  upsertPurchaseRemote(purchase).catch(() => addToOfflineQueue('purchase', purchase));
+
+  if (!navigator.onLine) {
+    addToOfflineQueue('purchase', purchase);
+    showToast('Purchase saved offline — will sync when back online 📡', 'success');
+  } else if (purchaseLoanOn) {
+    showToast('Purchase submitted — credit loan will be logged after owner approval ✓', 'success');
+  } else if (!purchaseVatOn) {
+    showToast('Purchase submitted to owner for review ✓', 'success');
+  } else {
+    showToast('Purchase submitted — owner will review and add to stock ✓', 'success');
+  }
+
+  clearPurchaseForm();
+  renderPurchaseHistory();
+}
+
+function clearPurchaseForm() {
+  document.getElementById('pu-item-name').value = '';
+  document.getElementById('pu-qty').value = '';
+  document.getElementById('pu-cost-unit').value = '';
+  document.getElementById('pu-expenses').value = '';
+  document.getElementById('pu-notes').value = '';
+  document.getElementById('pu-loan-person').value = '';
+  document.getElementById('pu-loan-amount').value = '';
+  document.getElementById('pu-loan-notes').value = '';
+  document.getElementById('pvat-flag-info').style.display = 'none';
+  document.getElementById('pvat-rate-row').classList.remove('visible');
+  document.getElementById('pu-prev-vat-row').style.display = 'none';
+  if (purchaseVatOn) { purchaseVatOn = true; togglePurchaseVAT(); }
+  if (purchaseLoanOn) { purchaseLoanOn = false; document.getElementById('pu-loan-toggle').classList.remove('on'); document.getElementById('pu-loan-fields').style.display = 'none'; }
+  calcPurchasePreview();
+}
+
+function renderPurchaseHistory() {
+  const purchases = getPurchases();
+  const container = document.getElementById('m-purchase-list');
+  if (!container) return;
+  if (!purchases.length) {
+    container.innerHTML = `<div class="empty"><div class="e-icon">🛒</div><p>No purchases logged yet.</p></div>`;
+    return;
+  }
+  const sorted = [...purchases].sort((a,b) => new Date(b.submittedAt) - new Date(a.submittedAt));
+  container.innerHTML = `
+    <div style="display:flex;justify-content:flex-end;margin-bottom:0.75rem;">
+      <button class="btn btn-danger btn-sm" onclick="clearManagerPurchaseHistory()">🗑 Clear All History</button>
+    </div>
+  ` + sorted.map(p => `
+    <div class="sale-item">
+      <div class="sale-item-info">
+        <h3>${p.name}
+          <span class="flag-badge ${p.flagForStock ? 'flag-stock' : 'flag-nostock'}">
+            ${p.flagForStock ? '🚩 VAT — Add to Stock' : '✓ No VAT — Log Only'}
+          </span>
+        </h3>
+        <p>${p.date} · Qty: ${p.qty}</p>
+        <p>Unit cost: ETB ${p.costUnit.toFixed(2)}${p.vatOn ? ` · VAT ${p.vatRate}%: ETB ${p.vatAmount.toFixed(2)}` : ''}</p>
+        ${p.ownerNote ? `<p>Owner note: ${p.ownerNote}</p>` : ''}
+        <span class="status-badge status-${p.status}">${p.status.toUpperCase()}${p.flagForStock && p.stockAdded ? ' · STOCK ADDED' : ''}</span>
+      </div>
+      <div class="sale-item-nums">
+        <div class="amount">ETB ${p.total.toFixed(2)}</div>
+        <div style="font-size:0.7rem;color:var(--muted)">Total Cost</div>
+        <button class="btn btn-danger btn-sm" style="margin-top:0.5rem;font-size:0.65rem;padding:0.2rem 0.6rem;" onclick="deleteManagerPurchase('${p.id}')">Delete</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function deleteManagerPurchase(id) {
+  askConfirm('Delete this purchase entry?', () => {
+    setPurchases(getPurchases().filter(p => p.id !== id));
+    deletePurchaseRemote(id);
+    renderPurchaseHistory();
+    showToast('Purchase deleted', 'error');
+  });
+}
+
+function clearManagerPurchaseHistory() {
+  askConfirm('Clear your entire purchase history? This cannot be undone.', () => {
+    const toDelete = getPurchases();
+    setPurchases([]);
+    toDelete.forEach(p => deletePurchaseRemote(p.id));
+    renderPurchaseHistory();
+    showToast('Purchase history cleared', 'error');
+  });
+}
+
+// ════════════════════════════════════════
+// OWNER — LOW STOCK ALERTS
+// ════════════════════════════════════════
+function renderLowStockAlerts() {
+  const stock = getStock();
+  const low = stock.filter(s => s.qty <= 10 && s.qty > 0);
+  const zero = stock.filter(s => s.qty === 0);
+  const container = document.getElementById('o-low-stock-alerts');
+  if (!container) return;
+
+  if (!low.length && !zero.length) { container.innerHTML = ''; return; }
+
+  let html = `<div class="low-stock-banner">
+    <div class="ls-title">⚠️ Stock Alert — Action Required</div>
+    <div class="ls-items">`;
+
+  zero.forEach(s => {
+    html += `<span class="ls-item critical">🔴 ${s.name} — OUT OF STOCK</span>`;
+  });
+  low.forEach(s => {
+    html += `<span class="ls-item">🟡 ${s.name} — ${s.qty} left</span>`;
+  });
+
+  html += `</div></div>`;
+  container.innerHTML = html;
+}
+
+// ════════════════════════════════════════
+// OWNER — PURCHASE REVIEW
+// ════════════════════════════════════════
+function renderPurchaseReview() {
+  const pending = getPurchases().filter(p => p.status === 'pending');
+  const container = document.getElementById('o-purchase-review');
+  if (!container) return;
+  if (!pending.length) { container.innerHTML = ''; return; }
+
+  container.innerHTML = `
+    <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.8rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:1rem;padding-bottom:0.5rem;border-bottom:1px solid var(--border);">
+      🛒 Pending Purchases (${pending.length})
+    </div>
+    ${pending.map(p => `
+      <div class="review-card" style="border-left:4px solid ${p.flagForStock ? 'var(--gold)' : 'var(--border)'};">
+        <div class="review-card-head" style="background:${p.flagForStock ? '#fefce8' : 'var(--cream)'};">
+          <h3>${p.name}
+            <span class="flag-badge ${p.flagForStock ? 'flag-stock' : 'flag-nostock'}">
+              ${p.flagForStock ? '🚩 VAT — Add to Stock' : '✓ No VAT — Log Only'}
+            </span>
+          </h3>
+          <span class="status-badge status-pending">PENDING</span>
+        </div>
+        <div class="review-card-body">
+          <div class="row"><span>Date</span><strong>${p.date}</strong></div>
+          <div class="row"><span>Qty Purchased</span><strong>${p.qty} units</strong></div>
+          <div class="row"><span>Cost / Unit</span><strong>ETB ${p.costUnit.toFixed(2)}</strong></div>
+          <div class="row"><span>Subtotal</span><strong>ETB ${p.subtotal.toFixed(2)}</strong></div>
+          ${p.vatOn ? `<div class="row"><span>VAT (${p.vatRate}%)</span><strong>ETB ${p.vatAmount.toFixed(2)}</strong></div>` : ''}
+          <div class="row"><span style="font-weight:700">Total Cost</span><strong>ETB ${p.total.toFixed(2)}</strong></div>
+          ${p.notes ? `<div class="row"><span>Notes</span><strong>${p.notes}</strong></div>` : ''}
+          ${p.flagForStock ? `
+          <div style="margin-top:0.75rem;padding:0.6rem 0.8rem;background:#fef9c3;border-radius:3px;font-size:0.75rem;color:#713f12;">
+            🚩 Approving will add <strong>${p.qty} units of &ldquo;${p.name}&rdquo;</strong> to stock.
+          </div>` : `
+          <div style="margin-top:0.75rem;padding:0.6rem 0.8rem;background:#f0fdf4;border-radius:3px;font-size:0.75rem;color:#166534;">
+            ✓ Approving will log this purchase only — no stock change.
+          </div>`}
+        </div>
+        <div style="padding:0.75rem 1.25rem; border-top:1px solid var(--border);">
+          <label>Owner note (optional)</label>
+          <input type="text" id="pnote-${p.id}" placeholder="Add a note..." style="margin-top:0.4rem">
+        </div>
+        <div class="review-actions">
+          <button class="btn btn-success btn-sm" onclick="approvePurchase('${p.id}')">
+            ✓ ${p.flagForStock ? 'Approve & Add to Stock' : 'Approve'}
+          </button>
+          <button class="btn btn-danger btn-sm" onclick="rejectPurchase('${p.id}')">✗ Reject</button>
+        </div>
+      </div>
+    `).join('')}
+    <div style="margin-bottom:1.5rem;"></div>
+  `;
+}
+
+function approvePurchase(id) {
+  const purchases = getPurchases();
+  const i = purchases.findIndex(p => p.id === id);
+  if (i === -1) return;
+  const p = purchases[i];
+  const note = document.getElementById('pnote-' + id)?.value || '';
+  purchases[i].status = 'approved';
+  purchases[i].stockAdded = true;
+  purchases[i].ownerNote = note;
+  purchases[i].reviewedAt = new Date().toISOString();
+  setPurchases(purchases);
+  upsertPurchaseRemote(purchases[i]);
+
+  if (p.flagForStock) {
+    const stock = getStock();
+    const si = stock.findIndex(s => s.name.toLowerCase() === p.name.toLowerCase());
+    if (si > -1) {
+      stock[si].qty += p.qty;
+      upsertStockRemote(stock[si]);
+    } else {
+      const newItem = { name: p.name, qty: p.qty, addedAt: new Date().toISOString() };
+      stock.push(newItem);
+      upsertStockRemote(newItem);
+    }
+    setStock(stock);
+    renderLowStockAlerts();
+    renderStockList();
+  }
+
+  renderPurchaseReview();
+  renderPurchaseHistory();
+  renderOwnerPurchases();
+
+  // Create loan record if this was a credit purchase
+  if (p.isLoan) {
+    createLoanRecord(purchases[i], 'purchase');
+    renderOwnerLoans();
+  }
+
+  if (p.flagForStock) {
+    showToast('Approved! ' + p.qty + ' units of "' + p.name + '" added to stock ✓', 'success');
+  } else {
+    showToast('Purchase approved and logged ✓', 'success');
+  }
+}
+
+function rejectPurchase(id) {
+  const purchases = getPurchases();
+  const i = purchases.findIndex(p => p.id === id);
+  if (i === -1) return;
+  const note = document.getElementById('pnote-' + id)?.value || '';
+  purchases[i].status = 'rejected';
+  purchases[i].ownerNote = note;
+  purchases[i].reviewedAt = new Date().toISOString();
+  setPurchases(purchases);
+  upsertPurchaseRemote(purchases[i]);
+  renderPurchaseReview();
+  renderPurchaseHistory();
+  showToast('Purchase rejected', 'error');
+}
+
+function renderOwnerPurchases() {
+  const approved = getPurchases().filter(p => p.status === 'approved' && !p.flagForStock);
+  const container = document.getElementById('o-purchases-list');
+  if (!container) return;
+  if (!approved.length) {
+    container.innerHTML = `<div class="empty"><div class="e-icon">🧾</div><p>No non-VAT purchases approved yet.</p></div>`;
+    return;
+  }
+  const totalSpent = approved.reduce((a, p) => a + p.total, 0);
+  const sorted = [...approved].sort((a, b) => new Date(b.date) - new Date(a.date));
+  container.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;padding:0.9rem 1rem;background:var(--cream);border-radius:3px;border:1px solid var(--border);">
+      <span style="font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;">${approved.length} purchases</span>
+      <div style="display:flex;align-items:center;gap:0.75rem;">
+        <span style="font-family:'Syne',sans-serif;font-weight:700;">Total Spent: ETB ${fmtNum(totalSpent)}</span>
+        <button class="btn btn-danger btn-sm" onclick="clearOwnerPurchases()">🗑 Clear All</button>
+      </div>
+    </div>
+    <table class="report-table">
+      <thead><tr>
+        <th>Date</th><th>Item</th><th>Qty</th><th>Remaining</th><th>Unit Cost</th><th>Total</th><th>Notes</th><th>Owner Note</th><th></th>
+      </tr></thead>
+      <tbody>
+        ${sorted.map(p => {
+          const remaining = p.remainingQty !== undefined ? p.remainingQty : p.qty;
+          const remStyle = remaining <= 0 ? 'color:var(--red);font-weight:700;' : remaining < p.qty ? 'color:var(--gold);font-weight:600;' : 'color:var(--green);font-weight:600;';
+          return `<tr>
+            <td>${p.date}</td>
+            <td><strong>${p.name}</strong></td>
+            <td>${p.qty}</td>
+            <td style="${remStyle}">${remaining <= 0 ? '✗ 0 (fully sold)' : remaining + ' left'}</td>
+            <td>ETB ${p.costUnit.toFixed(2)}</td>
+            <td>ETB ${p.total.toFixed(2)}</td>
+            <td style="color:var(--muted);font-size:0.72rem">${p.notes || '—'}</td>
+            <td style="color:var(--muted);font-size:0.72rem">${p.ownerNote || '—'}</td>
+            <td><button class="btn btn-danger btn-sm" style="font-size:0.65rem;padding:0.2rem 0.5rem;" onclick="deleteOwnerPurchase('${p.id}')">Delete</button></td>
+          </tr>`;
+        }).join('')}
+      </tbody>
+    </table>
+  `;
+}
+
+function deleteOwnerPurchase(id) {
+  askConfirm('Delete this purchase record?', () => {
+    setPurchases(getPurchases().filter(p => p.id !== id));
+    deletePurchaseRemote(id);
+    renderOwnerPurchases();
+    showToast('Purchase deleted', 'error');
+  });
+}
+
+function clearOwnerPurchases() {
+  askConfirm('Clear ALL purchase records? This cannot be undone.', () => {
+    const toDelete = getPurchases().filter(p => p.status === 'approved' && !p.flagForStock);
+    setPurchases(getPurchases().filter(p => p.status !== 'approved' || p.flagForStock));
+    toDelete.forEach(p => deletePurchaseRemote(p.id));
+    renderOwnerPurchases();
+    showToast('Purchase records cleared', 'error');
+  });
+}
+
+// ════════════════════════════════════════
+// STOCK MANAGEMENT
+// ════════════════════════════════════════
+
+function addStockItem() {
+  const name = document.getElementById('stock-add-name').value.trim();
+  const qty = parseInt(document.getElementById('stock-add-qty').value);
+  if (!name) return showToast('Enter item name', 'error');
+  if (isNaN(qty) || qty < 0) return showToast('Enter valid quantity', 'error');
+  const stock = getStock();
+  const existing = stock.findIndex(s => s.name.toLowerCase() === name.toLowerCase());
+  let item;
+  if (existing > -1) {
+    stock[existing].qty = qty;
+    stock[existing].name = name;
+    item = stock[existing];
+  } else {
+    item = { name, qty, addedAt: new Date().toISOString() };
+    stock.push(item);
+  }
+  setStock(stock);
+  upsertStockRemote(item);
+  document.getElementById('stock-add-name').value = '';
+  document.getElementById('stock-add-qty').value = '';
+  renderStockList();
+  showToast(`Stock updated: ${name} — ${qty} units`, 'success');
+}
+
+function importStockFromExcel(input) {
+  const file = input.files[0];
+  if (!file) return;
+  document.getElementById('stock-excel-filename').textContent = file.name;
+  const resultEl = document.getElementById('stock-import-result');
+  resultEl.style.display = 'none';
+
+  const isCsv = file.name.toLowerCase().endsWith('.csv');
+
+  function processRows(rows) {
+    if (!rows.length) { showImportResult('No data found in file.', 'error'); return; }
+
+    // Auto-detect and skip header row
+    const firstRow = rows[0];
+    const hasHeader = isNaN(firstRow[1]) || String(firstRow[0]).toLowerCase().includes('name') || String(firstRow[0]).toLowerCase().includes('item');
+    const dataRows = hasHeader ? rows.slice(1) : rows;
+
+    let added = 0, updated = 0, skipped = 0;
+    const stock = getStock();
+
+    dataRows.forEach(row => {
+      const name = String(row[0] || '').trim();
+      const qty = parseInt(row[1]);
+      if (!name || isNaN(qty) || qty < 0) { skipped++; return; }
+
+      const existing = stock.findIndex(s => s.name.toLowerCase() === name.toLowerCase());
+      if (existing > -1) {
+        stock[existing].qty = qty;
+        stock[existing].name = name;
+        upsertStockRemote(stock[existing]);
+        updated++;
+      } else {
+        const newItem = { name, qty, addedAt: new Date().toISOString() };
+        stock.push(newItem);
+        upsertStockRemote(newItem);
+        added++;
+      }
+    });
+
+    setStock(stock);
+    renderStockList();
+    renderLowStockAlerts();
+
+    const msg = `✓ Import complete — ${added} added, ${updated} updated${skipped ? ', ' + skipped + ' skipped (invalid rows)' : ''}.`;
+    showImportResult(msg, 'success');
+    input.value = '';
+  }
+
+  if (isCsv) {
+    // Handle CSV with plain text reader — more reliable than SheetJS for CSV
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      try {
+        const text = e.target.result;
+        const rows = text.split(/\r?\n/).filter(l => l.trim()).map(line => {
+          // Handle quoted CSV fields
+          const cols = [];
+          let cur = '', inQ = false;
+          for (let i = 0; i < line.length; i++) {
+            const c = line[i];
+            if (c === '"') { inQ = !inQ; }
+            else if (c === ',' && !inQ) { cols.push(cur.trim()); cur = ''; }
+            else { cur += c; }
+          }
+          cols.push(cur.trim());
+          return cols;
+        });
+        processRows(rows);
+      } catch (err) {
+        showImportResult('Error reading CSV file. Make sure it has two columns: Item Name and Qty.', 'error');
+      }
+    };
+    reader.onerror = () => showImportResult('Could not read the file.', 'error');
+    reader.readAsText(file, 'UTF-8');
+  } else {
+    // Handle XLSX with SheetJS
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      try {
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, { type: 'array' });
+        const sheet = workbook.Sheets[workbook.SheetNames[0]];
+        const rows = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '' });
+        processRows(rows);
+      } catch (err) {
+        showImportResult('Could not read .xlsx file — it may be too complex (formulas, merged cells). Try saving it as a .csv file first, then upload the .csv instead.', 'error');
+      }
+    };
+    reader.onerror = () => showImportResult('Could not read the file.', 'error');
+    reader.readAsArrayBuffer(file);
+  }
+}
+
+function showImportResult(msg, type) {
+  const el = document.getElementById('stock-import-result');
+  el.style.display = 'block';
+  el.style.background = type === 'success' ? '#dcfce7' : '#fee2e2';
+  el.style.color = type === 'success' ? '#166534' : '#991b1b';
+  el.style.border = '1px solid ' + (type === 'success' ? '#86efac' : '#fca5a5');
+  el.textContent = msg;
+}
+
+function downloadStockTemplate() {
+  const rows = [['Item Name', 'Qty'], ['Coffee Bags', 50], ['Sugar (kg)', 100], ['Milk (litre)', 30]];
+  const csv = rows.map(r => r.map(c => '"' + String(c).replace(/"/g, '""') + '"').join(',')).join('\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = 'SalesFlow_Stock_Template.csv'; a.click();
+  URL.revokeObjectURL(url);
+  showToast('Template downloaded ✓', 'success');
+}
+
+function deleteStockItem(name) {
+  askConfirm(`Remove "${name}" from stock?`, () => {
+    const stock = getStock().filter(s => s.name !== name);
+    setStock(stock);
+    deleteStockRemote(name);
+    renderStockList();
+    showToast('Item removed from stock', 'success');
+  });
+}
+
+function renderStockList() {
+  const stock = getStock();
+  const container = document.getElementById('stock-list');
+  if (!container) return;
+  if (!stock.length) {
+    container.innerHTML = `<div class="empty"><div class="e-icon">📦</div><p>No stock items added yet.</p></div>`;
+    return;
+  }
+  container.innerHTML = `
+    <table class="report-table">
+      <thead><tr><th>Item</th><th>Qty in Stock</th><th>VAT Eligible</th><th>Action</th></tr></thead>
+      <tbody>
+        ${stock.map(s => `<tr>
+          <td><strong>${s.name}</strong></td>
+          <td>${s.qty}</td>
+          <td>${s.qty > 0
+            ? '<span style="color:var(--green);font-weight:600">✓ Yes</span>'
+            : '<span style="color:var(--red)">✗ No (out of stock)</span>'}</td>
+          <td>
+            <button class="btn btn-sm btn-ghost" onclick="promptEditStock('${s.name.replace(/'/g,"\\'")}', ${s.qty})">Edit</button>
+            <button class="btn btn-sm btn-danger" style="margin-left:0.5rem" onclick="deleteStockItem('${s.name.replace(/'/g,"\\'")}')">Remove</button>
+          </td>
+        </tr>`).join('')}
+      </tbody>
+    </table>
+  `;
+}
+
+function promptEditStock(name, currentQty) {
+  // Use a custom modal input since prompt() is blocked in iframes
+  const modal = document.getElementById('confirm-modal');
+  document.getElementById('confirm-modal-msg').innerHTML =
+    `Update quantity for <strong>${name}</strong>:<br><input id="stock-edit-qty" type="number" min="0" value="${currentQty}" style="margin-top:0.75rem;width:100%;padding:0.6rem;border:1.5px solid var(--border);border-radius:3px;font-size:1rem;font-family:inherit;">`;
+  document.getElementById('confirm-modal-ok').textContent = 'Update';
+  document.getElementById('confirm-modal-cancel').textContent = 'Cancel';
+  modal.style.display = 'flex';
+  setTimeout(() => document.getElementById('stock-edit-qty')?.focus(), 100);
+
+  const ok = document.getElementById('confirm-modal-ok');
+  const cancel = document.getElementById('confirm-modal-cancel');
+  function cleanup() {
+    modal.style.display = 'none';
+    ok.textContent = 'Confirm';
+    cancel.textContent = 'Cancel';
+    ok.onclick = null; cancel.onclick = null;
+  }
+  ok.onclick = () => {
+    const qty = parseInt(document.getElementById('stock-edit-qty').value);
+    if (isNaN(qty) || qty < 0) { showToast('Invalid quantity', 'error'); return; }
+    cleanup();
+    const stock = getStock();
+    const i = stock.findIndex(s => s.name === name);
+    if (i > -1) { stock[i].qty = qty; upsertStockRemote(stock[i]); }
+    setStock(stock);
+    renderStockList();
+    showToast(`Stock updated: ${name} — ${qty} units`, 'success');
+  };
+  cancel.onclick = () => cleanup();
+}
+
+// ════════════════════════════════════════
+// TAX CALCULATOR — ETHIOPIA (Monthly)
+// ════════════════════════════════════════
+
+const MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+function initTaxTab() {
+  const sel = document.getElementById('tax-year');
+  sel.innerHTML = '';
+  const now = new Date();
+  const curYear = now.getFullYear();
+
+  // Collect all years from actual data
+  const allSales = getSales().filter(s => s.status === 'approved');
+  const allPurchases = getPurchases().filter(p => p.status === 'approved');
+  const dataYears = new Set([curYear, curYear - 1]);
+  allSales.forEach(s => { if (s.date) dataYears.add(parseInt(s.date.substring(0,4))); });
+  allPurchases.forEach(p => { if (p.date) dataYears.add(parseInt(p.date.substring(0,4))); });
+
+  [...dataYears].sort((a, b) => b - a).forEach(y => {
+    const o = document.createElement('option');
+    o.value = y;
+    o.textContent = y;
+    sel.appendChild(o);
+  });
+
+  // Default to year with most recent data
+  let defaultYear = curYear;
+  if (allSales.length || allPurchases.length) {
+    const all = [...allSales, ...allPurchases].filter(x => x.date).map(x => x.date).sort();
+    if (all.length) defaultYear = parseInt(all[all.length - 1].substring(0,4));
+  }
+  sel.value = defaultYear;
+  if (!sel.value) sel.value = curYear;
+
+  // Default to current month
+  const currentMonth = String(now.getMonth() + 1).padStart(2, '0');
+  document.getElementById('tax-period').value = currentMonth;
+
+  updateTaxFromData();
+  renderTaxLog();
+}
+
+function getTaxDateRange(period, year) {
+  year = parseInt(year);
+  const month = parseInt(period);
+  // Last day of month
+  const lastDay = new Date(year, month, 0).getDate();
+  const from = year + '-' + period + '-01';
+  const to = year + '-' + period + '-' + String(lastDay).padStart(2, '0');
+  return { from, to };
+}
+
+function updateTaxFromData() {
+  const period = document.getElementById('tax-period').value;
+  const year = document.getElementById('tax-year').value;
+  if (!year) return;
+  const { from, to } = getTaxDateRange(period, year);
+
+  // Show active date range so user can verify
+  let rangeDiv = document.getElementById('tax-date-range-info');
+  if (!rangeDiv) {
+    rangeDiv = document.createElement('div');
+    rangeDiv.id = 'tax-date-range-info';
+    rangeDiv.style.cssText = 'padding:0.6rem 1rem;background:#e0f2fe;border:1.5px solid #7dd3fc;border-radius:3px;font-size:0.74rem;color:#0369a1;margin-bottom:1rem;';
+    const hint = document.getElementById('tax-autofill-hint');
+    hint && hint.parentNode.insertBefore(rangeDiv, hint.nextSibling);
+  }
+  rangeDiv.innerHTML = `📅 Showing data from <strong>${from}</strong> to <strong>${to}</strong>`;
+
+  const sales = getSales().filter(s => s.status === 'approved' && s.date >= from && s.date <= to);
+  const purchases = getPurchases().filter(p => p.status === 'approved' && p.date >= from && p.date <= to);
+
+  const periodLabel = document.getElementById('tax-period').selectedOptions[0]?.text || period;
+
+  // Revenue options
+  const totalRevenue = sales.reduce((a,s)=>a+s.revenue,0);
+  const vatSalesRev = sales.filter(s=>s.vatOn).reduce((a,s)=>a+s.revenue,0);
+  const nonVatSalesRev = sales.filter(s=>!s.vatOn).reduce((a,s)=>a+s.revenue,0);
+  const revenueOpts = [
+    { label: 'All sales revenue — ETB ' + totalRevenue.toFixed(2) + ' (' + sales.length + ' records)', val: totalRevenue.toFixed(2) },
+    { label: 'VAT sales only — ETB ' + vatSalesRev.toFixed(2), val: vatSalesRev.toFixed(2) },
+    { label: 'Non-VAT sales only — ETB ' + nonVatSalesRev.toFixed(2), val: nonVatSalesRev.toFixed(2) },
+  ];
+
+  // Costs options
+  const saleCosts = sales.reduce((a,s)=>a+s.totalCost,0);
+  const purchaseCosts = purchases.reduce((a,p)=>a+p.subtotal,0);
+  const totalCosts = saleCosts + purchaseCosts;
+  const costsOpts = [
+    { label: 'All costs (sales + purchases) — ETB ' + totalCosts.toFixed(2), val: totalCosts.toFixed(2) },
+    { label: 'Sales costs only — ETB ' + saleCosts.toFixed(2), val: saleCosts.toFixed(2) },
+    { label: 'Purchase costs only — ETB ' + purchaseCosts.toFixed(2), val: purchaseCosts.toFixed(2) },
+  ];
+
+  // VAT collected options
+  const vatCollectedTotal = sales.filter(s=>s.vatOn).reduce((a,s)=>a+s.vatAmount,0);
+  const vatCollectedOpts = [
+    { label: 'VAT collected on sales — ETB ' + vatCollectedTotal.toFixed(2), val: vatCollectedTotal.toFixed(2) },
+  ];
+
+  // VAT input options
+  const vatPaidTotal = purchases.filter(p=>p.vatOn).reduce((a,p)=>a+p.vatAmount,0);
+  const vatInputOpts = [
+    { label: 'Input VAT paid on purchases — ETB ' + vatPaidTotal.toFixed(2), val: vatPaidTotal.toFixed(2) },
+  ];
+
+  function fillSel(selId, inputId, opts) {
+    const sel = document.getElementById(selId);
+    sel.innerHTML = '<option value="">— pick from data —</option>';
+    opts.forEach(o => {
+      const opt = document.createElement('option');
+      opt.value = o.val;
+      opt.textContent = o.label;
+      sel.appendChild(opt);
+    });
+    if (opts.length) {
+      sel.value = opts[0].val;
+      document.getElementById(inputId).value = opts[0].val;
+    }
+  }
+
+  fillSel('tax-revenue-sel', 'tax-revenue', revenueOpts);
+  fillSel('tax-costs-sel', 'tax-costs', costsOpts);
+  fillSel('tax-vat-collected-sel', 'tax-vat-collected', vatCollectedOpts);
+  fillSel('tax-vat-input-sel', 'tax-vat-input', vatInputOpts);
+
+  calcTax();
+}
+
+function onTaxDropdown(field) {
+  const map = {
+    'revenue': ['tax-revenue-sel', 'tax-revenue'],
+    'costs': ['tax-costs-sel', 'tax-costs'],
+    'vat-collected': ['tax-vat-collected-sel', 'tax-vat-collected'],
+    'vat-input': ['tax-vat-input-sel', 'tax-vat-input'],
+  };
+  const [selId, inputId] = map[field];
+  const val = document.getElementById(selId).value;
+  if (val !== '') document.getElementById(inputId).value = val;
+  calcTax();
+}
+
+function calcTax() {
+  const revenue = parseFloat(document.getElementById('tax-revenue').value) || 0;
+  const costs = parseFloat(document.getElementById('tax-costs').value) || 0;
+  const vatCollected = parseFloat(document.getElementById('tax-vat-collected').value) || 0;
+  const vatInputPaid = parseFloat(document.getElementById('tax-vat-input').value) || 0;
+  const priorYearTax = parseFloat(document.getElementById('tax-prior-year').value) || 0;
+  const period = document.getElementById('tax-period').value;
+
+  // ── VAT ──
+  const vatPayable = Math.max(0, vatCollected - vatInputPaid);
+
+  // ── Business Income Tax ──
+  const taxableProfit = Math.max(0, revenue - costs);
+  const standardTax = taxableProfit * 0.30; // 30% flat rate
+
+  // MAT: 2.5% of turnover — applies if calculated tax < MAT
+  const mat = revenue * 0.025;
+  const incomeTaxDue = Math.max(standardTax, mat);
+  const matApplied = incomeTaxDue === mat && mat > standardTax;
+
+  // ── Quarterly Advance ──
+  const quarterlyAdvance = period !== 'annual' ? (priorYearTax / 12) : null;
+
+  // ── Total tax obligation ──
+  const totalTaxDue = vatPayable + incomeTaxDue;
+
+  const container = document.getElementById('tax-results');
+  if (!container) return;
+
+  const fmt = n => 'ETB ' + n.toLocaleString('en-ET', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const periodLabel = document.getElementById('tax-period').selectedOptions[0].text;
+  const yearLabel = document.getElementById('tax-year').selectedOptions[0].text;
+
+  container.innerHTML = `
+    <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.8rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:1rem;">
+      Results — ${periodLabel} · ${yearLabel}
+    </div>
+
+    <!-- Summary boxes -->
+    <div class="stats-grid" style="margin-bottom:1.5rem;">
+      <div class="stat-box gold">
+        <div class="stat-label">VAT Payable to ERCA</div>
+        <div class="stat-value">${fmt(vatPayable)}</div>
+        <div class="stat-sub">Collected ${fmt(vatCollected)} − Input ${fmt(vatInputPaid)}</div>
+      </div>
+      <div class="stat-box" style="border-color:var(--red)">
+        <div class="stat-label">Business Income Tax</div>
+        <div class="stat-value">${fmt(incomeTaxDue)}</div>
+        <div class="stat-sub">${matApplied ? '⚠️ MAT applied (2.5% of turnover)' : '30% of taxable profit'}</div>
+      </div>
+      ${quarterlyAdvance !== null ? `
+      <div class="stat-box blue">
+        <div class="stat-label">Monthly Advance Due</div>
+        <div class="stat-value">${fmt(quarterlyAdvance)}</div>
+        <div class="stat-sub">25% of prior year tax · ${document.getElementById('tax-period').value === 'q1' || document.getElementById('tax-period').value === 'q2' ? 'Cat A: 5 days after quarter end' : 'Cat A: 5 days · Cat B: 15 days'}</div>
+      </div>` : ''}
+      <div class="stat-box" style="background:var(--ink);border-color:var(--ink);">
+        <div class="stat-label" style="color:#aaa;">Total Tax Obligation</div>
+        <div class="stat-value" style="color:white;">${fmt(totalTaxDue)}</div>
+        <div class="stat-sub" style="color:#aaa;">VAT + Income Tax</div>
+      </div>
+    </div>
+
+    <!-- Breakdown table -->
+    <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.75rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:0.75rem;">Full Breakdown</div>
+    <table class="report-table">
+      <tbody>
+        <tr><td>Total Revenue (Turnover)</td><td style="text-align:right;font-weight:600;">${fmt(revenue)}</td></tr>
+        <tr><td>Total Allowable Costs</td><td style="text-align:right;color:var(--red)">− ${fmt(costs)}</td></tr>
+        <tr style="font-weight:700;border-top:2px solid var(--border)"><td>Taxable Profit</td><td style="text-align:right;">${fmt(taxableProfit)}</td></tr>
+        <tr><td style="padding-left:1.5rem;color:var(--muted);font-size:0.78rem;">Standard Tax (30% × profit)</td><td style="text-align:right;color:var(--muted);font-size:0.78rem;">${fmt(standardTax)}</td></tr>
+        <tr><td style="padding-left:1.5rem;color:var(--muted);font-size:0.78rem;">MAT floor (2.5% × turnover)</td><td style="text-align:right;color:var(--muted);font-size:0.78rem;">${fmt(mat)}</td></tr>
+        <tr style="font-weight:700;${matApplied ? 'color:#b45309' : ''}">
+          <td>Income Tax Due ${matApplied ? '⚠️ MAT' : ''}</td>
+          <td style="text-align:right;">${fmt(incomeTaxDue)}</td>
+        </tr>
+        <tr style="border-top:2px solid var(--border)"><td>VAT Collected on Sales</td><td style="text-align:right;">${fmt(vatCollected)}</td></tr>
+        <tr><td>Input VAT Paid on Purchases</td><td style="text-align:right;color:var(--red)">− ${fmt(vatInputPaid)}</td></tr>
+        <tr style="font-weight:700;"><td>Net VAT Payable</td><td style="text-align:right;">${fmt(vatPayable)}</td></tr>
+        ${quarterlyAdvance !== null ? `<tr style="border-top:2px solid var(--border);font-weight:700;"><td>Monthly Advance Payment</td><td style="text-align:right;">${fmt(quarterlyAdvance)}</td></tr>` : ''}
+        <tr style="border-top:2px solid var(--ink);font-weight:800;font-size:1rem;"><td>TOTAL TAX OBLIGATION</td><td style="text-align:right;">${fmt(totalTaxDue)}</td></tr>
+      </tbody>
+    </table>
+
+    ${matApplied ? `
+    <div style="margin-top:1rem;padding:0.8rem 1rem;background:#fef3c7;border:1.5px solid #fde68a;border-radius:3px;font-size:0.74rem;color:#92400e;">
+      ⚠️ <strong>MAT Applied:</strong> Your calculated income tax (${fmt(standardTax)}) was lower than 2.5% of turnover (${fmt(mat)}), so the Minimum Alternative Tax of ${fmt(mat)} applies instead.
+    </div>` : ''}
+  `;
+}
+
+function getTaxReportRows() {
+  const revenue = parseFloat(document.getElementById('tax-revenue').value) || 0;
+  const costs = parseFloat(document.getElementById('tax-costs').value) || 0;
+  const vatCollected = parseFloat(document.getElementById('tax-vat-collected').value) || 0;
+  const vatInputPaid = parseFloat(document.getElementById('tax-vat-input').value) || 0;
+  const priorYearTax = parseFloat(document.getElementById('tax-prior-year').value) || 0;
+  const period = document.getElementById('tax-period').selectedOptions[0].text;
+  const year = document.getElementById('tax-year').selectedOptions[0].text;
+
+  const vatPayable = Math.max(0, vatCollected - vatInputPaid);
+  const taxableProfit = Math.max(0, revenue - costs);
+  const standardTax = taxableProfit * 0.30;
+  const mat = revenue * 0.025;
+  const incomeTaxDue = Math.max(standardTax, mat);
+  const quarterlyAdvance = priorYearTax / 12;
+  const totalTax = vatPayable + incomeTaxDue;
+
+  return [
+    ['SalesFlow — Ethiopian Tax Report'],
+    ['Period', period + ' · ' + year],
+    ['Generated', new Date().toLocaleDateString()],
+    [],
+    ['INCOME & PROFIT'],
+    ['Total Revenue (Turnover)', revenue.toFixed(2)],
+    ['Total Allowable Costs', costs.toFixed(2)],
+    ['Taxable Profit', (revenue - costs).toFixed(2)],
+    [],
+    ['BUSINESS INCOME TAX'],
+    ['Standard Tax (30% × profit)', standardTax.toFixed(2)],
+    ['MAT floor (2.5% × turnover)', mat.toFixed(2)],
+    ['Income Tax Due (higher of above)', incomeTaxDue.toFixed(2)],
+    ['MAT Applied?', incomeTaxDue === mat && mat > standardTax ? 'YES' : 'No'],
+    [],
+    ['VAT'],
+    ['VAT Collected on Sales', vatCollected.toFixed(2)],
+    ['Input VAT Paid on Purchases', vatInputPaid.toFixed(2)],
+    ['Net VAT Payable', vatPayable.toFixed(2)],
+    [],
+    ['ADVANCE TAX'],
+    ['Prior Year Annual Tax', priorYearTax.toFixed(2)],
+    ['Monthly Advance (1/12 of prior year)', quarterlyAdvance.toFixed(2)],
+    [],
+    ['TOTAL TAX OBLIGATION (VAT + Income Tax)', totalTax.toFixed(2)],
+  ];
+}
+
+// ════════════════════════════════════════
+// LOAN TRACKER
+// ════════════════════════════════════════
+
+function createLoanRecord(sourceRecord, sourceType) {
+  // Avoid duplicate loan record for same source
+  const existing = getLoans().find(l => l.sourceId === sourceRecord.id);
+  if (existing) return;
+
+  const loanTypeLabels = {
+    credit_sale: 'Credit Sale — Customer Owes Us',
+    lent_goods:  'Lent Goods — Expecting Return',
+    credit_purchase: 'Credit Purchase — We Owe Supplier'
+  };
+
+  const loan = {
+    id: 'loan_' + Date.now().toString(),
+    sourceId: sourceRecord.id,
+    sourceType,                             // 'sale' | 'purchase'
+    loanType: sourceRecord.loanType,
+    loanTypeLabel: loanTypeLabels[sourceRecord.loanType] || sourceRecord.loanType,
+    itemName: sourceRecord.name,
+    date: sourceRecord.date,
+    person: sourceRecord.person,
+    amountOwed: sourceRecord.amountOwed,
+    loanNotes: sourceRecord.loanNotes || '',
+    settled: false,
+    settledAt: null,
+    createdAt: new Date().toISOString()
+  };
+
+  const loans = getLoans();
+  loans.push(loan);
+  setLoans(loans);
+  upsertLoanRemote(loan);
+}
+
+function settleLoan(id) {
+  askConfirm('Mark this loan as settled?', () => {
+    const loans = getLoans();
+    const i = loans.findIndex(l => l.id === id);
+    if (i === -1) return;
+    loans[i].settled = true;
+    loans[i].settledAt = new Date().toISOString();
+    setLoans(loans);
+    upsertLoanRemote(loans[i]);
+    renderOwnerLoans();
+    renderManagerLoans();
+    showToast('Loan marked as settled ✓', 'success');
+  });
+}
+
+function unsettleLoan(id) {
+  askConfirm('Mark this loan as unsettled again?', () => {
+    const loans = getLoans();
+    const i = loans.findIndex(l => l.id === id);
+    if (i === -1) return;
+    loans[i].settled = false;
+    loans[i].settledAt = null;
+    setLoans(loans);
+    upsertLoanRemote(loans[i]);
+    renderOwnerLoans();
+    renderManagerLoans();
+    showToast('Loan marked as unsettled', 'error');
+  });
+}
+
+function deleteLoan(id) {
+  askConfirm('Delete this loan record?', () => {
+    setLoans(getLoans().filter(l => l.id !== id));
+    deleteLoanRemote(id);
+    renderOwnerLoans();
+    renderManagerLoans();
+    showToast('Loan deleted', 'error');
+  });
+}
+
+function clearSettledLoans() {
+  const settled = getLoans().filter(l => l.settled);
+  if (!settled.length) return showToast('No settled loans to clear', 'error');
+  askConfirm(`Clear ${settled.length} settled loan${settled.length !== 1 ? 's' : ''}? This permanently deletes them for both owner and manager.`, () => {
+    setLoans(getLoans().filter(l => !l.settled));
+    settled.forEach(l => deleteLoanRemote(l.id));
+    renderOwnerLoans();
+    renderManagerLoans();
+    showToast(`${settled.length} settled loan${settled.length !== 1 ? 's' : ''} cleared ✓`, 'success');
+  });
+}
+
+function loanCard(loan, showActions) {
+  const isOwe = loan.loanType === 'credit_purchase';
+  const accentColor = loan.settled ? '#1a6b3a' : isOwe ? '#c0392b' : '#1e40af';
+  const bgColor = loan.settled ? '#f0fdf4' : isOwe ? '#fff5f5' : '#eff6ff';
+  const borderColor = loan.settled ? '#86efac' : isOwe ? '#fca5a5' : '#93c5fd';
+  const loanTypeLabel = isOwe ? '🔴 We Owe' : loan.loanType === 'lent_goods' ? '🟡 Lent Goods' : '🔵 Owed to Us';
+  const statusBadge = loan.settled
+    ? `<span style="display:inline-block;padding:0.15rem 0.55rem;background:#dcfce7;color:#166534;border-radius:2px;font-size:0.62rem;font-weight:700;letter-spacing:0.08em;">✓ SETTLED${loan.settledAt ? ' · ' + loan.settledAt.split('T')[0] : ''}</span>`
+    : `<span style="display:inline-block;padding:0.15rem 0.55rem;background:#fee2e2;color:#991b1b;border-radius:2px;font-size:0.62rem;font-weight:700;letter-spacing:0.08em;">⏳ OUTSTANDING</span>`;
+
+  return `
+    <div style="border:1.5px solid ${borderColor};border-left:5px solid ${accentColor};border-radius:4px;padding:0.9rem 1rem;margin-bottom:0.65rem;background:${bgColor};">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.5rem;">
+        <div>
+          <span style="font-family:'Syne',sans-serif;font-weight:800;font-size:0.9rem;">${loan.itemName}</span>
+          <span style="margin-left:0.5rem;font-size:0.68rem;font-weight:700;color:${accentColor};">${loanTypeLabel}</span>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;color:${accentColor};">ETB ${loan.amountOwed.toFixed(2)}</div>
+        </div>
+      </div>
+      <div style="font-size:0.74rem;color:#374151;margin-bottom:0.3rem;">👤 <strong>${loan.person}</strong> &nbsp;·&nbsp; 📅 ${loan.date}</div>
+      ${loan.loanNotes ? `<div style="font-size:0.71rem;color:#6b7280;margin-bottom:0.3rem;">📝 ${loan.loanNotes}</div>` : ''}
+      <div style="font-size:0.68rem;color:#9ca3af;margin-bottom:0.5rem;">${loan.loanTypeLabel}</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.4rem;">
+        ${statusBadge}
+        ${showActions ? `
+          <div style="display:flex;gap:0.4rem;">
+            ${!loan.settled
+              ? `<button class="btn btn-sm" style="background:var(--green);color:#fff;border-color:var(--green);font-size:0.65rem;padding:0.25rem 0.6rem;" onclick="settleLoan('${loan.id}')">✓ Mark Settled</button>`
+              : `<button class="btn btn-ghost btn-sm" style="font-size:0.65rem;padding:0.25rem 0.6rem;" onclick="unsettleLoan('${loan.id}')">↩ Unsettle</button>`
+            }
+            <button class="btn btn-danger btn-sm" style="font-size:0.65rem;padding:0.25rem 0.6rem;" onclick="deleteLoan('${loan.id}')">Delete</button>
+          </div>
+        ` : ''}
+      </div>
+    </div>
+  `;
+}
+
+function renderOwnerLoans() {
+  const container = document.getElementById('o-loans-list');
+  if (!container) return;
+  const query = (document.getElementById('o-loan-search')?.value || '').trim().toLowerCase();
+  let loans = getLoans().sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  if (query) loans = loans.filter(l => l.person.toLowerCase().includes(query) || l.itemName.toLowerCase().includes(query));
+
+  const allLoans = getLoans();
+  const totalOwedToUs = allLoans.filter(l => l.loanType !== 'credit_purchase' && !l.settled).reduce((s, l) => s + l.amountOwed, 0);
+  const totalWeOwe    = allLoans.filter(l => l.loanType === 'credit_purchase' && !l.settled).reduce((s, l) => s + l.amountOwed, 0);
+
+  let html = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:1.25rem;">
+      <div style="padding:0.9rem;background:#eff6ff;border:1.5px solid #93c5fd;border-radius:4px;text-align:center;">
+        <div style="font-size:0.68rem;color:#1e40af;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.25rem;">Owed to Us</div>
+        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;color:#1e40af;">ETB ${fmtNum(totalOwedToUs)}</div>
+        <div style="font-size:0.65rem;color:#6b7280;margin-top:0.1rem;">${allLoans.filter(l=>l.loanType!=='credit_purchase'&&!l.settled).length} outstanding</div>
+      </div>
+      <div style="padding:0.9rem;background:#fff5f5;border:1.5px solid #fca5a5;border-radius:4px;text-align:center;">
+        <div style="font-size:0.68rem;color:#c0392b;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.25rem;">We Owe</div>
+        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;color:#c0392b;">ETB ${fmtNum(totalWeOwe)}</div>
+        <div style="font-size:0.65rem;color:#6b7280;margin-top:0.1rem;">${allLoans.filter(l=>l.loanType==='credit_purchase'&&!l.settled).length} outstanding</div>
+      </div>
+    </div>
+  `;
+
+  if (!loans.length) {
+    html += query
+      ? `<div class="empty"><div class="e-icon">🔍</div><p>No loans found for "<strong>${query}</strong>".</p></div>`
+      : `<div class="empty"><div class="e-icon">💳</div><p>No loans logged yet. Loans appear here when the manager submits a sale or purchase with the loan toggle on and you approve it.</p></div>`;
+    container.innerHTML = html;
+    return;
+  }
+
+  const weAreOwed = loans.filter(l => l.loanType !== 'credit_purchase');
+  const weOwe     = loans.filter(l => l.loanType === 'credit_purchase');
+
+  if (query) {
+    html += `<div style="font-size:0.72rem;color:var(--muted);margin-bottom:0.75rem;">Showing ${loans.length} result${loans.length!==1?'s':''} for "<strong>${query}</strong>"</div>`;
+    html += loans.map(l => loanCard(l, true)).join('');
+  } else {
+    if (weAreOwed.length) {
+      html += `<div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.1em;color:#1e40af;margin-bottom:0.6rem;padding-bottom:0.4rem;border-bottom:2px solid #93c5fd;">🔵 We Are Owed — Credit Sales & Lent Goods</div>`;
+      html += weAreOwed.map(l => loanCard(l, true)).join('');
+    }
+    if (weOwe.length) {
+      html += `<div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.1em;color:#c0392b;margin:1.25rem 0 0.6rem;padding-bottom:0.4rem;border-bottom:2px solid #fca5a5;">🔴 We Owe — Credit Purchases</div>`;
+      html += weOwe.map(l => loanCard(l, true)).join('');
+    }
+  }
+
+  container.innerHTML = html;
+}
+
+function renderManagerLoans() {
+  const container = document.getElementById('m-loans-list');
+  if (!container) return;
+  const query = (document.getElementById('m-loan-search')?.value || '').trim().toLowerCase();
+  let loans = getLoans().sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  if (query) loans = loans.filter(l => l.person.toLowerCase().includes(query) || l.itemName.toLowerCase().includes(query));
+
+  if (!loans.length) {
+    container.innerHTML = query
+      ? `<div class="empty"><div class="e-icon">🔍</div><p>No loans found for "<strong>${query}</strong>".</p></div>`
+      : `<div class="empty"><div class="e-icon">💳</div><p>No loans yet. Toggle the loan switch when submitting a sale or purchase to log it here after owner approval.</p></div>`;
+    return;
+  }
+
+  const weAreOwed = loans.filter(l => l.loanType !== 'credit_purchase');
+  const weOwe     = loans.filter(l => l.loanType === 'credit_purchase');
+  let html = '';
+
+  if (query) {
+    html += `<div style="font-size:0.72rem;color:var(--muted);margin-bottom:0.75rem;">Showing ${loans.length} result${loans.length!==1?'s':''} for "<strong>${query}</strong>"</div>`;
+    html += loans.map(l => loanCard(l, false)).join('');
+  } else {
+    if (weAreOwed.length) {
+      html += `<div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.1em;color:#1e40af;margin-bottom:0.6rem;padding-bottom:0.4rem;border-bottom:2px solid #93c5fd;">🔵 Owed to Us</div>`;
+      html += weAreOwed.map(l => loanCard(l, false)).join('');
+    }
+    if (weOwe.length) {
+      html += `<div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.1em;color:#c0392b;margin:1rem 0 0.6rem;padding-bottom:0.4rem;border-bottom:2px solid #fca5a5;">🔴 We Owe</div>`;
+      html += weOwe.map(l => loanCard(l, false)).join('');
+    }
+  }
+
+  container.innerHTML = html;
+}
+
+// ════════════════════════════════════════
+// TAX PAYMENT LOG
+// ════════════════════════════════════════
+
+function saveTaxLog() {
+  const period = document.getElementById('tax-period').value;
+  const periodLabel = document.getElementById('tax-period').selectedOptions[0]?.text || period;
+  const yearLabel = document.getElementById('tax-year').selectedOptions[0]?.text || '';
+  const year = document.getElementById('tax-year').value;
+
+  const revenue     = parseFloat(document.getElementById('tax-revenue').value) || 0;
+  const costs       = parseFloat(document.getElementById('tax-costs').value) || 0;
+  const vatCollected= parseFloat(document.getElementById('tax-vat-collected').value) || 0;
+  const vatInput    = parseFloat(document.getElementById('tax-vat-input').value) || 0;
+  const priorYear   = parseFloat(document.getElementById('tax-prior-year').value) || 0;
+
+  if (!revenue && !vatCollected) return showToast('Calculate figures first before saving', 'error');
+
+  const vatPayable    = Math.max(0, vatCollected - vatInput);
+  const taxableProfit = Math.max(0, revenue - costs);
+  const standardTax  = taxableProfit * 0.30;
+  const mat          = revenue * 0.025;
+  const incomeTax    = Math.max(standardTax, mat);
+  const matApplied   = incomeTax === mat && mat > standardTax;
+  const quarterlyAdv = priorYear / 12;
+  const totalDue     = vatPayable + incomeTax;
+  const { from, to } = getTaxDateRange(period, year);
+
+  const log = {
+    id: Date.now().toString(),
+    period, periodLabel, year, yearLabel,
+    from, to,
+    revenue, costs, vatCollected, vatInput, priorYear,
+    vatPayable, taxableProfit, standardTax, mat,
+    incomeTax, matApplied, quarterlyAdv, totalDue,
+    paid: false,
+    paidAt: null,
+    savedAt: new Date().toISOString(),
+  };
+
+  const logs = getTaxLogs();
+  const existing = logs.find(l => l.period === period && l.year === year && !l.paid);
+
+  const doSave = () => {
+    logs.unshift(log);
+    setTaxLogs(logs);
+    upsertTaxLogRemote(log);
+    renderTaxLog();
+    showToast('Tax log saved ✓', 'success');
+  };
+
+  if (existing) {
+    askConfirm(`A tax log for ${periodLabel} ${yearLabel} already exists. Save another one?`, doSave);
+  } else {
+    doSave();
+  }
+}
+
+function toggleTaxPaid(id) {
+  const logs = getTaxLogs();
+  const i = logs.findIndex(l => l.id === id);
+  if (i === -1) return;
+  logs[i].paid = !logs[i].paid;
+  logs[i].paidAt = logs[i].paid ? new Date().toISOString() : null;
+  setTaxLogs(logs);
+  upsertTaxLogRemote(logs[i]);
+  renderTaxLog();
+  showToast(logs[i].paid ? 'Marked as paid ✓' : 'Marked as unpaid', logs[i].paid ? 'success' : 'error');
+}
+
+function deleteTaxLog(id) {
+  askConfirm('Delete this tax log entry?', () => {
+    setTaxLogs(getTaxLogs().filter(l => l.id !== id));
+    deleteTaxLogRemote(id);
+    renderTaxLog();
+    showToast('Tax log deleted', 'error');
+  });
+}
+
+function downloadTaxLogEntry(id) {
+  const log = getTaxLogs().find(l => l.id === id);
+  if (!log) return;
+  const fmt = n => parseFloat(n).toFixed(2);
+  const rows = [
+    ['SalesFlow — Tax Log Entry'],
+    ['Period', log.periodLabel + ' · ' + log.yearLabel],
+    ['Date Range', log.from + ' to ' + log.to],
+    ['Saved On', new Date(log.savedAt).toLocaleDateString()],
+    ['Status', log.paid ? 'PAID on ' + new Date(log.paidAt).toLocaleDateString() : 'UNPAID'],
+    [],
+    ['INPUTS'],
+    ['Total Revenue (ETB)', fmt(log.revenue)],
+    ['Total Costs (ETB)', fmt(log.costs)],
+    ['VAT Collected (ETB)', fmt(log.vatCollected)],
+    ['Input VAT Paid (ETB)', fmt(log.vatInput)],
+    ['Prior Year Tax (ETB)', fmt(log.priorYear)],
+    [],
+    ['CALCULATION'],
+    ['Taxable Profit (ETB)', fmt(log.taxableProfit)],
+    ['Standard Tax 30% (ETB)', fmt(log.standardTax)],
+    ['MAT 2.5% of turnover (ETB)', fmt(log.mat)],
+    ['Income Tax Due (ETB)', fmt(log.incomeTax), log.matApplied ? 'MAT Applied' : ''],
+    ['Net VAT Payable (ETB)', fmt(log.vatPayable)],
+    ['Monthly Advance (1/12) (ETB)', fmt(log.quarterlyAdv)],
+    [],
+    ['TOTAL TAX OBLIGATION (ETB)', fmt(log.totalDue)],
+  ];
+  const csv = rows.map(r => r.map(c => '"' + String(c == null ? '' : c).replace(/"/g,'""') + '"').join(',')).join('\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'TaxLog_' + log.period.toUpperCase() + '_' + log.year + '.csv';
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('Downloaded ✓', 'success');
+}
+
+function renderTaxLog() {
+  const container = document.getElementById('tax-log-list');
+  if (!container) return;
+  const logs = getTaxLogs();
+  if (!logs.length) {
+    container.innerHTML = `<div class="empty"><div class="e-icon">🧾</div><p>No tax logs saved yet. Calculate your tax above then click <strong>Save to Tax Log</strong>.</p></div>`;
+    return;
+  }
+  const fmt = n => 'ETB ' + parseFloat(n).toLocaleString('en-ET', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+  container.innerHTML = logs.map(log => `
+    <div class="tax-log-card ${log.paid ? 'paid' : 'unpaid'}">
+      <div class="tax-log-head">
+        <div>
+          <h3>${log.periodLabel} &nbsp;·&nbsp; ${log.yearLabel}</h3>
+          <div style="font-size:0.7rem;color:var(--muted);margin-top:0.15rem;">${log.from} — ${log.to} &nbsp;·&nbsp; Saved ${new Date(log.savedAt).toLocaleDateString()}</div>
+        </div>
+        <span class="tax-paid-label ${log.paid ? 'paid' : 'unpaid'}">
+          ${log.paid ? '✅ PAID' : '⏳ UNPAID'}
+        </span>
+      </div>
+      <div class="tax-log-body">
+        <div class="row"><span>Total Revenue</span><strong>${fmt(log.revenue)}</strong></div>
+        <div class="row"><span>Taxable Profit</span><strong>${fmt(log.taxableProfit)}</strong></div>
+        <div class="row"><span>Income Tax Due ${log.matApplied ? '<span style="font-size:0.65rem;color:#b45309;">⚠️ MAT</span>' : ''}</span><strong>${fmt(log.incomeTax)}</strong></div>
+        <div class="row"><span>Net VAT Payable</span><strong>${fmt(log.vatPayable)}</strong></div>
+        <div class="row"><span>Monthly Advance (1/12)</span><strong>${fmt(log.quarterlyAdv)}</strong></div>
+        <div class="row" style="font-weight:800;font-size:0.88rem;"><span>Total Tax Obligation</span><strong>${fmt(log.totalDue)}</strong></div>
+        ${log.paid && log.paidAt ? `<div class="row" style="color:var(--green);"><span>Paid On</span><strong>${new Date(log.paidAt).toLocaleDateString()}</strong></div>` : ''}
+      </div>
+      <div class="tax-log-foot">
+        <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;font-size:0.8rem;font-weight:600;">
+          <input type="checkbox" ${log.paid ? 'checked' : ''} onchange="toggleTaxPaid('${log.id}')" style="width:1rem;height:1rem;cursor:pointer;">
+          Mark as paid
+        </label>
+        <button class="btn btn-sm btn-ghost" onclick="downloadTaxLogEntry('${log.id}')">⬇ Download</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteTaxLog('${log.id}')" style="margin-left:auto;">Delete</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function downloadTaxReport() {
+  const rows = getTaxReportRows();
+  const csv = rows.map(r => r.map(c => '"' + String(c == null ? '' : c).replace(/"/g, '""') + '"').join(',')).join('\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  const period = document.getElementById('tax-period').value;
+  const year = document.getElementById('tax-year').value;
+  a.download = 'SalesFlow_Tax_Report_' + period.toUpperCase() + '_' + year + '.csv';
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('Tax report downloaded ✓', 'success');
+}
+
+function printTaxReport() {
+  const rows = getTaxReportRows();
+  const revenue = parseFloat(document.getElementById('tax-revenue').value) || 0;
+  const costs = parseFloat(document.getElementById('tax-costs').value) || 0;
+  const vatCollected = parseFloat(document.getElementById('tax-vat-collected').value) || 0;
+  const vatInputPaid = parseFloat(document.getElementById('tax-vat-input').value) || 0;
+  const priorYearTax = parseFloat(document.getElementById('tax-prior-year').value) || 0;
+  const period = document.getElementById('tax-period').selectedOptions[0].text;
+  const year = document.getElementById('tax-year').selectedOptions[0].text;
+  const vatPayable = Math.max(0, vatCollected - vatInputPaid);
+  const taxableProfit = Math.max(0, revenue - costs);
+  const standardTax = taxableProfit * 0.30;
+  const mat = revenue * 0.025;
+  const incomeTaxDue = Math.max(standardTax, mat);
+  const quarterlyAdv = priorYearTax / 12;
+  const totalTax = vatPayable + incomeTaxDue;
+  const fmt = n => 'ETB ' + n.toLocaleString('en-ET', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+  const zone = document.getElementById('print-zone');
+  zone.style.display = 'block';
+  zone.innerHTML = `
+    <div class="print-header">
+      <h1>SalesFlow — Ethiopian Tax Report</h1>
+      <p>${period} · ${year} &nbsp;|&nbsp; Generated: ${new Date().toLocaleDateString()}</p>
+    </div>
+    <div class="print-stats">
+      <div class="print-stat"><div class="label">Total Revenue</div><div class="value">${fmt(revenue)}</div></div>
+      <div class="print-stat"><div class="label">Taxable Profit</div><div class="value">${fmt(taxableProfit)}</div></div>
+      <div class="print-stat"><div class="label">Income Tax Due</div><div class="value">${fmt(incomeTaxDue)}</div></div>
+      <div class="print-stat"><div class="label">Net VAT Payable</div><div class="value">${fmt(vatPayable)}</div></div>
+      <div class="print-stat"><div class="label">Quarterly Advance</div><div class="value">${fmt(quarterlyAdv)}</div></div>
+      <div class="print-stat"><div class="label">TOTAL TAX DUE</div><div class="value">${fmt(totalTax)}</div></div>
+    </div>
+    <div class="section-title">Full Breakdown</div>
+    <table>
+      <tbody>
+        <tr><th>Item</th><th>Amount (ETB)</th></tr>
+        <tr><td>Total Revenue (Turnover)</td><td>${fmt(revenue)}</td></tr>
+        <tr><td>Total Allowable Costs</td><td>− ${fmt(costs)}</td></tr>
+        <tr><td><strong>Taxable Profit</strong></td><td><strong>${fmt(taxableProfit)}</strong></td></tr>
+        <tr><td>Standard Income Tax (30%)</td><td>${fmt(standardTax)}</td></tr>
+        <tr><td>MAT Floor (2.5% of turnover)</td><td>${fmt(mat)}</td></tr>
+        <tr><td><strong>Income Tax Due${incomeTaxDue === mat && mat > standardTax ? ' ⚠️ MAT Applied' : ''}</strong></td><td><strong>${fmt(incomeTaxDue)}</strong></td></tr>
+        <tr><td>VAT Collected on Sales</td><td>${fmt(vatCollected)}</td></tr>
+        <tr><td>Input VAT Paid on Purchases</td><td>− ${fmt(vatInputPaid)}</td></tr>
+        <tr><td><strong>Net VAT Payable</strong></td><td><strong>${fmt(vatPayable)}</strong></td></tr>
+        <tr><td>Prior Year Tax</td><td>${fmt(priorYearTax)}</td></tr>
+        <tr><td><strong>Monthly Advance (1/12)</strong></td><td><strong>${fmt(quarterlyAdv)}</strong></td></tr>
+        <tr style="font-weight:800; border-top:2px solid #000;"><td>TOTAL TAX OBLIGATION</td><td>${fmt(totalTax)}</td></tr>
+      </tbody>
+    </table>
+    <p style="margin-top:1.5rem;font-size:10px;color:#777;">This is an estimate. Confirm with a licensed accountant or ERCA before filing.</p>
+  `;
+  window.print();
+  zone.style.display = 'none';
+}
+
+// ════════════════════════════════════════
+// VAT DOWNLOAD
+// ════════════════════════════════════════
+function downloadVatSheet() {
+  const approved = getSales().filter(s => s.status === 'approved' && s.vatOn);
+  if (!approved.length) return showToast('No VAT sales to download', 'error');
+
+  const rows = [
+    ['Date', 'Item', 'Qty', 'Selling Price (ETB)', 'Revenue (ETB)', 'VAT Rate (%)', 'VAT Amount (ETB)', 'Cost (ETB)', 'Profit (ETB)', 'Owner Note']
+  ];
+  approved.sort((a,b) => new Date(a.date) - new Date(b.date)).forEach(s => {
+    rows.push([
+      s.date, s.name, s.qty,
+      s.price.toFixed(2), s.revenue.toFixed(2),
+      s.vatRate, s.vatAmount.toFixed(2),
+      s.totalCost.toFixed(2), s.profit.toFixed(2),
+      s.ownerNote || ''
+    ]);
+  });
+
+  const total = approved.reduce((a, s) => a + s.vatAmount, 0);
+  rows.push([]);
+  rows.push(['', '', '', '', '', 'TOTAL VAT COLLECTED (ETB)', total.toFixed(2), '', '', '']);
+
+  const csv = rows.map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `VAT_Collected_SalesFlow.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('VAT sheet downloaded ✓', 'success');
+}
+
+// ════════════════════════════════════════
+// EXPORT & PRINT
+// ════════════════════════════════════════
+const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+function initExportTab() {
+  const now = new Date();
+  const py = document.getElementById('print-year');
+  if (py && !py.options.length) {
+    const sales = getSales(); const purchases = getPurchases();
+    const years = new Set([now.getFullYear()]);
+    sales.forEach(s => { if (s.date) years.add(new Date(s.date).getFullYear()); });
+    purchases.forEach(p => { if (p.date) years.add(new Date(p.date).getFullYear()); });
+    [...years].sort((a,b) => b-a).forEach(y => {
+      const o = document.createElement('option'); o.value = y; o.textContent = y; py.appendChild(o);
+    });
+  }
+  document.getElementById('print-month').value = now.getMonth();
+  document.getElementById('print-preview-area').style.display = 'none';
+}
+
+// ── helper: build CSV and trigger download ──
+function triggerCSV(rows, filename) {
+  const csv = rows.map(r => r.map(c => '"' + String(c == null ? '' : c).replace(/"/g, '""') + '"').join(',')).join('\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = filename; a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ── Download All Sales ──
+function downloadAllSales() {
+  const sales = getSales().filter(s => s.status === 'approved');
+  if (!sales.length) return showToast('No approved sales to export', 'error');
+  const rows = [['Date','Item','Qty','Selling Price (ETB)','Revenue (ETB)','VAT?','VAT Rate (%)','VAT Amount (ETB)','Cost/Unit (ETB)','Total Cost (ETB)','Expenses (ETB)','Profit (ETB)','Notes','Owner Note']];
+  sales.sort((a,b) => new Date(a.date)-new Date(b.date)).forEach(s => {
+    rows.push([s.date, s.name, s.qty, s.price.toFixed(2), s.revenue.toFixed(2),
+      s.vatOn ? 'Yes' : 'No', s.vatOn ? s.vatRate : '', s.vatOn ? s.vatAmount.toFixed(2) : '',
+      s.cost.toFixed(2), s.totalCost.toFixed(2), s.expenses.toFixed(2), s.profit.toFixed(2),
+      s.notes || '', s.ownerNote || '']);
+  });
+  // Totals row
+  rows.push([]);
+  rows.push(['TOTALS','','',
+    '', sales.reduce((a,s)=>a+s.revenue,0).toFixed(2),
+    '','', sales.reduce((a,s)=>a+s.vatAmount,0).toFixed(2),
+    '', sales.reduce((a,s)=>a+s.totalCost,0).toFixed(2),
+    sales.reduce((a,s)=>a+s.expenses,0).toFixed(2),
+    sales.reduce((a,s)=>a+s.profit,0).toFixed(2),'','']);
+  triggerCSV(rows, 'SalesFlow_All_Sales.csv');
+  showToast('All sales downloaded ✓', 'success');
+}
+
+// ── Download All Purchases ──
+function downloadAllPurchases() {
+  const purchases = getPurchases().filter(p => p.status === 'approved');
+  if (!purchases.length) return showToast('No approved purchases to export', 'error');
+  const rows = [['Date','Item','Qty','Cost/Unit (ETB)','Subtotal (ETB)','VAT?','VAT Rate (%)','VAT Amount (ETB)','Total (ETB)','Added to Stock?','Notes','Owner Note']];
+  purchases.sort((a,b) => new Date(a.date)-new Date(b.date)).forEach(p => {
+    rows.push([p.date, p.name, p.qty, p.costUnit.toFixed(2), p.subtotal.toFixed(2),
+      p.vatOn ? 'Yes' : 'No', p.vatOn ? p.vatRate : '', p.vatOn ? p.vatAmount.toFixed(2) : '',
+      p.total.toFixed(2), p.stockAdded ? 'Yes' : 'No', p.notes || '', p.ownerNote || '']);
+  });
+  rows.push([]);
+  rows.push(['TOTALS','','','', purchases.reduce((a,p)=>a+p.subtotal,0).toFixed(2),
+    '','', purchases.reduce((a,p)=>a+p.vatAmount,0).toFixed(2),
+    purchases.reduce((a,p)=>a+p.total,0).toFixed(2),'','','']);
+  triggerCSV(rows, 'SalesFlow_All_Purchases.csv');
+  showToast('All purchases downloaded ✓', 'success');
+}
+
+// ── Download Stock Snapshot ──
+function downloadStock() {
+  const stock = getStock();
+  if (!stock.length) return showToast('No stock items to export', 'error');
+  const rows = [['Item','Qty in Stock','VAT Eligible']];
+  stock.forEach(s => rows.push([s.name, s.qty, s.qty > 0 ? 'Yes' : 'No (out of stock)']));
+  triggerCSV(rows, 'SalesFlow_Stock_Snapshot.csv');
+  showToast('Stock snapshot downloaded ✓', 'success');
+}
+
+// ── Build monthly report data object ──
+function buildMonthlyData(month, year) {
+  const sales = getSales().filter(s => {
+    if (s.status !== 'approved') return false;
+    const d = new Date(s.date);
+    return d.getFullYear() === year && d.getMonth() === month;
+  });
+  const purchases = getPurchases().filter(p => {
+    if (p.status !== 'approved') return false;
+    const d = new Date(p.date);
+    return d.getFullYear() === year && d.getMonth() === month;
+  });
+  const totalRev = sales.reduce((a,s)=>a+s.revenue,0);
+  const totalProfit = sales.reduce((a,s)=>a+s.profit,0);
+  const totalVat = sales.reduce((a,s)=>a+s.vatAmount,0);
+  const totalCost = sales.reduce((a,s)=>a+s.totalCost,0);
+  const totalPurchases = purchases.reduce((a,p)=>a+p.total,0);
+  return { sales, purchases, totalRev, totalProfit, totalVat, totalCost, totalPurchases };
+}
+
+// ── Preview print report in-page ──
+function previewPrintReport() {
+  const month = parseInt(document.getElementById('print-month').value);
+  const year = parseInt(document.getElementById('print-year').value);
+  const d = buildMonthlyData(month, year);
+  const area = document.getElementById('print-preview-area');
+  area.style.display = 'block';
+  area.innerHTML = buildPrintHTML(month, year, d, false);
+  area.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ── Print monthly report ──
+function printMonthlyReport() {
+  const month = parseInt(document.getElementById('print-month').value);
+  const year = parseInt(document.getElementById('print-year').value);
+  const d = buildMonthlyData(month, year);
+  if (!d.sales.length && !d.purchases.length) return showToast('No data for this month', 'error');
+  const zone = document.getElementById('print-zone');
+  zone.style.display = 'block';
+  zone.innerHTML = buildPrintHTML(month, year, d, true);
+  window.print();
+  zone.style.display = 'none';
+}
+
+// ── Download monthly as CSV ──
+function downloadMonthlyCSV() {
+  const month = parseInt(document.getElementById('print-month').value);
+  const year = parseInt(document.getElementById('print-year').value);
+  const d = buildMonthlyData(month, year);
+  if (!d.sales.length && !d.purchases.length) return showToast('No data for this month', 'error');
+  const label = MONTHS[month] + '_' + year;
+
+  const rows = [
+    ['SalesFlow Monthly Report — ' + MONTHS[month] + ' ' + year],
+    [],
+    ['SUMMARY'],
+    ['Total Revenue (ETB)', d.totalRev.toFixed(2)],
+    ['Net Profit (ETB)', d.totalProfit.toFixed(2)],
+    ['VAT Collected (ETB)', d.totalVat.toFixed(2)],
+    ['Total Costs (ETB)', d.totalCost.toFixed(2)],
+    ['Total Purchases Spent (ETB)', d.totalPurchases.toFixed(2)],
+    [],
+    ['SALES'],
+    ['Date','Item','Qty','Revenue (ETB)','VAT Amount (ETB)','Cost (ETB)','Profit (ETB)']
+  ];
+  d.sales.sort((a,b)=>new Date(a.date)-new Date(b.date)).forEach(s => {
+    rows.push([s.date, s.name, s.qty, s.revenue.toFixed(2), s.vatAmount.toFixed(2), s.totalCost.toFixed(2), s.profit.toFixed(2)]);
+  });
+  if (d.purchases.length) {
+    rows.push([], ['PURCHASES'], ['Date','Item','Qty','Unit Cost (ETB)','Total (ETB)','VAT?','Added to Stock?']);
+    d.purchases.sort((a,b)=>new Date(a.date)-new Date(b.date)).forEach(p => {
+      rows.push([p.date, p.name, p.qty, p.costUnit.toFixed(2), p.total.toFixed(2), p.vatOn?'Yes':'No', p.stockAdded?'Yes':'No']);
+    });
+  }
+  triggerCSV(rows, 'SalesFlow_Report_' + label + '.csv');
+  showToast('Monthly CSV downloaded ✓', 'success');
+}
+
+// ── Build print HTML ──
+function buildPrintHTML(month, year, d, forPrint) {
+  const margin = d.totalRev > 0 ? ((d.totalProfit/d.totalRev)*100).toFixed(1) : '0.0';
+  const byItem = {};
+  d.sales.forEach(s => {
+    if (!byItem[s.name]) byItem[s.name] = { revenue:0, profit:0, qty:0, vat:0 };
+    byItem[s.name].revenue += s.revenue; byItem[s.name].profit += s.profit;
+    byItem[s.name].qty += s.qty; byItem[s.name].vat += s.vatAmount;
+  });
+  const items = Object.entries(byItem).sort((a,b)=>b[1].revenue-a[1].revenue);
+
+  const salesRows = d.sales.sort((a,b)=>new Date(a.date)-new Date(b.date)).map(s =>
+    '<tr><td>'+s.date+'</td><td>'+s.name+'</td><td>'+s.qty+'</td><td>ETB '+s.revenue.toFixed(2)+'</td><td>'+(s.vatOn?'ETB '+s.vatAmount.toFixed(2):'—')+'</td><td>ETB '+s.totalCost.toFixed(2)+'</td><td>ETB '+s.profit.toFixed(2)+'</td></tr>'
+  ).join('');
+
+  const purchaseRows = d.purchases.length ? d.purchases.sort((a,b)=>new Date(a.date)-new Date(b.date)).map(p =>
+    '<tr><td>'+p.date+'</td><td>'+p.name+'</td><td>'+p.qty+'</td><td>ETB '+p.costUnit.toFixed(2)+'</td><td>ETB '+p.total.toFixed(2)+'</td><td>'+(p.vatOn?'VAT '+p.vatRate+'%':'No VAT')+'</td></tr>'
+  ).join('') : '';
+
+  return `
+    <div class="print-header">
+      <h1>SalesFlow — Monthly Report</h1>
+      <p>${MONTHS[month]} ${year} &nbsp;|&nbsp; Generated: ${new Date().toLocaleDateString()}</p>
+    </div>
+    <div class="print-stats">
+      <div class="print-stat"><div class="label">Total Revenue</div><div class="value">ETB ${fmtNum(d.totalRev)}</div></div>
+      <div class="print-stat"><div class="label">Net Profit (${margin}%)</div><div class="value">ETB ${fmtNum(d.totalProfit)}</div></div>
+      <div class="print-stat"><div class="label">VAT Collected</div><div class="value">ETB ${fmtNum(d.totalVat)}</div></div>
+      <div class="print-stat"><div class="label">Total Costs</div><div class="value">ETB ${fmtNum(d.totalCost)}</div></div>
+      ${d.purchases.length ? '<div class="print-stat"><div class="label">Purchases Spent</div><div class="value">ETB '+fmtNum(d.totalPurchases)+'</div></div>' : ''}
+    </div>
+    ${items.length ? `
+    <div class="section-title">Top Items by Revenue</div>
+    <table><thead><tr><th>Item</th><th>Units Sold</th><th>Revenue</th><th>VAT</th><th>Profit</th></tr></thead>
+    <tbody>${items.map(([name,v])=>'<tr><td>'+name+'</td><td>'+v.qty+'</td><td>ETB '+v.revenue.toFixed(2)+'</td><td>ETB '+v.vat.toFixed(2)+'</td><td>ETB '+v.profit.toFixed(2)+'</td></tr>').join('')}</tbody>
+    </table>` : ''}
+    ${d.sales.length ? `
+    <div class="section-title">Sales Detail</div>
+    <table><thead><tr><th>Date</th><th>Item</th><th>Qty</th><th>Revenue</th><th>VAT</th><th>Cost</th><th>Profit</th></tr></thead>
+    <tbody>${salesRows}<tr style="font-weight:700;border-top:2px solid #ccc"><td colspan="3">TOTAL</td><td>ETB ${d.totalRev.toFixed(2)}</td><td>ETB ${d.totalVat.toFixed(2)}</td><td>ETB ${d.totalCost.toFixed(2)}</td><td>ETB ${d.totalProfit.toFixed(2)}</td></tr></tbody>
+    </table>` : '<p style="color:#999;font-size:0.8rem">No sales this month.</p>'}
+    ${d.purchases.length ? `
+    <div class="section-title">Purchases</div>
+    <table><thead><tr><th>Date</th><th>Item</th><th>Qty</th><th>Unit Cost</th><th>Total</th><th>VAT</th></tr></thead>
+    <tbody>${purchaseRows}<tr style="font-weight:700;border-top:2px solid #ccc"><td colspan="4">TOTAL SPENT</td><td>ETB ${d.totalPurchases.toFixed(2)}</td><td></td></tr></tbody>
+    </table>` : ''}
+    ${forPrint ? '' : '<div style="margin-top:1.5rem;text-align:right"><button onclick="printMonthlyReport()" style="padding:0.6rem 1.2rem;background:#0f0e0d;color:white;border:none;border-radius:3px;font-family:Syne,sans-serif;font-weight:700;font-size:0.8rem;cursor:pointer;">🖨️ Print This Report</button></div>'}
+  `;
+}
+
+
+// ════════════════════════════════════════
+// PWA — OFFLINE SUPPORT & SYNC QUEUE
+// ════════════════════════════════════════
+
+function getOfflineQueue() { return getS('sf_offline_queue', []); }
+function setOfflineQueue(q) { setS('sf_offline_queue', q); }
+
+function addToOfflineQueue(type, item) {
+  const q = getOfflineQueue();
+  q.push({ type, item, queuedAt: new Date().toISOString() });
+  setOfflineQueue(q);
+  updateOfflineBar();
+}
+
+function flushOfflineQueue() {
+  const q = getOfflineQueue();
+  if (!q.length) return 0;
+  let flushed = 0;
+  q.forEach(entry => {
+    if (entry.type === 'sale') {
+      const sales = getSales();
+      if (!sales.find(s => s.id === entry.item.id)) { sales.push(entry.item); setSales(sales); flushed++; }
+    } else if (entry.type === 'purchase') {
+      const purchases = getPurchases();
+      if (!purchases.find(p => p.id === entry.item.id)) { purchases.push(entry.item); setPurchases(purchases); flushed++; }
+    }
+  });
+  setOfflineQueue([]);
+  return flushed;
+}
+
+function updateOfflineBar() {
+  if (currentRole !== 'manager') return;
+  const bar = document.getElementById('offline-bar');
+  const icon = document.getElementById('ob-icon');
+  const msg = document.getElementById('ob-msg');
+  const qLabel = document.getElementById('ob-queue');
+  const syncBtn = document.getElementById('sync-btn');
+  if (!bar) return;
+  const queue = getOfflineQueue();
+  bar.style.display = 'flex';
+
+  if (!navigator.onLine) {
+    bar.className = 'offline';
+    icon.textContent = '✈️';
+    msg.textContent = 'You\'re offline — entries saved locally';
+    qLabel.textContent = queue.length ? queue.length + ' waiting to sync' : '';
+    syncBtn.style.display = 'none';
+  } else if (queue.length > 0) {
+    bar.className = 'syncing';
+    icon.textContent = '🔄';
+    msg.textContent = 'Back online — ' + queue.length + ' item(s) ready to sync';
+    qLabel.textContent = '';
+    syncBtn.style.display = 'inline-block';
+    syncBtn.textContent = '↑ Sync Now';
+    syncBtn.disabled = false;
+  } else {
+    bar.className = 'synced';
+    icon.textContent = '✅';
+    msg.textContent = 'Online — all data synced';
+    qLabel.textContent = '';
+    syncBtn.style.display = 'none';
+    setTimeout(() => { if (navigator.onLine && !getOfflineQueue().length && bar) bar.style.display = 'none'; }, 4000);
+  }
+}
+
+async function manualSync() {
+  const btn = document.getElementById('sync-btn');
+  btn.innerHTML = '<span class="spin">⟳</span> Syncing...';
+  btn.disabled = true;
+  const queue = getOfflineQueue();
+  let synced = 0;
+  for (const entry of queue) {
+    try {
+      if (entry.type === 'sale') await upsertSaleRemote(entry.item);
+      else if (entry.type === 'purchase') await upsertPurchaseRemote(entry.item);
+      synced++;
+    } catch {}
+  }
+  setOfflineQueue([]);
+  updateOfflineBar();
+  if (synced > 0) { showToast(synced + ' item(s) synced ✓', 'success'); renderManagerHistory(); renderPurchaseHistory(); }
+  else showToast('All up to date ✓', 'success');
+}
+
+async function autoSync() {
+  if (!navigator.onLine) return;
+  const queue = getOfflineQueue();
+  if (!queue.length) return;
+  let synced = 0;
+  for (const entry of queue) {
+    try {
+      if (entry.type === 'sale') await upsertSaleRemote(entry.item);
+      else if (entry.type === 'purchase') await upsertPurchaseRemote(entry.item);
+      synced++;
+    } catch {}
+  }
+  setOfflineQueue([]);
+  if (synced > 0) { showToast(synced + ' offline item(s) synced ✓', 'success'); renderManagerHistory(); renderPurchaseHistory(); updateOfflineBar(); }
+}
+
+window.addEventListener('online', () => { updateOfflineBar(); setTimeout(autoSync, 1200); });
+window.addEventListener('offline', () => { updateOfflineBar(); });
+
+// ── Register Service Worker for full offline caching ──
+function registerServiceWorker() {
+  if (!('serviceWorker' in navigator)) return;
+  const swCode = `
+const CACHE='salesflow-v1';
+self.addEventListener('install',e=>{self.skipWaiting();});
+self.addEventListener('activate',e=>{e.waitUntil(clients.claim());});
+self.addEventListener('fetch',e=>{
+  if(e.request.method!=='GET')return;
+  e.respondWith(
+    caches.match(e.request).then(cached=>{
+      const net=fetch(e.request).then(res=>{
+        if(res&&res.status===200){const c=res.clone();caches.open(CACHE).then(cache=>cache.put(e.request,c));}
+        return res;
+      }).catch(()=>cached||new Response('Offline',{status:503}));
+      return cached||net;
+    })
+  );
+});`;
+  const blob = new Blob([swCode], { type: 'application/javascript' });
+  navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(() => {});
+}
+
+function fmtNum(n) {
+  return n.toLocaleString('en-ET', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+let toastTimer;
+function showToast(msg, type = 'success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'show ' + type;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { t.className = ''; }, 3000);
+}
+
+// ════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════
+window.onload = () => {
+  document.getElementById('landing').style.display = 'flex';
+  const s = getSettings();
+  if (!s.managerPin) { s.managerPin = DEFAULTS.managerPin; saveSettings(s); }
+  if (!s.ownerPin) { s.ownerPin = DEFAULTS.ownerPin; saveSettings(s); }
+  registerServiceWorker();
+};
+</script>
+</body>
+</html>
