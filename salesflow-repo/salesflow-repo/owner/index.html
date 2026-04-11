@@ -747,8 +747,8 @@
           <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.8rem;margin-bottom:0.5rem;">📊 Bulk Import from Excel</div>
           <p style="font-size:0.72rem;color:var(--muted);margin-bottom:0.75rem;line-height:1.5;">Upload an <strong>.xlsx</strong> or <strong>.csv</strong> file with two columns: <strong>Item Name</strong> and <strong>Qty</strong>. Existing items will be updated, new ones added. Header row is skipped automatically.</p>
           <div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;">
-            <label for="stock-excel-input" class="btn btn-ghost btn-sm" style="cursor:pointer;margin:0;">📁 Choose File</label>
-            <input type="file" id="stock-excel-input" accept=".xlsx,.xls,.csv" style="display:none;" onchange="importStockFromExcel(this)">
+            <button class="btn btn-ghost btn-sm" style="cursor:pointer;margin:0;" onclick="document.getElementById('stock-excel-input').click()">📁 Choose File</button>
+            <input type="file" id="stock-excel-input" accept=".xlsx,.xls,.csv" style="position:absolute;width:1px;height:1px;opacity:0;overflow:hidden;" onchange="importStockFromExcel(this)">
             <span id="stock-excel-filename" style="font-size:0.72rem;color:var(--muted);">No file chosen</span>
             <button class="btn btn-sm" style="background:var(--green);color:#fff;border-color:var(--green);" onclick="downloadStockTemplate()">⬇ Download Template</button>
           </div>
