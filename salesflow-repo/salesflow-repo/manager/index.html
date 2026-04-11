@@ -703,7 +703,7 @@ function setOfflineQueue(q) { setS('sf_offline_queue', q); }
 // ════════════════════════════════════════
 async function sbUpsert(table, id, data) {
   try {
-    await fetch(`${SUPABASE_URL}/rest/v1/${table}`, {
+    const r = await fetch(`${SUPABASE_URL}/rest/v1/${table}`, {
       method: 'POST',
       headers: {
         'apikey': SUPABASE_KEY,
@@ -713,7 +713,7 @@ async function sbUpsert(table, id, data) {
       },
       body: JSON.stringify({ id, data })
     });
-    return true;
+    return r.ok; // true only on 2xx, false on 4xx/5xx
   } catch { return false; }
 }
 
@@ -767,7 +767,11 @@ window.addEventListener('load', async () => {
   document.getElementById('s-date').value = today;
   document.getElementById('pu-date').value = today;
 
+  // Hide offline bar until we know the real status
+  document.getElementById('offline-bar').style.display = 'none';
+
   showLoading('Syncing with server...');
+  let supabaseOk = false;
   try {
     const [settings, stock, sales, purchases, loans] = await Promise.all([
       sbGetKey('config'),
@@ -781,7 +785,10 @@ window.addEventListener('load', async () => {
     if (sales.length) setSales(sales);
     if (purchases.length) setPurchases(purchases);
     if (loans.length) setLoans(loans);
-  } catch {}
+    supabaseOk = true;
+  } catch {
+    supabaseOk = false;
+  }
   hideLoading();
 
   const s = getSettings();
@@ -789,12 +796,15 @@ window.addEventListener('load', async () => {
   document.getElementById('pu-vat-rate').value = s.defaultVat || 15;
 
   refreshStockDatalist();
-  updateOfflineBar();
   renderHistory();
   renderPurchasesHistory();
   renderLoans();
   calcPreview();
 
+  // Only show offline bar if actually offline or has pending items
+  updateOfflineBar();
+
+  // Auto-sync any queued items
   if (navigator.onLine) autoSync();
   registerSW();
 });
@@ -1042,16 +1052,22 @@ async function submitSale() {
   sales.push(sale);
   setSales(sales);
 
-  const ok = navigator.onLine ? await sbUpsert('sales', sale.id, sale) : false;
-  if (!ok) {
+  if (!navigator.onLine) {
     addToOfflineQueue('sale', sale);
-    showToast('Saved offline — syncs when online 📡', 'success');
+    showToast('Saved offline — will sync when back online 📡', 'success');
   } else {
-    showToast(saleLoanOn ? 'Sale submitted — loan logged after owner approval ✓' : 'Sale submitted to owner ✓', 'success');
+    const ok = await sbUpsert('sales', sale.id, sale);
+    if (ok) {
+      showToast(saleLoanOn ? 'Sale submitted — loan logged after owner approval ✓' : 'Sale submitted to owner ✓', 'success');
+    } else {
+      addToOfflineQueue('sale', sale);
+      showToast('Saved locally — tap Sync Now to send to owner', 'error');
+    }
   }
 
   clearSaleForm();
   if (currentTab === 'history') renderHistory();
+  updateOfflineBar();
 }
 
 function clearSaleForm() {
@@ -1155,20 +1171,24 @@ async function submitPurchase() {
   purchases.push(purchase);
   setPurchases(purchases);
 
-  const ok = navigator.onLine ? await sbUpsert('purchases', purchase.id, purchase) : false;
-  if (!ok) {
+  if (!navigator.onLine) {
     addToOfflineQueue('purchase', purchase);
-    showToast('Saved offline — syncs when online 📡', 'success');
-  } else if (purchaseLoanOn) {
-    showToast('Purchase submitted — credit loan logged after owner approval ✓', 'success');
-  } else if (!purchaseVatOn) {
-    showToast('Purchase submitted to owner ✓', 'success');
+    showToast('Saved offline — will sync when back online 📡', 'success');
   } else {
-    showToast('Purchase submitted — owner will add to stock ✓', 'success');
+    const ok = await sbUpsert('purchases', purchase.id, purchase);
+    if (ok) {
+      if (purchaseLoanOn) showToast('Purchase submitted — credit loan logged after owner approval ✓', 'success');
+      else if (!purchaseVatOn) showToast('Purchase submitted to owner ✓', 'success');
+      else showToast('Purchase submitted — owner will add to stock ✓', 'success');
+    } else {
+      addToOfflineQueue('purchase', purchase);
+      showToast('Saved locally — tap Sync Now to send to owner', 'error');
+    }
   }
 
   clearPurchaseForm();
   if (currentTab === 'purchases-history') renderPurchasesHistory();
+  updateOfflineBar();
 }
 
 function clearPurchaseForm() {
@@ -1377,15 +1397,16 @@ function updateOfflineBar() {
   const qLabel = document.getElementById('ob-queue');
   const btn    = document.getElementById('sync-btn');
   const queue  = getOfflineQueue();
-  bar.style.display = 'flex';
 
   if (!navigator.onLine) {
+    bar.style.display = 'flex';
     bar.className = 'offline';
     icon.textContent = '✈️';
     msg.textContent = 'Offline — entries saved to phone';
     qLabel.textContent = queue.length ? queue.length + ' waiting' : '';
     btn.style.display = 'none';
   } else if (queue.length > 0) {
+    bar.style.display = 'flex';
     bar.className = 'syncing';
     icon.textContent = '🔄';
     msg.textContent = `${queue.length} item(s) ready to sync`;
@@ -1394,12 +1415,9 @@ function updateOfflineBar() {
     btn.textContent = '↑ Sync Now';
     btn.disabled = false;
   } else {
+    // Online and no queue — hide the bar entirely
+    bar.style.display = 'none';
     bar.className = 'synced';
-    icon.textContent = '✅';
-    msg.textContent = 'Online — all synced';
-    qLabel.textContent = '';
-    btn.style.display = 'none';
-    setTimeout(() => { if (!getOfflineQueue().length) bar.style.display = 'none'; }, 3000);
   }
 }
 
