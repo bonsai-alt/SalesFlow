@@ -478,14 +478,14 @@
 
         <div class="form-row two">
           <div>
-            <label>Item Name</label>
+            <label>Item Name (የእቃ ስም)</label>
             <div class="suggest-wrap">
               <input type="text" id="s-name" placeholder="e.g. Coffee Bags" oninput="onItemNameChange()" autocomplete="off" onfocus="onItemNameChange()" onblur="hideSuggestDropdown()">
               <div id="suggest-dropdown"></div>
             </div>
           </div>
           <div>
-            <label>Date</label>
+            <label>Date (ቀን)</label>
             <input type="date" id="s-date">
           </div>
         </div>
@@ -495,22 +495,22 @@
 
         <div class="form-row three">
           <div>
-            <label>Qty Sold</label>
+            <label>Qty Sold (የተሸጠ መጠን)</label>
             <input type="number" id="s-qty" placeholder="0" min="1" oninput="calcPreview()">
           </div>
           <div>
-            <label>Sell Price/Unit</label>
+            <label>Sell Price/Unit (የሽያጭ ዋጋ/አንድ)</label>
             <input type="number" id="s-price" placeholder="0.00" min="0" step="0.01" oninput="calcPreview()">
           </div>
           <div>
-            <label>Cost/Unit</label>
+            <label>Cost/Unit (ዋጋ/አንድ)</label>
             <input type="number" id="s-cost" placeholder="0.00" min="0" step="0.01" oninput="calcPreview()">
           </div>
         </div>
 
         <div class="form-row single">
           <div>
-            <label>Expenses / Unit (ETB) <span style="font-size:0.65rem;color:var(--muted);text-transform:none;letter-spacing:0;">transport, handling etc.</span></label>
+            <label>Expenses (ወጪዎች) / Unit (ETB) <span style="font-size:0.65rem;color:var(--muted);text-transform:none;letter-spacing:0;">transport, handling etc.</span></label>
             <input type="number" id="s-expenses" placeholder="0.00" min="0" step="0.01" oninput="calcPreview()">
           </div>
         </div>
@@ -518,12 +518,12 @@
         <!-- VAT Toggle -->
         <div style="margin-bottom:0.75rem;">
           <div class="toggle-row" onclick="toggleVAT()">
-            <label>VAT Applicable</label>
+            <label>VAT Applicable (ቫት ይፈጸማል)</label>
             <div class="toggle" id="vat-toggle"></div>
           </div>
           <div id="vat-block-msg">⚠ Item not in stock or stock is zero — VAT cannot be applied.</div>
           <div class="vat-rate-row" id="vat-rate-row">
-            <label style="margin-top:0.5rem;">VAT Rate (%)</label>
+            <label style="margin-top:0.5rem;">VAT Rate (%) (የቫት መጠን)</label>
             <input type="number" id="s-vat-rate" placeholder="15" min="0" max="100" step="0.01" oninput="calcPreview()" value="15">
           </div>
         </div>
@@ -556,7 +556,7 @@
               </div>
             </div>
             <div>
-              <label>Loan Notes (optional)</label>
+              <label>Loan Notes (ማስታወሻ) (optional)</label>
               <input type="text" id="sale-loan-notes" placeholder="e.g. Pay by end of month">
             </div>
           </div>
@@ -564,7 +564,7 @@
 
         <div class="form-row single">
           <div>
-            <label>Notes (optional)</label>
+            <label>Notes (ማስታወሻ) (optional)</label>
             <textarea id="s-notes" placeholder="Any remarks..."></textarea>
           </div>
         </div>
@@ -572,11 +572,11 @@
         <!-- Preview -->
         <div class="preview-box">
           <div class="p-row"><span>Qty</span><span id="p-qty">—</span></div>
-          <div class="p-row"><span>Revenue</span><span id="p-revenue">ETB —</span></div>
+          <div class="p-row"><span>Revenue (ገቢ)</span><span id="p-revenue">ETB —</span></div>
           <div class="p-row" id="p-vat-row" style="display:none"><span id="p-vat-label">VAT (0%)</span><span id="p-vat">ETB —</span></div>
           <div class="p-row"><span>Cost (unit × qty)</span><span id="p-cost">ETB —</span></div>
-          <div class="p-row"><span>Expenses (unit × qty)</span><span id="p-exp">ETB —</span></div>
-          <div class="p-row total profit"><span>Profit</span><span id="p-profit">ETB —</span></div>
+          <div class="p-row"><span>Expenses (ወጪዎች) (unit × qty)</span><span id="p-exp">ETB —</span></div>
+          <div class="p-row total profit"><span>Profit (ትርፍ)</span><span id="p-profit">ETB —</span></div>
         </div>
 
         <div class="btn-row">
@@ -604,7 +604,7 @@
     <!-- LOG PURCHASE TAB -->
     <div class="tab-pane" id="tab-purchase">
       <div class="card">
-        <div class="card-title">🛒 Log Purchase (ግቢ መዝገብ) (ግቢ)</div>
+        <div class="card-title">🛒 Log Purchase (ግዢ መዝገብ) (ግቢ መዝገብ) (ግቢ)</div>
         <p style="font-size:0.72rem;color:var(--muted);margin-bottom:1rem;line-height:1.5;">
           <strong>With VAT</strong> → owner approves → added to stock.<br>
           <strong>Without VAT</strong> → logged only, no stock change.
@@ -612,7 +612,7 @@
 
         <div class="form-row single">
           <div>
-            <label>Item Name</label>
+            <label>Item Name (የእቃ ስም)</label>
             <input type="text" id="pu-name" placeholder="e.g. Coffee Bags" autocomplete="off">
           </div>
         </div>
@@ -623,7 +623,7 @@
             <input type="number" id="pu-qty" placeholder="0" min="1" step="1" oninput="calcPurchasePreview()">
           </div>
           <div>
-            <label>Cost/Unit</label>
+            <label>Cost/Unit (ዋጋ/አንድ)</label>
             <input type="number" id="pu-cost" placeholder="0.00" min="0" step="0.01" oninput="calcPurchasePreview()">
           </div>
           <div>
@@ -631,11 +631,11 @@
             <input type="number" id="pu-exp" placeholder="0.00" min="0" step="0.01" oninput="calcPurchasePreview()">
           </div>
         </div>
-        <div style="font-size:0.68rem;color:var(--muted);margin:-0.25rem 0 0.75rem;">Expenses/unit × qty added to subtotal</div>
+        <div style="font-size:0.68rem;color:var(--muted);margin:-0.25rem 0 0.75rem;">Expenses (ወጪዎች)/unit × qty added to subtotal</div>
 
         <div class="form-row single">
           <div>
-            <label>Date</label>
+            <label>Date (ቀን)</label>
             <input type="date" id="pu-date">
           </div>
         </div>
@@ -650,7 +650,7 @@
             <div class="toggle" id="pvat-toggle"></div>
           </div>
           <div class="vat-rate-row" id="pvat-rate-row">
-            <label style="margin-top:0.5rem;">VAT Rate (%)</label>
+            <label style="margin-top:0.5rem;">VAT Rate (%) (የቫት መጠን)</label>
             <input type="number" id="pu-vat-rate" placeholder="15" min="0" max="100" step="0.01" oninput="calcPurchasePreview()" value="15">
           </div>
           <div id="pvat-flag-info" style="display:none;margin-top:0.5rem;padding:0.5rem 0.75rem;background:#fef9c3;border:1.5px solid #fde047;border-radius:3px;font-size:0.7rem;color:#713f12;">
@@ -670,7 +670,7 @@
           <div id="pu-loan-fields" style="display:none;margin-top:0.6rem;padding:0.85rem;background:#fef9c3;border:1.5px solid #fde047;border-radius:4px;">
             <div class="form-row two" style="margin-bottom:0.6rem;">
               <div>
-                <label>Supplier Name</label>
+                <label>Supplier Name (የአቅራቢ ስም)</label>
                 <input type="text" id="pu-loan-person" placeholder="e.g. Supplier ABC">
               </div>
               <div>
@@ -679,7 +679,7 @@
               </div>
             </div>
             <div>
-              <label>Loan Notes (optional)</label>
+              <label>Loan Notes (ማስታወሻ) (optional)</label>
               <input type="text" id="pu-loan-notes" placeholder="e.g. Payment due in 30 days">
             </div>
           </div>
@@ -687,7 +687,7 @@
 
         <div class="form-row single">
           <div>
-            <label>Notes (optional)</label>
+            <label>Notes (ማስታወሻ) (optional)</label>
             <textarea id="pu-notes" placeholder="Supplier name, delivery info..."></textarea>
           </div>
         </div>
@@ -696,10 +696,10 @@
         <div class="preview-box">
           <div class="p-row"><span>Qty</span><span id="pu-p-qty">—</span></div>
           <div class="p-row"><span>Cost/unit</span><span id="pu-p-unit">ETB —</span></div>
-          <div class="p-row"><span>Expenses (unit × qty)</span><span id="pu-p-exp">ETB —</span></div>
+          <div class="p-row"><span>Expenses (ወጪዎች) (unit × qty)</span><span id="pu-p-exp">ETB —</span></div>
           <div class="p-row"><span>Subtotal</span><span id="pu-p-sub">ETB —</span></div>
           <div class="p-row" id="pu-p-vat-row" style="display:none"><span id="pu-p-vat-label">VAT (0%)</span><span id="pu-p-vat">ETB —</span></div>
-          <div class="p-row total"><span>Total Cost</span><span id="pu-p-total">ETB —</span></div>
+          <div class="p-row total"><span>Total Cost (ጠቅላላ ወጪ)</span><span id="pu-p-total">ETB —</span></div>
         </div>
 
         <div class="btn-row">
@@ -760,8 +760,8 @@
   <div class="confirm-box">
     <div id="confirm-msg"></div>
     <div class="confirm-btns">
-      <button class="btn btn-ghost btn-sm" id="confirm-cancel">Cancel</button>
-      <button class="btn btn-danger btn-sm" id="confirm-ok">Confirm</button>
+      <button class="btn btn-ghost btn-sm" id="confirm-cancel">Cancel (ሰርዝ)</button>
+      <button class="btn btn-danger btn-sm" id="confirm-ok">Confirm (አረጋግጥ)</button>
     </div>
   </div>
 </div>
@@ -1249,7 +1249,7 @@ function renderSaleStaging() {
   area.style.display = 'block';
 
   const totalRevenue = saleList.reduce((s, i) => s + i.revenue, 0);
-  const totalProfit  = saleList.reduce((s, i) => s + i.profit, 0);
+  const totalProfit = saleList.reduce((s, i) => s + i.profit, 0);
 
   list.innerHTML = saleList.map((s, idx) => `
     <div style="display:flex;justify-content:space-between;align-items:center;padding:0.6rem 0.75rem;background:var(--paper);border:1.5px solid var(--border);border-radius:3px;margin-bottom:0.4rem;">
@@ -1267,7 +1267,7 @@ function renderSaleStaging() {
     </div>
   `).join('');
 
-  total.innerHTML = `${saleList.length} item${saleList.length !== 1 ? 's' : ''} &nbsp;·&nbsp; Total Revenue: <span style="color:var(--ink);">ETB ${totalRevenue.toFixed(2)}</span> &nbsp;·&nbsp; Total Profit: <span style="color:var(--green);">ETB ${totalProfit.toFixed(2)}</span>`;
+  total.innerHTML = `${saleList.length} item${saleList.length !== 1 ? 's' : ''} &nbsp;·&nbsp; Total Revenue: <span style="color:var(--ink);">ETB ${totalRevenue (ገቢ).toFixed(2)}</span> &nbsp;·&nbsp; Total Profit: <span style="color:var(--green);">ETB ${totalProfit (ትርፍ).toFixed(2)}</span>`;
 }
 
 function removeSaleItem(idx) {
@@ -1523,7 +1523,7 @@ async function submitSale() {
   } else {
     const ok = await sbUpsert('sales', sale.id, sale);
     if (ok) {
-      showToast(saleLoanOn ? 'Sale submitted — loan logged after owner approval ✓' : 'Sale submitted to owner ✓', 'success');
+      showToast(saleLoanOn ? 'Sale submitted — loan logged after owner approval ✓' : 'ሽያጭ ለባለቤቱ ተልኳል ✓', 'success');
     } else {
       addToOfflineQueue('sale', sale);
       showToast('Saved locally — tap Sync Now to send to owner', 'error');
@@ -1644,8 +1644,8 @@ async function submitPurchase() {
     const ok = await sbUpsert('purchases', purchase.id, purchase);
     if (ok) {
       if (purchaseLoanOn) showToast('Purchase submitted — credit loan logged after owner approval ✓', 'success');
-      else if (!purchaseVatOn) showToast('Purchase submitted to owner ✓', 'success');
-      else showToast('Purchase submitted — owner will add to stock ✓', 'success');
+      else if (!purchaseVatOn) showToast('ግዢ ለባለቤቱ ተልኳል ✓', 'success');
+      else showToast('ግዢ ተልኳል — ባለቤቱ ወደ ስቶክ ይጨምራል ✓', 'success');
     } else {
       addToOfflineQueue('purchase', purchase);
       showToast('Saved locally — tap Sync Now to send to owner', 'error');
@@ -1844,7 +1844,7 @@ function renderOrders() {
       </div>
       <div style="display:flex;justify-content:space-between;align-items:center;">
         <span style="font-size:0.7rem;font-weight:600;color:${statusColor};">${statusLabel}</span>
-        ${o.status !== 'fulfilled' ? `<button class="btn btn-primary btn-sm" onclick="fillPurchaseFromOrder('${o.id}')">🛒 Buy Now</button>` : ''}
+        ${o.status !== 'fulfilled' ? `<button class="btn btn-primary btn-sm" onclick="fillPurchaseFromOrder('${o.id}')">🛒 Buy Now (አሁን ግዛ)</button>` : ''}
       </div>
     </div>`;
   };
@@ -1852,13 +1852,13 @@ function renderOrders() {
   let html = '';
   if (active.length) {
     html += `<div class="card">
-      <div class="card-title">📋 Purchase Orders (${active.length})</div>`;
+      <div class="card-title">📋 Purchase Orders (የግዢ ትዕዛዝ) (${active.length})</div>`;
     html += active.map(orderCard).join('');
     html += `</div>`;
   }
   if (done.length) {
     html += `<div class="card" style="opacity:0.7;">
-      <div class="card-title" style="font-size:0.78rem;color:var(--muted);">✓ Fulfilled Orders</div>`;
+      <div class="card-title" style="font-size:0.78rem;color:var(--muted);">✓ Fulfilled Orders (የተጠናቀቁ ትዕዛዞች)</div>`;
     html += done.map(orderCard).join('');
     html += `</div>`;
   }
@@ -1875,7 +1875,7 @@ function renderHistory() {
   container.innerHTML = `
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.75rem;">
       <span style="font-size:0.7rem;color:var(--muted);font-weight:600;">${sales.length} entries</span>
-      <button class="btn btn-danger btn-sm" onclick="clearAllSalesHistory()">🗑 Clear All</button>
+      <button class="btn btn-danger btn-sm" onclick="clearAllSalesHistory()">🗑 Clear All (ሁሉንም አጥፋ)</button>
     </div>
   ` + sales.map(s => `
     <div class="history-item ${s.status}">
@@ -1891,7 +1891,7 @@ function renderHistory() {
         <div class="hi-amount">ETB ${s.revenue.toFixed(2)}</div>
         <div class="hi-profit">+ETB ${s.profit.toFixed(2)}</div>
         <div class="hi-delete">
-          <button class="btn btn-danger btn-sm" onclick="deleteSale('${s.id}')">Delete</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteSale('${s.id}')">Delete (አጥፋ)</button>
         </div>
       </div>
     </div>
@@ -1908,7 +1908,7 @@ function renderPurchasesHistory() {
   container.innerHTML = `
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.75rem;">
       <span style="font-size:0.7rem;color:var(--muted);font-weight:600;">${purchases.length} entries</span>
-      <button class="btn btn-danger btn-sm" onclick="clearAllPurchasesHistory()">🗑 Clear All</button>
+      <button class="btn btn-danger btn-sm" onclick="clearAllPurchasesHistory()">🗑 Clear All (ሁሉንም አጥፋ)</button>
     </div>
   ` + purchases.map(p => `
     <div class="history-item ${p.status}">
@@ -1922,7 +1922,7 @@ function renderPurchasesHistory() {
       <div class="hi-nums">
         <div class="hi-amount">ETB ${p.total.toFixed(2)}</div>
         <div class="hi-delete">
-          <button class="btn btn-danger btn-sm" onclick="deletePurchase('${p.id}')">Delete</button>
+          <button class="btn btn-danger btn-sm" onclick="deletePurchase('${p.id}')">Delete (አጥፋ)</button>
         </div>
       </div>
     </div>
@@ -2049,7 +2049,7 @@ function askConfirm(msg, onYes) {
   const modal = document.getElementById('confirm-modal');
   document.getElementById('confirm-msg').textContent = msg;
   document.getElementById('confirm-ok').textContent = 'Confirm';
-  document.getElementById('confirm-cancel').textContent = 'Cancel';
+  document.getElementById('confirm-cancel').textContent = 'Cancel (ሰርዝ)';
   modal.style.display = 'flex';
   const ok = document.getElementById('confirm-ok');
   const cancel = document.getElementById('confirm-cancel');
