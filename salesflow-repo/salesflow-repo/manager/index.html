@@ -465,6 +465,7 @@
     <div class="tab" onclick="switchTab('history',this)">My Sales (ሽያጮቼ)</div>
     <div class="tab" onclick="switchTab('purchases-history',this)">My Purchases (ግቢዎቼ)</div>
     <div class="tab" onclick="switchTab('loans',this)">💳 Loans (ብድር)</div>
+    <div class="tab" onclick="switchTab('orders',this)" id="orders-tab">📋 Orders <span id="orders-badge" style="display:none;background:var(--red);color:white;font-size:0.6rem;padding:0.1rem 0.4rem;border-radius:20px;margin-left:0.25rem;font-weight:700;"></span></div>
   </div>
 
   <!-- SCROLL AREA -->
@@ -740,10 +741,15 @@
       <div class="card" style="margin-bottom:0;">
         <div class="card-title">💳 Loans (ብድር)</div>
         <div style="margin-bottom:1rem;">
-          <input type="text" id="loan-search" placeholder="🔍 Search by person or customer name..." oninput="renderLoans()" style="width:100%;padding:0.6rem 0.75rem;border:1.5px solid var(--border);border-radius:3px;font-family:'DM Mono',monospace;font-size:0.8rem;background:var(--paper);">
+          <input type="text" id="loan-search" placeholder="🔍 Search by person or customer name..." oninput="renderLoans()" style="width:100%;padding:0.6rem 0.75rem;border:1.5px solid var(--border);border-radius:10px;font-family:'DM Mono',monospace;font-size:0.8rem;background:var(--paper);">
         </div>
         <div id="loans-list"></div>
       </div>
+    </div>
+
+    <!-- ORDERS TAB -->
+    <div class="tab-pane" id="tab-orders">
+      <div id="orders-list"></div>
     </div>
 
   </div><!-- end scroll-area -->
@@ -795,6 +801,8 @@ function setStock(s)    { setS('sf_stock', s); }
 function getSettings()  { return getS('sf_settings', { defaultVat: 15 }); }
 function getLoans()     { return getS('sf_loans', []); }
 function setLoans(l)    { setS('sf_loans', l); }
+function getPurchaseOrders()  { return getS('sf_purchase_orders', []); }
+function setPurchaseOrders(o) { setS('sf_purchase_orders', o); }
 function getOfflineQueue()  { return getS('sf_offline_queue', []); }
 function setOfflineQueue(q) { setS('sf_offline_queue', q); }
 
@@ -873,18 +881,20 @@ window.addEventListener('load', async () => {
   showLoading('Syncing with server...');
   let supabaseOk = false;
   try {
-    const [settings, stock, sales, purchases, loans] = await Promise.all([
+    const [settings, stock, sales, purchases, loans, orders] = await Promise.all([
       sbGetKey('config'),
       sbGet('stock'),
       sbGet('sales'),
       sbGet('purchases'),
-      sbGet('loans')
+      sbGet('loans'),
+      sbGet('purchase_orders')
     ]);
     if (settings) setS('sf_settings', settings);
     if (stock.length) setStock(stock);
     if (sales.length) setSales(sales);
     if (purchases.length) setPurchases(purchases);
     if (loans.length) setLoans(loans);
+    if (orders.length) setPurchaseOrders(orders);
     supabaseOk = true;
   } catch {
     supabaseOk = false;
@@ -899,6 +909,8 @@ window.addEventListener('load', async () => {
   renderHistory();
   renderPurchasesHistory();
   renderLoans();
+  renderOrders();
+  updateOrdersBadge();
   calcPreview();
 
   // Only show offline bar if actually offline or has pending items
@@ -935,7 +947,7 @@ function switchTab(tab, el) {
   if (tab === 'history') { renderHistory(); refreshFromCloud(); }
   if (tab === 'purchases-history') { renderPurchasesHistory(); refreshFromCloud(); }
   if (tab === 'loans') renderLoans();
-  // Refresh stock from cloud when opening sale/purchase forms
+  if (tab === 'orders') { renderOrders(); updateOrdersBadge(); }
   if (tab === 'sale' || tab === 'purchase') refreshStockAndSales();
 }
 
@@ -1398,6 +1410,8 @@ async function submitAllPurchases() {
     } else {
       addToOfflineQueue('purchase', purchase);
     }
+    // Auto-deduct from matching purchase orders
+    checkOrderFulfillment(purchase.name, purchase.qty);
   }
   setPurchases(purchases);
 
@@ -1721,6 +1735,123 @@ function renderLoans() {
 // ════════════════════════════════════════
 // HISTORY RENDERS
 // ════════════════════════════════════════
+// ════════════════════════════════════════
+// PURCHASE ORDERS (from owner)
+// ════════════════════════════════════════
+function updateOrdersBadge() {
+  const badge = document.getElementById('orders-badge');
+  if (!badge) return;
+  const pending = getPurchaseOrders().filter(o => o.status !== 'fulfilled').length;
+  if (pending > 0) {
+    badge.textContent = pending;
+    badge.style.display = 'inline-block';
+  } else {
+    badge.style.display = 'none';
+  }
+}
+
+function fillPurchaseFromOrder(orderId) {
+  const order = getPurchaseOrders().find(o => o.id === orderId);
+  if (!order) return;
+  // Switch to purchase tab and pre-fill
+  const purchaseTab = document.querySelector('.tab[onclick*="purchase\']"]') ||
+    [...document.querySelectorAll('.tab')].find(t => t.textContent.includes('Log Purchase'));
+  if (purchaseTab) purchaseTab.click();
+  setTimeout(() => {
+    document.getElementById('pu-name').value = order.itemName;
+    document.getElementById('pu-qty').value = order.qtyRemaining;
+    calcPurchasePreview();
+    showToast(`Pre-filled from order: ${order.itemName} ✓`, 'success');
+  }, 100);
+}
+
+function checkOrderFulfillment(purchaseName, purchaseQty) {
+  // Called when manager submits a purchase — deduct from matching orders
+  const orders = getPurchaseOrders();
+  let changed = false;
+
+  orders.forEach((order, i) => {
+    if (order.status === 'fulfilled') return;
+    if (order.itemName.toLowerCase() !== purchaseName.toLowerCase()) return;
+
+    const deduct = Math.min(purchaseQty, order.qtyRemaining);
+    orders[i].qtyFulfilled = (orders[i].qtyFulfilled || 0) + deduct;
+    orders[i].qtyRemaining = Math.max(0, orders[i].qtyRemaining - deduct);
+    orders[i].status = orders[i].qtyRemaining <= 0 ? 'fulfilled' : 'partial';
+
+    // Update in Supabase
+    fetch(`${SUPABASE_URL}/rest/v1/purchase_orders`, {
+      method: 'POST',
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_KEY,
+        'Content-Type': 'application/json',
+        'Prefer': 'resolution=merge-duplicates'
+      },
+      body: JSON.stringify({ id: orders[i].id, data: orders[i] })
+    }).catch(() => {});
+
+    changed = true;
+  });
+
+  if (changed) {
+    setPurchaseOrders(orders);
+    updateOrdersBadge();
+    if (currentTab === 'orders') renderOrders();
+  }
+}
+
+function renderOrders() {
+  const container = document.getElementById('orders-list');
+  if (!container) return;
+  const orders = getPurchaseOrders().sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  const active = orders.filter(o => o.status !== 'fulfilled');
+  const done   = orders.filter(o => o.status === 'fulfilled');
+
+  if (!orders.length) {
+    container.innerHTML = `<div class="card"><div class="empty"><div class="e-icon">📋</div><p>No purchase orders yet. The owner will send orders here when stock needs restocking.</p></div></div>`;
+    return;
+  }
+
+  const orderCard = (o) => {
+    const pct = Math.min(100, Math.round(((o.qtyNeeded - o.qtyRemaining) / o.qtyNeeded) * 100));
+    const statusColor = o.status === 'fulfilled' ? 'var(--green)' : o.status === 'partial' ? 'var(--gold-dark)' : 'var(--purple)';
+    const statusLabel = o.status === 'fulfilled' ? '✓ Fulfilled (ተጠናቋል)' : o.status === 'partial' ? `⏳ ${o.qtyRemaining} still needed` : '📤 Pending — Buy This';
+    return `<div style="border:1.5px solid var(--border);border-left:4px solid ${statusColor};border-radius:12px;padding:0.9rem 1rem;margin-bottom:0.6rem;background:white;box-shadow:var(--shadow-sm);">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.4rem;">
+        <span style="font-family:'Syne',sans-serif;font-weight:800;font-size:0.9rem;color:var(--purple-dark);">${o.itemName}</span>
+        <span style="font-family:'Syne',sans-serif;font-weight:800;font-size:0.9rem;color:${statusColor};">×${o.qtyNeeded}</span>
+      </div>
+      ${o.note ? `<div style="font-size:0.72rem;color:var(--purple-dark);background:var(--purple-pale);padding:0.3rem 0.7rem;border-radius:6px;margin-bottom:0.5rem;">📝 ${o.note}</div>` : ''}
+      <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.4rem;">
+        <div style="flex:1;height:7px;background:var(--border);border-radius:4px;overflow:hidden;">
+          <div style="height:100%;width:${pct}%;background:${statusColor};border-radius:4px;transition:width 0.4s;"></div>
+        </div>
+        <span style="font-size:0.68rem;font-weight:700;color:${statusColor};min-width:30px;">${pct}%</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <span style="font-size:0.7rem;font-weight:600;color:${statusColor};">${statusLabel}</span>
+        ${o.status !== 'fulfilled' ? `<button class="btn btn-primary btn-sm" onclick="fillPurchaseFromOrder('${o.id}')">🛒 Buy Now</button>` : ''}
+      </div>
+    </div>`;
+  };
+
+  let html = '';
+  if (active.length) {
+    html += `<div class="card">
+      <div class="card-title">📋 Purchase Orders (${active.length})</div>`;
+    html += active.map(orderCard).join('');
+    html += `</div>`;
+  }
+  if (done.length) {
+    html += `<div class="card" style="opacity:0.7;">
+      <div class="card-title" style="font-size:0.78rem;color:var(--muted);">✓ Fulfilled Orders</div>`;
+    html += done.map(orderCard).join('');
+    html += `</div>`;
+  }
+  container.innerHTML = html;
+}
+
 function renderHistory() {
   const container = document.getElementById('history-list');
   const sales = getSales().sort((a, b) => new Date(b.submittedAt) - new Date(a.submittedAt));
