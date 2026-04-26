@@ -834,6 +834,34 @@
       </div>
       <!-- Low Stock Alerts -->
       <div id="o-low-stock-alerts"></div>
+
+      <!-- Purchase Orders (send to manager) -->
+      <div class="card" style="margin-bottom:1.25rem;">
+        <div class="card-title">📋 Purchase Orders (ትዕዛዝ) — Send to Manager</div>
+        <p style="font-size:0.75rem;color:var(--muted);margin-bottom:1rem;">Create a purchase order for the manager. They will see it in their Orders tab and can buy directly from it.</p>
+
+        <div class="form-row" style="margin-bottom:0.75rem;">
+          <div>
+            <label>Item (from stock)</label>
+            <select id="po-item" style="width:100%;">
+              <option value="">— Select item —</option>
+            </select>
+          </div>
+          <div>
+            <label>Qty Needed</label>
+            <input type="number" id="po-qty" placeholder="0" min="1" step="1">
+          </div>
+        </div>
+        <div style="margin-bottom:0.75rem;">
+          <label>Note to Manager (optional)</label>
+          <input type="text" id="po-note" placeholder="e.g. Urgent — running low, buy before Friday">
+        </div>
+        <button class="btn btn-primary" onclick="createPurchaseOrder()" style="width:100%;">📤 Send Order to Manager</button>
+
+        <!-- Active orders list -->
+        <div id="o-purchase-orders" style="margin-top:1.25rem;"></div>
+      </div>
+
       <!-- Pending Purchases needing stock action -->
       <div id="o-purchase-review"></div>
       <!-- Pending Sales -->
@@ -1468,6 +1496,13 @@ async function upsertLoanRemote(loan) { await sbUpsert('loans', loan.id, loan); 
 async function deleteLoanRemote(id) { await sbDelete('loans', id); }
 function setTaxLogs(l) { setS('sf_tax_logs', l); }
 
+// Purchase Orders — owner creates, manager fulfils
+function getPurchaseOrders() { return getS('sf_purchase_orders', []); }
+function setPurchaseOrders(o) { setS('sf_purchase_orders', o); }
+async function getPurchaseOrdersRemote() { return await sbGet('purchase_orders'); }
+async function upsertPurchaseOrderRemote(o) { await sbUpsert('purchase_orders', o.id, o); }
+async function deletePurchaseOrderRemote(id) { await sbDelete('purchase_orders', id); }
+
 // Settings — Supabase, with localStorage fallback
 function getSettings() { return getS('sf_settings', { managerPin: DEFAULTS.managerPin, ownerPin: DEFAULTS.ownerPin, defaultVat: DEFAULTS.defaultVat }); }
 function saveSettings(s) {
@@ -1543,12 +1578,13 @@ async function initOwner() {
   showLoading('Loading data from cloud...');
   let loadOk = false;
   try {
-    const [sales, purchases, stock, taxLogs, loans, settings] = await Promise.all([
+    const [sales, purchases, stock, taxLogs, loans, orders, settings] = await Promise.all([
       getSalesRemote(),
       getPurchasesRemote(),
       getStockRemote(),
       getTaxLogsRemote(),
       getLoansRemote(),
+      getPurchaseOrdersRemote(),
       sbGetKey('settings', 'config')
     ]);
     if (sales.length) setSales(sales);
@@ -1556,6 +1592,7 @@ async function initOwner() {
     if (stock.length) setStock(stock);
     if (taxLogs.length) setTaxLogs(taxLogs);
     if (loans.length) setLoans(loans);
+    if (orders.length) setPurchaseOrders(orders);
     if (settings) setS('sf_settings', settings);
     loadOk = true;
   } catch(e) {
@@ -1565,7 +1602,6 @@ async function initOwner() {
 
   if (!loadOk) {
     showToast('Could not reach cloud — showing cached data. Tap Refresh to retry.', 'error');
-    // Add a refresh button to the review tab
     const reviewEl = document.getElementById('o-review-list');
     if (reviewEl) reviewEl.innerHTML = `
       <div style="text-align:center;padding:2rem;">
@@ -1585,6 +1621,8 @@ async function initOwner() {
   renderPurchaseReview();
   renderOwnerPurchases();
   renderOwnerLoans();
+  populatePurchaseOrderDropdown();
+  renderPurchaseOrders();
 }
 
 // ════════════════════════════════════════
@@ -2127,18 +2165,137 @@ function renderLowStockAlerts() {
 
   if (!low.length && !zero.length) { container.innerHTML = ''; return; }
 
-  let html = `<div class="low-stock-banner">
-    <div class="ls-title">⚠️ Stock Alert — Action Required</div>
-    <div class="ls-items">`;
+  let html = `<div style="background:white;border:1.5px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:1.25rem;box-shadow:var(--shadow-sm);">
+    <div style="background:linear-gradient(90deg,#7f1d1d,#991b1b);padding:0.75rem 1.1rem;display:flex;align-items:center;justify-content:space-between;">
+      <span style="font-family:'Syne',sans-serif;font-weight:800;font-size:0.85rem;color:white;">⚠ Stock Alerts (ስቶክ ማስጠንቀቂያ)</span>
+      <span style="background:white;color:#991b1b;font-size:0.65rem;font-weight:800;padding:0.15rem 0.55rem;border-radius:20px;">${zero.length + low.length} items</span>
+    </div>`;
 
-  zero.forEach(s => {
-    html += `<span class="ls-item critical">🔴 ${s.name} — OUT OF STOCK</span>`;
-  });
-  low.forEach(s => {
-    html += `<span class="ls-item">🟡 ${s.name} — ${s.qty} left</span>`;
-  });
+  if (zero.length) {
+    html += `<div style="padding:0.6rem 1.1rem;background:#fff5f5;border-bottom:1px solid #fecaca;">
+      <div style="font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#991b1b;margin-bottom:0.4rem;">🔴 Out of Stock (ምርት አልቋል)</div>
+      <div style="display:flex;flex-wrap:wrap;gap:0.4rem;">
+        ${zero.map(s => `<span style="background:#fee2e2;color:#991b1b;padding:0.2rem 0.65rem;border-radius:20px;font-size:0.72rem;font-weight:600;border:1px solid #fca5a5;">${s.name}</span>`).join('')}
+      </div>
+    </div>`;
+  }
 
-  html += `</div></div>`;
+  if (low.length) {
+    html += `<div style="padding:0.6rem 1.1rem;background:#fffbeb;">
+      <div style="font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#92400e;margin-bottom:0.4rem;">🟡 Running Low</div>
+      <div style="display:flex;flex-wrap:wrap;gap:0.4rem;">
+        ${low.map(s => `<span style="background:#fef9c3;color:#92400e;padding:0.2rem 0.65rem;border-radius:20px;font-size:0.72rem;font-weight:600;border:1px solid #fde68a;">${s.name} — ${s.qty} left</span>`).join('')}
+      </div>
+    </div>`;
+  }
+
+  html += `</div>`;
+  container.innerHTML = html;
+}
+
+// ════════════════════════════════════════
+// PURCHASE ORDERS
+// ════════════════════════════════════════
+function populatePurchaseOrderDropdown() {
+  const sel = document.getElementById('po-item');
+  if (!sel) return;
+  const stock = getStock();
+  sel.innerHTML = '<option value="">— Select item —</option>';
+  stock.sort((a, b) => a.name.localeCompare(b.name)).forEach(s => {
+    const opt = document.createElement('option');
+    opt.value = s.name;
+    opt.textContent = `${s.name} (${Number(s.qty)} in stock)`;
+    sel.appendChild(opt);
+  });
+}
+
+function createPurchaseOrder() {
+  const item = document.getElementById('po-item').value;
+  const qty  = parseInt(document.getElementById('po-qty').value);
+  const note = document.getElementById('po-note').value.trim();
+
+  if (!item) return showToast('Select an item', 'error');
+  if (!qty || qty <= 0) return showToast('Enter qty needed', 'error');
+
+  const stockItem = getStock().find(s => s.name === item);
+
+  const order = {
+    id: 'po_' + Date.now().toString(),
+    itemName: item,
+    qtyNeeded: qty,
+    qtyFulfilled: 0,
+    qtyRemaining: qty,
+    note,
+    status: 'pending', // pending | partial | fulfilled
+    createdAt: new Date().toISOString(),
+    createdBy: 'owner',
+    currentStock: stockItem ? Number(stockItem.qty) : 0
+  };
+
+  const orders = getPurchaseOrders();
+  orders.push(order);
+  setPurchaseOrders(orders);
+  upsertPurchaseOrderRemote(order);
+
+  document.getElementById('po-item').value = '';
+  document.getElementById('po-qty').value = '';
+  document.getElementById('po-note').value = '';
+
+  renderPurchaseOrders();
+  showToast(`Order sent to manager: ${qty}x ${item} ✓`, 'success');
+}
+
+function deletePurchaseOrder(id) {
+  askConfirm('Cancel this purchase order?', () => {
+    setPurchaseOrders(getPurchaseOrders().filter(o => o.id !== id));
+    deletePurchaseOrderRemote(id);
+    renderPurchaseOrders();
+    showToast('Order cancelled', 'error');
+  });
+}
+
+function renderPurchaseOrders() {
+  const container = document.getElementById('o-purchase-orders');
+  if (!container) return;
+  const orders = getPurchaseOrders().sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  const active = orders.filter(o => o.status !== 'fulfilled');
+  const done   = orders.filter(o => o.status === 'fulfilled');
+
+  if (!orders.length) {
+    container.innerHTML = `<div style="text-align:center;padding:1.5rem;color:var(--muted);font-size:0.78rem;">No active orders. Create one above to notify the manager.</div>`;
+    return;
+  }
+
+  const orderCard = (o) => {
+    const pct = Math.min(100, Math.round((o.qtyFulfilled / o.qtyNeeded) * 100));
+    const statusColor = o.status === 'fulfilled' ? 'var(--green)' : o.status === 'partial' ? 'var(--gold-dark)' : 'var(--purple)';
+    const statusLabel = o.status === 'fulfilled' ? '✓ Fulfilled' : o.status === 'partial' ? `⏳ Partial — ${o.qtyRemaining} remaining` : '📤 Pending';
+    return `<div style="border:1.5px solid var(--border);border-left:4px solid ${statusColor};border-radius:10px;padding:0.85rem 1rem;margin-bottom:0.6rem;background:white;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.35rem;">
+        <span style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.88rem;color:var(--purple-dark);">${o.itemName}</span>
+        <button onclick="deletePurchaseOrder('${o.id}')" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:0.85rem;padding:0;">✕</button>
+      </div>
+      <div style="font-size:0.72rem;color:var(--muted);margin-bottom:0.4rem;">Needed: <strong style="color:var(--ink);">${o.qtyNeeded}</strong> · Current stock: ${o.currentStock} · Ordered: ${new Date(o.createdAt).toLocaleDateString()}</div>
+      ${o.note ? `<div style="font-size:0.7rem;color:var(--purple-dark);background:var(--purple-pale);padding:0.3rem 0.6rem;border-radius:6px;margin-bottom:0.4rem;">📝 ${o.note}</div>` : ''}
+      <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.3rem;">
+        <div style="flex:1;height:6px;background:var(--border);border-radius:3px;overflow:hidden;">
+          <div style="height:100%;width:${pct}%;background:${statusColor};border-radius:3px;transition:width 0.3s;"></div>
+        </div>
+        <span style="font-size:0.68rem;font-weight:700;color:${statusColor};">${pct}%</span>
+      </div>
+      <span style="font-size:0.68rem;font-weight:700;color:${statusColor};">${statusLabel}</span>
+    </div>`;
+  };
+
+  let html = '';
+  if (active.length) {
+    html += `<div style="font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:0.5rem;">Active Orders (${active.length})</div>`;
+    html += active.map(orderCard).join('');
+  }
+  if (done.length) {
+    html += `<div style="font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin:0.75rem 0 0.5rem;">Fulfilled Orders (${done.length})</div>`;
+    html += done.map(orderCard).join('');
+  }
   container.innerHTML = html;
 }
 
