@@ -1303,6 +1303,24 @@ async function upsertStockRemote(item) {
   } catch { return false; }
 }
 
+// Batch upsert — sends all items in one request
+async function upsertStockBatch(items) {
+  if (!items.length) return true;
+  try {
+    const r = await fetch(`${SUPABASE_URL}/rest/v1/stock`, {
+      method: 'POST',
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_KEY,
+        'Content-Type': 'application/json',
+        'Prefer': 'resolution=merge-duplicates'
+      },
+      body: JSON.stringify(items.map(item => ({ name: item.name, data: item })))
+    });
+    return r.ok;
+  } catch { return false; }
+}
+
 async function deleteStockRemote(name) {
   try {
     await fetch(`${SUPABASE_URL}/rest/v1/stock?name=eq.${encodeURIComponent(name)}`, {
@@ -2287,6 +2305,7 @@ function importStockFromExcel(input) {
     const dataRows = allRows.slice(headerRowIdx + 1);
     let added = 0, updated = 0, skipped = 0;
     const stock = getStock();
+    const toUpsert = []; // collect all items for batch upload
 
     dataRows.forEach(row => {
       const name = String(row[nameColIdx] || '').trim();
@@ -2306,22 +2325,20 @@ function importStockFromExcel(input) {
       } else {
         qty = parseFloat(String(rawQty).replace(/,/g, ''));
         if (isNaN(qty) || qty < 0) qty = 0;
-        // Remove float noise (e.g. 1666.5999999999997 → 1666.6)
         qty = Math.round(qty * 100) / 100;
       }
-      // Force to number type
       qty = Number(qty);
 
       const existing = stock.findIndex(s => s.name.toLowerCase() === name.toLowerCase());
       if (existing > -1) {
         stock[existing].qty = qty;
         stock[existing].name = name;
-        upsertStockRemote(stock[existing]);
+        toUpsert.push(stock[existing]);
         updated++;
       } else {
         const newItem = { name, qty, addedAt: new Date().toISOString() };
         stock.push(newItem);
-        upsertStockRemote(newItem);
+        toUpsert.push(newItem);
         added++;
       }
     });
@@ -2331,10 +2348,16 @@ function importStockFromExcel(input) {
     renderLowStockAlerts();
     input.value = '';
 
-    // Show result with detected columns info
+    // Batch upload ALL items in one single Supabase request
     const colInfo = `(Name: col ${String.fromCharCode(65 + nameColIdx)}, Qty: col ${String.fromCharCode(65 + qtyColIdx)})`;
-    const msg = `✓ Import complete — ${added} added, ${updated} updated${skipped ? ', ' + skipped + ' skipped' : ''} ${colInfo}`;
-    showImportResult(msg, 'success');
+    showImportResult(`⏳ Uploading ${toUpsert.length} items to cloud...`, 'success');
+
+    upsertStockBatch(toUpsert).then(ok => {
+      const status = ok ? '✓' : '⚠ Saved locally only —';
+      const msg = `${status} Import complete — ${added} added, ${updated} updated${skipped ? ', ' + skipped + ' skipped' : ''} ${colInfo}`;
+      showImportResult(msg, ok ? 'success' : 'error');
+      if (!ok) showToast('Cloud upload failed — check connection and try again', 'error');
+    });
   }
 
   if (isCsv) {
