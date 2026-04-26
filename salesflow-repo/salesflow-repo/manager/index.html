@@ -13,17 +13,27 @@
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --ink: #0f0e0d;
-    --paper: #f5f0e8;
-    --cream: #ede7d9;
-    --accent: #c0392b;
-    --gold: #d4a012;
-    --muted: #7a7268;
-    --border: #d0c8b8;
-    --card: #faf7f2;
-    --red: #c0392b;
-    --green: #1a6b3a;
-    --safe: #e6f4ec;
+    --purple:      #6C3FC5;
+    --purple-dark: #4A2A8A;
+    --purple-deep: #2D1B5E;
+    --purple-light:#8B5CF6;
+    --purple-pale: #EDE9FF;
+    --purple-mid:  #7C3AED;
+    --gold:        #F0B429;
+    --gold-dark:   #C98A00;
+    --gold-light:  #FDE68A;
+    --gold-pale:   #FFFBEB;
+    --ink:         #1A1033;
+    --paper:       #F8F6FF;
+    --card:        #FFFFFF;
+    --border:      #DDD6FE;
+    --muted:       #6B7280;
+    --red:         #EF4444;
+    --green:       #10B981;
+    --blue:        #3B82F6;
+    --shadow-sm:   0 1px 3px rgba(108,63,197,0.08);
+    --shadow-md:   0 4px 16px rgba(108,63,197,0.12);
+    --shadow-lg:   0 8px 32px rgba(108,63,197,0.18);
   }
 
   html, body {
@@ -31,12 +41,10 @@
     font-family: 'DM Mono', monospace;
     background: var(--paper);
     color: var(--ink);
-    font-size: 14px;
     overscroll-behavior: none;
     -webkit-tap-highlight-color: transparent;
   }
 
-  /* ── APP SHELL ── */
   #app {
     display: flex;
     flex-direction: column;
@@ -49,8 +57,8 @@
 
   /* ── TOPBAR ── */
   .topbar {
-    background: var(--ink);
-    color: var(--paper);
+    background: linear-gradient(90deg, var(--purple-deep) 0%, var(--purple-dark) 100%);
+    color: white;
     padding: 0.75rem 1rem;
     display: flex;
     align-items: center;
@@ -58,6 +66,7 @@
     flex-shrink: 0;
     position: relative;
     z-index: 10;
+    box-shadow: 0 2px 12px rgba(45,27,94,0.4);
   }
   .topbar-logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.05rem; letter-spacing: -0.02em; }
   .topbar-logo span { color: var(--gold); }
@@ -73,33 +82,39 @@
     font-weight: 600;
     flex-shrink: 0;
   }
-  #offline-bar.offline { background: #fee2e2; color: #991b1b; }
-  #offline-bar.syncing { background: #fef9c3; color: #713f12; }
-  #offline-bar.synced  { background: #dcfce7; color: #166534; }
+  #offline-bar.offline { background: #FEE2E2; color: #991B1B; }
+  #offline-bar.syncing { background: var(--gold-pale); color: #92400E; }
+  #offline-bar.synced  { background: #D1FAE5; color: #065F46; }
   #offline-bar .ob-spacer { flex: 1; }
   #sync-btn {
-    background: var(--ink); color: var(--paper);
-    border: none; border-radius: 3px;
-    padding: 0.2rem 0.6rem; font-size: 0.65rem;
-    font-family: 'DM Mono', monospace; cursor: pointer;
+    background: var(--purple);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 0.2rem 0.6rem;
+    font-size: 0.65rem;
+    font-family: 'DM Mono', monospace;
+    cursor: pointer;
+    font-weight: 700;
   }
 
   /* ── TABS ── */
   .tabs {
     display: flex;
-    background: var(--cream);
+    background: white;
     border-bottom: 2px solid var(--border);
     flex-shrink: 0;
     overflow-x: auto;
     scrollbar-width: none;
+    box-shadow: var(--shadow-sm);
   }
   .tabs::-webkit-scrollbar { display: none; }
   .tab {
-    padding: 0.7rem 1rem;
+    padding: 0.75rem 1rem;
     font-family: 'Syne', sans-serif;
     font-weight: 700;
-    font-size: 0.72rem;
-    letter-spacing: 0.06em;
+    font-size: 0.7rem;
+    letter-spacing: 0.05em;
     text-transform: uppercase;
     cursor: pointer;
     white-space: nowrap;
@@ -108,7 +123,8 @@
     color: var(--muted);
     transition: all 0.15s;
   }
-  .tab.active { color: var(--ink); border-bottom-color: var(--ink); }
+  .tab:hover { color: var(--purple); background: var(--purple-pale); }
+  .tab.active { color: var(--purple); border-bottom-color: var(--purple); background: var(--purple-pale); }
 
   /* ── SCROLL AREA ── */
   .scroll-area {
@@ -123,9 +139,10 @@
   .card {
     background: var(--card);
     border: 1.5px solid var(--border);
-    border-radius: 5px;
+    border-radius: 16px;
     padding: 1.25rem;
     margin-bottom: 1rem;
+    box-shadow: var(--shadow-sm);
   }
   .card-title {
     font-family: 'Syne', sans-serif;
@@ -133,32 +150,40 @@
     font-size: 0.95rem;
     margin-bottom: 1rem;
     letter-spacing: -0.01em;
+    color: var(--purple-dark);
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid var(--purple-pale);
   }
 
   /* ── FORM ── */
   label {
     display: block;
-    font-size: 0.7rem;
-    font-weight: 600;
+    font-size: 0.68rem;
+    font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    color: var(--muted);
+    color: var(--purple-dark);
     margin-bottom: 0.35rem;
   }
-  input[type=text], input[type=number], input[type=date], textarea {
+  input[type=text], input[type=number], input[type=date], textarea, select {
     width: 100%;
-    padding: 0.65rem 0.75rem;
+    padding: 0.65rem 0.85rem;
     border: 1.5px solid var(--border);
-    border-radius: 3px;
+    border-radius: 10px;
     font-family: 'DM Mono', monospace;
     font-size: 0.82rem;
     background: var(--paper);
     color: var(--ink);
-    transition: border-color 0.15s;
+    transition: all 0.2s;
     -webkit-appearance: none;
     appearance: none;
+    outline: none;
   }
-  input:focus, textarea:focus { outline: none; border-color: var(--ink); }
+  input:focus, textarea:focus, select:focus {
+    border-color: var(--purple);
+    background: white;
+    box-shadow: 0 0 0 3px rgba(108,63,197,0.1);
+  }
   textarea { resize: vertical; min-height: 60px; }
 
   .form-row { display: grid; gap: 0.75rem; margin-bottom: 0.75rem; }
@@ -169,116 +194,127 @@
   /* ── TOGGLE ── */
   .toggle-row {
     display: flex; align-items: center; justify-content: space-between;
-    padding: 0.65rem 0.75rem;
-    border: 1.5px solid var(--border); border-radius: 3px;
+    padding: 0.7rem 0.9rem;
+    border: 1.5px solid var(--border); border-radius: 10px;
     cursor: pointer; background: var(--paper);
+    transition: all 0.2s;
   }
-  .toggle-row label { margin: 0; font-size: 0.78rem; text-transform: none; letter-spacing: 0; color: var(--ink); font-weight: 600; }
+  .toggle-row:hover { border-color: var(--purple); background: var(--purple-pale); }
+  .toggle-row label { margin: 0; font-size: 0.8rem; text-transform: none; letter-spacing: 0; color: var(--ink); font-weight: 600; }
   .toggle {
-    width: 38px; height: 22px; background: var(--border);
-    border-radius: 11px; position: relative; transition: background 0.2s; flex-shrink: 0;
+    width: 42px; height: 24px; background: var(--border);
+    border-radius: 12px; position: relative; transition: background 0.2s; flex-shrink: 0;
   }
   .toggle::after {
-    content: ''; position: absolute; width: 16px; height: 16px;
-    background: white; border-radius: 50%; top: 3px; left: 3px; transition: left 0.2s;
+    content: ''; position: absolute; width: 18px; height: 18px;
+    background: white; border-radius: 50%; top: 3px; left: 3px;
+    transition: transform 0.2s; box-shadow: 0 1px 4px rgba(0,0,0,0.2);
   }
-  .toggle.on { background: var(--ink); }
-  .toggle.on::after { left: 19px; }
+  .toggle.on { background: var(--purple); }
+  .toggle.on::after { transform: translateX(18px); }
   .vat-rate-row { display: none; margin-top: 0.6rem; }
   .vat-rate-row.visible { display: block; }
 
   /* ── PREVIEW BOX ── */
   .preview-box {
-    background: var(--cream);
-    border: 1.5px solid var(--border);
-    border-radius: 3px;
+    background: linear-gradient(135deg, var(--purple-deep) 0%, var(--purple-dark) 100%);
+    border-radius: 12px;
     padding: 0.9rem 1rem;
     margin: 0.75rem 0;
+    box-shadow: var(--shadow-md);
   }
   .p-row {
     display: flex; justify-content: space-between;
     padding: 0.28rem 0; font-size: 0.78rem;
-    border-bottom: 1px solid var(--border);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    color: rgba(255,255,255,0.8);
   }
   .p-row:last-child { border-bottom: none; }
-  .p-row.total { font-weight: 800; font-size: 0.88rem; padding-top: 0.5rem; }
-  .p-row.profit { color: var(--green); }
-  .p-row.loss { color: var(--red); }
+  .p-row.total { font-weight: 800; font-size: 0.88rem; padding-top: 0.5rem; color: white; }
+  .p-row.profit { color: var(--gold) !important; }
+  .p-row.loss { color: #FCA5A5 !important; }
 
   /* ── BUTTONS ── */
   .btn {
     display: inline-flex; align-items: center; justify-content: center;
-    padding: 0.7rem 1.25rem;
-    border: 2px solid var(--ink); border-radius: 3px;
+    padding: 0.75rem 1.25rem;
+    border: none; border-radius: 10px;
     font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.78rem;
-    letter-spacing: 0.05em; cursor: pointer; transition: all 0.15s;
+    letter-spacing: 0.05em; cursor: pointer; transition: all 0.2s;
     text-transform: uppercase; text-decoration: none;
     -webkit-appearance: none; appearance: none;
   }
-  .btn-primary { background: var(--ink); color: var(--paper); }
-  .btn-primary:active { opacity: 0.8; }
-  .btn-ghost { background: transparent; color: var(--ink); }
-  .btn-ghost:active { background: var(--cream); }
-  .btn-danger { background: var(--red); color: white; border-color: var(--red); }
-  .btn-sm { padding: 0.35rem 0.75rem; font-size: 0.68rem; }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--purple) 0%, var(--purple-mid) 100%);
+    color: white;
+    box-shadow: 0 4px 12px rgba(108,63,197,0.35);
+  }
+  .btn-primary:active { transform: scale(0.97); opacity: 0.9; }
+  .btn-ghost { background: white; border: 1.5px solid var(--border); color: var(--purple-dark); }
+  .btn-ghost:active { background: var(--purple-pale); }
+  .btn-danger { background: var(--red); color: white; border: none; box-shadow: 0 4px 12px rgba(239,68,68,0.25); }
+  .btn-sm { padding: 0.35rem 0.75rem; font-size: 0.68rem; border-radius: 8px; }
   .btn-full { width: 100%; }
   .btn-row { display: flex; gap: 0.6rem; flex-wrap: wrap; margin-top: 1rem; }
 
   /* ── BADGES ── */
   .status-badge {
-    display: inline-block; padding: 0.2rem 0.55rem;
-    border-radius: 2px; font-size: 0.62rem; font-weight: 700;
+    display: inline-block; padding: 0.2rem 0.6rem;
+    border-radius: 20px; font-size: 0.6rem; font-weight: 700;
     letter-spacing: 0.08em; text-transform: uppercase;
   }
-  .status-pending  { background: #fef9c3; color: #713f12; }
-  .status-approved { background: #dcfce7; color: #166534; }
-  .status-rejected { background: #fee2e2; color: #991b1b; }
+  .status-pending  { background: #FEF9C3; color: #92400E; border: 1px solid #FDE68A; }
+  .status-approved { background: #D1FAE5; color: #065F46; border: 1px solid #6EE7B7; }
+  .status-rejected { background: #FEE2E2; color: #991B1B; border: 1px solid #FCA5A5; }
   .vat-badge {
-    display: inline-block; padding: 0.15rem 0.45rem;
-    border-radius: 2px; font-size: 0.6rem; font-weight: 700; letter-spacing: 0.06em;
+    display: inline-block; padding: 0.15rem 0.5rem;
+    border-radius: 20px; font-size: 0.6rem; font-weight: 700; letter-spacing: 0.06em;
   }
-  .vat-yes { background: #dbeafe; color: #1e40af; }
-  .vat-no  { background: var(--cream); color: var(--muted); }
+  .vat-yes { background: var(--gold-pale); color: var(--gold-dark); border: 1px solid var(--gold-light); }
+  .vat-no  { background: var(--purple-pale); color: var(--purple-dark); border: 1px solid var(--border); }
 
   /* ── HISTORY ITEMS ── */
   .history-item {
     border: 1.5px solid var(--border);
-    border-radius: 4px;
+    border-radius: 12px;
     padding: 0.85rem 1rem;
     margin-bottom: 0.6rem;
-    background: var(--paper);
+    background: white;
     display: flex;
     gap: 0.75rem;
     align-items: flex-start;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.2s;
   }
+  .history-item:hover { box-shadow: var(--shadow-md); border-color: var(--purple-light); }
   .history-item.approved { border-left: 4px solid var(--green); }
   .history-item.rejected { border-left: 4px solid var(--red); }
   .history-item.pending  { border-left: 4px solid var(--gold); }
   .hi-info { flex: 1; min-width: 0; }
-  .hi-info h3 { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.85rem; margin-bottom: 0.25rem; }
+  .hi-info h3 { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.85rem; margin-bottom: 0.25rem; color: var(--purple-dark); }
   .hi-info p { font-size: 0.72rem; color: var(--muted); margin-bottom: 0.15rem; line-height: 1.4; }
   .hi-nums { text-align: right; flex-shrink: 0; }
-  .hi-amount { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 0.9rem; }
+  .hi-amount { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 0.9rem; color: var(--purple); }
   .hi-profit { font-size: 0.7rem; color: var(--green); margin-top: 0.15rem; }
   .hi-delete { margin-top: 0.4rem; }
 
   /* ── EMPTY STATE ── */
   .empty { text-align: center; padding: 2.5rem 1rem; color: var(--muted); }
-  .empty .e-icon { font-size: 2rem; margin-bottom: 0.75rem; }
+  .empty .e-icon { font-size: 2rem; margin-bottom: 0.75rem; opacity: 0.5; }
   .empty p { font-size: 0.8rem; line-height: 1.6; }
 
   /* ── STOCK BANNER ── */
   #stock-banner {
     display: none; padding: 0.6rem 0.85rem;
-    border-radius: 3px; font-size: 0.74rem;
+    border-radius: 10px; font-size: 0.74rem;
     border: 1.5px solid; margin-bottom: 0.75rem;
   }
 
   /* ── AUTOFILL HINT ── */
   #autofill-hint {
     display: none; padding: 0.6rem 1rem;
-    background: #f0fdf4; border: 1.5px solid #86efac;
-    border-radius: 3px; font-size: 0.74rem; color: #166534;
+    background: var(--purple-pale); border: 1.5px solid var(--border);
+    border-radius: 10px; font-size: 0.74rem; color: var(--purple-dark);
     margin-bottom: 0.75rem; line-height: 1.5;
   }
 
@@ -286,83 +322,118 @@
   #vat-block-msg {
     display: none; margin-top: 0.4rem; font-size: 0.72rem;
     color: var(--red); padding: 0.5rem 0.75rem;
-    background: #fee2e2; border-radius: 3px;
+    background: #FEE2E2; border-radius: 8px;
   }
 
   /* ── TOAST ── */
   #toast {
     position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%) translateY(100px);
-    padding: 0.6rem 1.25rem; border-radius: 4px;
+    padding: 0.65rem 1.35rem; border-radius: 12px;
     font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.78rem;
-    z-index: 9999; transition: transform 0.3s; white-space: nowrap;
-    max-width: 90vw; text-align: center;
+    z-index: 9999; transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    white-space: nowrap; max-width: 90vw; text-align: center;
+    box-shadow: var(--shadow-lg);
   }
   #toast.show { transform: translateX(-50%) translateY(0); }
-  #toast.success { background: var(--ink); color: var(--paper); }
+  #toast.success { background: linear-gradient(135deg, var(--purple-dark), var(--purple)); color: white; }
   #toast.error   { background: var(--red); color: white; }
 
   /* ── CONFIRM MODAL ── */
   #confirm-modal {
     display: none; position: fixed; inset: 0;
-    background: rgba(0,0,0,0.5); z-index: 9998;
+    background: rgba(45,27,94,0.6);
+    backdrop-filter: blur(4px);
+    z-index: 9998;
     align-items: center; justify-content: center; padding: 1rem;
   }
   .confirm-box {
-    background: var(--paper); border: 2px solid var(--border);
-    border-radius: 6px; padding: 1.5rem;
-    width: 100%; max-width: 320px;
+    background: white; border-radius: 20px; padding: 1.5rem;
+    width: 100%; max-width: 320px; box-shadow: var(--shadow-lg);
   }
   #confirm-msg {
     font-family: 'Syne', sans-serif; font-weight: 600; font-size: 0.9rem;
-    line-height: 1.5; margin-bottom: 1.25rem;
+    line-height: 1.5; margin-bottom: 1.25rem; color: var(--purple-dark);
   }
   .confirm-btns { display: flex; gap: 0.6rem; justify-content: flex-end; }
 
   /* ── LOADING ── */
   #loading {
     display: none; position: fixed; inset: 0;
-    background: rgba(0,0,0,0.5); z-index: 99999;
+    background: rgba(45,27,94,0.5);
+    backdrop-filter: blur(4px);
+    z-index: 99999;
     align-items: center; justify-content: center;
   }
   .loading-box {
-    background: var(--paper); border-radius: 6px;
+    background: white; border-radius: 16px;
     padding: 1.5rem 2rem;
     font-family: 'Syne', sans-serif; font-weight: 700;
     display: flex; align-items: center; gap: 0.75rem;
-    font-size: 0.9rem;
+    font-size: 0.9rem; box-shadow: var(--shadow-lg); color: var(--purple-dark);
   }
 
   /* ── TAB PANES ── */
   .tab-pane { display: none; }
   .tab-pane.active { display: block; }
 
+  /* ── SUGGEST DROPDOWN ── */
+  .suggest-wrap { position: relative; }
+  #suggest-dropdown {
+    display: none;
+    position: absolute;
+    top: 100%; left: 0; right: 0;
+    background: white;
+    border: 2px solid var(--purple);
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+    z-index: 999;
+    max-height: 260px;
+    overflow-y: auto;
+    box-shadow: var(--shadow-lg);
+  }
+  .suggest-item {
+    padding: 0.65rem 0.85rem;
+    cursor: pointer;
+    border-bottom: 1px solid var(--border);
+    transition: background 0.1s;
+  }
+  .suggest-item:last-child { border-bottom: none; }
+  .suggest-item:active, .suggest-item:hover { background: var(--purple-pale); }
+  .suggest-item-name { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.85rem; margin-bottom: 0.2rem; color: var(--purple-dark); }
+  .suggest-item-meta { font-size: 0.68rem; color: var(--muted); display: flex; gap: 0.75rem; flex-wrap: wrap; }
+  .suggest-badge { display: inline-block; padding: 0.1rem 0.4rem; border-radius: 20px; font-size: 0.6rem; font-weight: 700; letter-spacing: 0.05em; }
+
   /* ── DIVIDER ── */
   .divider { border: none; border-top: 1.5px solid var(--border); margin: 1rem 0; }
+
+  /* ── SPIN ── */
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .spin { display: inline-block; animation: spin 0.8s linear infinite; }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--purple-light); }
 
   /* ── FLAG BADGE ── */
   .flag-badge {
     display: inline-block; padding: 0.15rem 0.45rem;
-    border-radius: 2px; font-size: 0.6rem; font-weight: 700; letter-spacing: 0.06em;
+    border-radius: 20px; font-size: 0.6rem; font-weight: 700; letter-spacing: 0.06em;
   }
-  .flag-stock { background: #fef9c3; color: #713f12; }
-  .flag-nostock { background: var(--cream); color: var(--muted); }
+  .flag-stock { background: var(--gold-pale); color: var(--gold-dark); border: 1px solid var(--gold-light); }
+  .flag-nostock { background: var(--purple-pale); color: var(--purple-dark); border: 1px solid var(--border); }
 
-  /* ── SPIN ANIMATION ── */
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .spin { display: inline-block; animation: spin 0.8s linear infinite; }
-
-  /* ── SECTION HEADER ── */
-  .section-header {
-    font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.72rem;
-    letter-spacing: 0.1em; text-transform: uppercase;
-    color: var(--muted); margin-bottom: 0.75rem;
-    padding-bottom: 0.5rem; border-bottom: 1px solid var(--border);
-  }
-
-  /* ── PULL TO REFRESH HINT ── */
+  /* ── REFRESH HINT ── */
   .refresh-hint {
     text-align: center; padding: 0.5rem; font-size: 0.68rem;
     color: var(--muted); margin-bottom: 0.5rem;
+  }
+
+  /* ── OWNER PIN SCREEN (standalone) ── */
+  #owner-pin-screen {
+    background: linear-gradient(135deg, var(--purple-deep) 0%, var(--purple-dark) 50%, var(--purple) 100%);
+    overflow: hidden;
+    position: relative;
   }
 </style>
 </head>
@@ -374,7 +445,7 @@
   <div class="topbar">
     <div class="topbar-logo">Sales<span>Flow</span></div>
     <div class="topbar-right">
-      <span style="font-size:0.65rem;color:rgba(255,255,255,0.5);font-weight:600;letter-spacing:0.08em;">MANAGER</span>
+      <span style="font-size:0.65rem;color:rgba(255,255,255,0.5);font-weight:600;letter-spacing:0.08em;">MANAGER (አስተዳዳሪ)</span>
     </div>
   </div>
 
@@ -389,11 +460,11 @@
 
   <!-- TABS -->
   <div class="tabs">
-    <div class="tab active" onclick="switchTab('sale',this)">Log Sale</div>
-    <div class="tab" onclick="switchTab('purchase',this)">Log Purchase</div>
-    <div class="tab" onclick="switchTab('history',this)">My Sales</div>
-    <div class="tab" onclick="switchTab('purchases-history',this)">My Purchases</div>
-    <div class="tab" onclick="switchTab('loans',this)">💳 Loans</div>
+    <div class="tab active" onclick="switchTab('sale',this)">Log Sale (ሽያጭ)</div>
+    <div class="tab" onclick="switchTab('purchase',this)">Log Purchase (ግቢ)</div>
+    <div class="tab" onclick="switchTab('history',this)">My Sales (ሽያጮቼ)</div>
+    <div class="tab" onclick="switchTab('purchases-history',this)">My Purchases (ግቢዎቼ)</div>
+    <div class="tab" onclick="switchTab('loans',this)">💳 Loans (ብድር)</div>
   </div>
 
   <!-- SCROLL AREA -->
@@ -402,22 +473,21 @@
     <!-- LOG SALE TAB -->
     <div class="tab-pane active" id="tab-sale">
       <div class="card">
-        <div class="card-title">📦 New Sale Entry</div>
+        <div class="card-title">📦 New Sale Entry (አዲስ ሽያጭ)</div>
 
         <div class="form-row two">
           <div>
             <label>Item Name</label>
-            <input type="text" id="s-name" placeholder="e.g. Coffee Bags" oninput="onItemNameChange()" list="stock-list-dl" autocomplete="off">
-            <datalist id="stock-list-dl"></datalist>
+            <div class="suggest-wrap">
+              <input type="text" id="s-name" placeholder="e.g. Coffee Bags" oninput="onItemNameChange()" autocomplete="off" onfocus="onItemNameChange()" onblur="hideSuggestDropdown()">
+              <div id="suggest-dropdown"></div>
+            </div>
           </div>
           <div>
             <label>Date</label>
             <input type="date" id="s-date">
           </div>
         </div>
-
-        <!-- Autofill hint -->
-        <div id="autofill-hint"></div>
 
         <!-- Stock banner -->
         <div id="stock-banner"></div>
@@ -461,7 +531,7 @@
         <div style="margin-bottom:0.75rem;">
           <div class="toggle-row" onclick="toggleSaleLoan()">
             <div>
-              <div style="font-size:0.78rem;font-weight:600;">💳 Loan / Credit Sale</div>
+              <div style="font-size:0.78rem;font-weight:600;">💳 Loan / Credit (ብድር)</div>
               <div style="font-size:0.68rem;color:var(--muted);margin-top:0.15rem;">Sold on credit or lent goods</div>
             </div>
             <div class="toggle" id="sale-loan-toggle"></div>
@@ -470,8 +540,8 @@
             <div style="margin-bottom:0.6rem;">
               <label>Loan Type</label>
               <select id="sale-loan-type" style="width:100%;padding:0.6rem 0.75rem;border:1.5px solid var(--border);border-radius:3px;font-family:'DM Mono',monospace;font-size:0.8rem;background:var(--paper);">
-                <option value="credit_sale">Sold on credit — customer hasn't paid yet</option>
-                <option value="lent_goods">Lent goods — expecting return</option>
+                <option value="credit_sale">Sold on credit (ብድር የተሰጠ) — customer hasn't paid yet</option>
+                <option value="lent_goods">Lent goods (ብድር የተሰጠ) — expecting return</option>
               </select>
             </div>
             <div class="form-row two" style="margin-bottom:0.6rem;">
@@ -509,7 +579,7 @@
         </div>
 
         <div class="btn-row">
-          <button class="btn btn-primary" onclick="addSaleToList()" style="flex:1;">+ Add to List</button>
+          <button class="btn btn-primary" onclick="addSaleToList()" style="flex:1;">+ Add to List (ወደ ዝርዝር ጨምር)</button>
           <button class="btn btn-ghost btn-sm" onclick="clearSaleForm()">Clear</button>
         </div>
       </div>
@@ -524,7 +594,7 @@
           <div id="sale-staging-list"></div>
           <div id="sale-staging-total" style="margin-top:0.75rem;padding:0.75rem;background:var(--cream);border-radius:3px;font-family:'Syne',sans-serif;font-weight:700;font-size:0.85rem;"></div>
           <div class="btn-row" style="margin-top:0.75rem;">
-            <button class="btn btn-primary" onclick="submitAllSales()" style="flex:1;">Submit All to Owner →</button>
+            <button class="btn btn-primary" onclick="submitAllSales()" style="flex:1;">Submit All to Owner (አስረክብ) →</button>
           </div>
         </div>
       </div>
@@ -533,7 +603,7 @@
     <!-- LOG PURCHASE TAB -->
     <div class="tab-pane" id="tab-purchase">
       <div class="card">
-        <div class="card-title">🛒 Log Purchase</div>
+        <div class="card-title">🛒 Log Purchase (ግቢ መዝገብ) (ግቢ)</div>
         <p style="font-size:0.72rem;color:var(--muted);margin-bottom:1rem;line-height:1.5;">
           <strong>With VAT</strong> → owner approves → added to stock.<br>
           <strong>Without VAT</strong> → logged only, no stock change.
@@ -591,7 +661,7 @@
         <div style="margin-bottom:0.75rem;">
           <div class="toggle-row" onclick="togglePurchaseLoan()">
             <div>
-              <div style="font-size:0.78rem;font-weight:600;">💳 Bought on Credit</div>
+              <div style="font-size:0.78rem;font-weight:600;">💳 Bought on Credit (ብድር የተወሰደ)</div>
               <div style="font-size:0.68rem;color:var(--muted);margin-top:0.15rem;">Received goods but haven't paid yet</div>
             </div>
             <div class="toggle" id="pu-loan-toggle"></div>
@@ -632,7 +702,7 @@
         </div>
 
         <div class="btn-row">
-          <button class="btn btn-primary" onclick="addPurchaseToList()" style="flex:1;">+ Add to List</button>
+          <button class="btn btn-primary" onclick="addPurchaseToList()" style="flex:1;">+ Add to List (ወደ ዝርዝር ጨምር)</button>
           <button class="btn btn-ghost btn-sm" onclick="clearPurchaseForm()">Clear</button>
         </div>
       </div>
@@ -647,7 +717,7 @@
           <div id="purchase-staging-list"></div>
           <div id="purchase-staging-total" style="margin-top:0.75rem;padding:0.75rem;background:var(--cream);border-radius:3px;font-family:'Syne',sans-serif;font-weight:700;font-size:0.85rem;"></div>
           <div class="btn-row" style="margin-top:0.75rem;">
-            <button class="btn btn-primary" onclick="submitAllPurchases()" style="flex:1;">Submit All to Owner →</button>
+            <button class="btn btn-primary" onclick="submitAllPurchases()" style="flex:1;">Submit All to Owner (አስረክብ) →</button>
           </div>
         </div>
       </div>
@@ -668,7 +738,7 @@
     <!-- LOANS TAB -->
     <div class="tab-pane" id="tab-loans">
       <div class="card" style="margin-bottom:0;">
-        <div class="card-title">💳 Loans</div>
+        <div class="card-title">💳 Loans (ብድር)</div>
         <div style="margin-bottom:1rem;">
           <input type="text" id="loan-search" placeholder="🔍 Search by person or customer name..." oninput="renderLoans()" style="width:100%;padding:0.6rem 0.75rem;border:1.5px solid var(--border);border-radius:3px;font-family:'DM Mono',monospace;font-size:0.8rem;background:var(--paper);">
         </div>
@@ -901,47 +971,88 @@ async function refreshFromCloud() {
 // ════════════════════════════════════════
 function onItemNameChange() {
   updateStockBanner();
-  const name = document.getElementById('s-name').value.trim();
-  const hint = document.getElementById('autofill-hint');
-  if (!name) { hint.style.display = 'none'; return; }
+  const query = document.getElementById('s-name').value.trim().toLowerCase();
+  const dropdown = document.getElementById('suggest-dropdown');
+  if (!query) { dropdown.style.display = 'none'; return; }
 
-  const vatPurchases = getPurchases().filter(p =>
+  const stock = getStock();
+  const purchases = getPurchases().filter(p => p.status === 'approved');
+  const itemMap = {};
+
+  stock.forEach(s => {
+    const key = s.name.toLowerCase();
+    if (!itemMap[key]) itemMap[key] = { name: s.name, sources: [] };
+    itemMap[key].sources.push({ type: 'stock', qty: s.qty });
+  });
+
+  purchases.forEach(p => {
+    const key = p.name.toLowerCase();
+    if (!itemMap[key]) itemMap[key] = { name: p.name, sources: [] };
+    const srcType = p.flagForStock ? 'vat_purchase' : 'purchase';
+    const existing = itemMap[key].sources.find(s => s.type === srcType);
+    if (!existing || new Date(p.date) > new Date(existing.date || 0)) {
+      itemMap[key].sources = itemMap[key].sources.filter(s => s.type !== srcType);
+      itemMap[key].sources.push({ type: srcType, costUnit: p.costUnit,
+        expensesPerUnit: p.expensesPerUnit || 0, date: p.date, id: p.id,
+        remainingQty: p.remainingQty !== undefined ? p.remainingQty : p.qty });
+    }
+  });
+
+  const matches = Object.values(itemMap)
+    .filter(item => item.name.toLowerCase().includes(query))
+    .slice(0, 10);
+
+  if (!matches.length) { dropdown.style.display = 'none'; return; }
+
+  dropdown.innerHTML = matches.map(item => {
+    const stockSrc = item.sources.find(s => s.type === 'stock');
+    const src = item.sources.find(s => s.type === 'vat_purchase') || item.sources.find(s => s.type === 'purchase');
+    const purchaseSrc = item.sources.find(s => s.type === 'purchase');
+    const stockBadge = stockSrc
+      ? `<span class="suggest-badge" style="background:${Number(stockSrc.qty) > 0 ? '#dcfce7' : '#fee2e2'};color:${Number(stockSrc.qty) > 0 ? '#166534' : '#991b1b'};">📦 ${stockSrc.qty} in stock</span>` : '';
+    const costBadge = src
+      ? `<span class="suggest-badge" style="background:#fef9c3;color:#713f12;">Cost: ETB ${src.costUnit.toFixed(2)}/unit${src.expensesPerUnit ? ' · Exp: ETB ' + src.expensesPerUnit.toFixed(2) : ''}</span>` : '';
+    const remainBadge = purchaseSrc && !item.sources.find(s => s.type === 'vat_purchase')
+      ? `<span class="suggest-badge" style="background:${purchaseSrc.remainingQty > 0 ? '#eff6ff' : '#fee2e2'};color:${purchaseSrc.remainingQty > 0 ? '#1e40af' : '#991b1b'};">🧾 ${purchaseSrc.remainingQty} remaining</span>` : '';
+    const re = new RegExp('(' + query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi');
+    const highlighted = item.name.replace(re, '<mark style="background:#fde047;border-radius:2px;padding:0 1px;">$1</mark>');
+    const safeName = item.name.replace(/'/g, "\\'");
+    return `<div class="suggest-item" onmousedown="selectSuggestion('${safeName}')">
+      <div class="suggest-item-name">${highlighted}</div>
+      <div class="suggest-item-meta">${stockBadge}${costBadge}${remainBadge}</div>
+    </div>`;
+  }).join('');
+
+  dropdown.style.display = 'block';
+}
+
+function hideSuggestDropdown() {
+  setTimeout(() => {
+    const dd = document.getElementById('suggest-dropdown');
+    if (dd) dd.style.display = 'none';
+  }, 180);
+}
+
+function selectSuggestion(name) {
+  document.getElementById('s-name').value = name;
+  const dd = document.getElementById('suggest-dropdown');
+  if (dd) dd.style.display = 'none';
+
+  // Autofill cost and expenses from most recent purchase
+  const purchases = getPurchases().filter(p =>
     p.status === 'approved' && p.name.toLowerCase() === name.toLowerCase()
   ).sort((a, b) => new Date(b.date) - new Date(a.date));
 
-  const nonVatPurchases = getPurchases().filter(p =>
-    p.status === 'approved' && !p.flagForStock && p.name.toLowerCase() === name.toLowerCase()
-  ).sort((a, b) => new Date(b.date) - new Date(a.date));
-
-  const totalNonVatRemaining = nonVatPurchases.reduce((sum, p) => sum + (p.remainingQty !== undefined ? p.remainingQty : p.qty), 0);
-
-  if (!vatPurchases.length && !nonVatPurchases.length) { hint.style.display = 'none'; return; }
-
-  hint.style.display = 'block';
-  let html = '';
-
-  if (vatPurchases.length) {
-    const last = vatPurchases[0];
-    const expPerUnit = last.expensesPerUnit || 0;
-    const stockItem = getStock().find(s => s.name.toLowerCase() === name.toLowerCase());
-    const stockQty = stockItem ? stockItem.qty : 0;
-    html += `<div style="${nonVatPurchases.length ? 'margin-bottom:0.4rem;' : ''}">
-      📦 <strong>Stock item</strong> · Last purchase <strong>${last.date}</strong> · Cost: <strong>ETB ${last.costUnit.toFixed(2)}</strong>${expPerUnit ? ` · Exp: <strong>ETB ${expPerUnit.toFixed(2)}</strong>` : ''} · <span style="color:var(--green);font-weight:600;">${stockQty} in stock</span>
-      &nbsp;<button class="btn btn-sm" style="padding:0.15rem 0.6rem;font-size:0.68rem;background:var(--ink);color:#fff;border-radius:3px;" onclick="autofillFromPurchase('${last.id}')">↙ Use these</button>
-    </div>`;
+  if (purchases.length) {
+    const last = purchases[0];
+    document.getElementById('s-cost').value = last.costUnit.toFixed(2);
+    document.getElementById('s-expenses').value = last.expensesPerUnit ? last.expensesPerUnit.toFixed(2) : '';
   }
 
-  if (nonVatPurchases.length) {
-    const last = nonVatPurchases[0];
-    const expPerUnit = last.expensesPerUnit || 0;
-    const remainColor = totalNonVatRemaining <= 0 ? '#991b1b' : totalNonVatRemaining < 5 ? '#713f12' : '#166534';
-    html += `<div>
-      🧾 <strong>Purchase log</strong> · Last purchase <strong>${last.date}</strong> · Cost: <strong>ETB ${last.costUnit.toFixed(2)}</strong>${expPerUnit ? ` · Exp: <strong>ETB ${expPerUnit.toFixed(2)}</strong>` : ''} · <span style="color:${remainColor};font-weight:600;">${totalNonVatRemaining} remaining</span>
-      &nbsp;<button class="btn btn-sm" style="padding:0.15rem 0.6rem;font-size:0.68rem;background:#1a6b3a;color:#fff;border-radius:3px;" onclick="autofillFromPurchase('${last.id}')">↙ Use these</button>
-    </div>`;
-  }
-
-  hint.innerHTML = html;
+  calcPreview();
+  updateStockBanner();
+  // Move focus to qty so manager can type next
+  document.getElementById('s-qty').focus();
 }
 
 function autofillFromPurchase(id) {
@@ -968,7 +1079,7 @@ function updateStockBanner() {
     return;
   }
 
-  const available = item.qty;
+  const available = Number(item.qty);
   if (available <= 0) {
     banner.style.cssText = 'display:block;background:#fee2e2;border-color:#fca5a5;color:#991b1b;padding:0.6rem 0.85rem;border-radius:3px;font-size:0.74rem;border:1.5px solid;margin-bottom:0.75rem;';
     banner.textContent = '✗ Out of stock — 0 units available. VAT blocked.';
@@ -996,7 +1107,7 @@ function toggleVAT() {
   const name = document.getElementById('s-name').value.trim().toLowerCase();
   const stock = getStock();
   const item = stock.find(s => s.name.toLowerCase() === name);
-  if (!vatOn && (!item || item.qty <= 0)) {
+  if (!vatOn && (!item || Number(item.qty) <= 0)) {
     document.getElementById('vat-block-msg').style.display = 'block';
     return;
   }
@@ -1064,8 +1175,8 @@ function addSaleToList() {
 
   if (vatOn) {
     const item = getStock().find(s => s.name.toLowerCase() === name.toLowerCase());
-    if (!item || item.qty <= 0) return showToast('Cannot add — item has no stock. VAT blocked.', 'error');
-    if (qty > item.qty) return showToast(`Cannot add — only ${item.qty} in stock.`, 'error');
+    if (!item || Number(item.qty) <= 0) return showToast('Cannot add — item has no stock. VAT blocked.', 'error');
+    if (qty > Number(item.qty)) return showToast(`Cannot add — only ${item.qty} in stock.`, 'error');
   }
 
   if (saleLoanOn) {
@@ -1164,7 +1275,7 @@ async function submitAllSales() {
   }
   setSales(sales);
 
-  btn.textContent = 'Submit All to Owner →';
+  btn.textContent = 'Submit All to Owner (አስረክብ) →';
   btn.disabled = false;
 
   const queued = saleList.length - successCount;
@@ -1290,7 +1401,7 @@ async function submitAllPurchases() {
   }
   setPurchases(purchases);
 
-  btn.textContent = 'Submit All to Owner →';
+  btn.textContent = 'Submit All to Owner (አስረክብ) →';
   btn.disabled = false;
 
   const queued = purchaseList.length - successCount;
@@ -1340,8 +1451,8 @@ async function submitSale() {
 
   if (vatOn) {
     const item = getStock().find(s => s.name.toLowerCase() === name.toLowerCase());
-    if (!item || item.qty <= 0) return showToast('Cannot submit — item has no stock. VAT blocked.', 'error');
-    if (qty > item.qty) return showToast(`Cannot submit — only ${item.qty} in stock.`, 'error');
+    if (!item || Number(item.qty) <= 0) return showToast('Cannot submit — item has no stock. VAT blocked.', 'error');
+    if (qty > Number(item.qty)) return showToast(`Cannot submit — only ${item.qty} in stock.`, 'error');
   }
 
   if (saleLoanOn) {
@@ -1402,7 +1513,8 @@ function clearSaleForm() {
     document.getElementById(id).value = '';
   });
   document.getElementById('stock-banner').style.display = 'none';
-  document.getElementById('autofill-hint').style.display = 'none';
+  const dd = document.getElementById('suggest-dropdown');
+  if (dd) dd.style.display = 'none';
   document.getElementById('vat-block-msg').style.display = 'none';
   if (vatOn) { vatOn = false; document.getElementById('vat-toggle').classList.remove('on'); document.getElementById('vat-rate-row').classList.remove('visible'); document.getElementById('p-vat-row').style.display = 'none'; }
   if (saleLoanOn) { saleLoanOn = false; document.getElementById('sale-loan-toggle').classList.remove('on'); document.getElementById('sale-loan-fields').style.display = 'none'; }
@@ -1545,11 +1657,11 @@ function renderLoans() {
   let html = `
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.6rem;margin-bottom:1rem;">
       <div style="padding:0.75rem;background:#eff6ff;border:1.5px solid #93c5fd;border-radius:4px;text-align:center;">
-        <div style="font-size:0.65rem;color:#1e40af;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.2rem;">Owed to Us</div>
+        <div style="font-size:0.65rem;color:#1e40af;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.2rem;">Owed to Us (ብድር የተሰጠ)</div>
         <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;color:#1e40af;">ETB ${totalOwedToUs.toFixed(2)}</div>
       </div>
       <div style="padding:0.75rem;background:#fff5f5;border:1.5px solid #fca5a5;border-radius:4px;text-align:center;">
-        <div style="font-size:0.65rem;color:#c0392b;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.2rem;">We Owe</div>
+        <div style="font-size:0.65rem;color:#c0392b;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.2rem;">We Owe (ብድር የተወሰደ)</div>
         <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;color:#c0392b;">ETB ${totalWeOwe.toFixed(2)}</div>
       </div>
     </div>
@@ -1560,10 +1672,10 @@ function renderLoans() {
     const accentColor = loan.settled ? '#1a6b3a' : isOwe ? '#c0392b' : '#1e40af';
     const bgColor = loan.settled ? '#f0fdf4' : isOwe ? '#fff5f5' : '#eff6ff';
     const borderColor = loan.settled ? '#86efac' : isOwe ? '#fca5a5' : '#93c5fd';
-    const loanTypeLabel = isOwe ? '🔴 We Owe' : loan.loanType === 'lent_goods' ? '🟡 Lent Goods' : '🔵 Owed to Us';
+    const loanTypeLabel = isOwe ? '🔴 We Owe (ብድር የተወሰደ) (ብድር የተወሰደ)' : loan.loanType === 'lent_goods' ? '🟡 Lent Goods' : '🔵 Owed to Us (ብድር የተሰጠ) (ብድር የተሰጠ)';
     const statusBadge = loan.settled
-      ? `<span style="padding:0.15rem 0.5rem;background:#dcfce7;color:#166534;border-radius:2px;font-size:0.6rem;font-weight:700;">✓ SETTLED${loan.settledAt ? ' · ' + loan.settledAt.split('T')[0] : ''}</span>`
-      : `<span style="padding:0.15rem 0.5rem;background:#fee2e2;color:#991b1b;border-radius:2px;font-size:0.6rem;font-weight:700;">⏳ OUTSTANDING</span>`;
+      ? `<span style="padding:0.15rem 0.5rem;background:#dcfce7;color:#166534;border-radius:2px;font-size:0.6rem;font-weight:700;">✓ SETTLED (ብድር መልሷል)${loan.settledAt ? ' · ' + loan.settledAt.split('T')[0] : ''}</span>`
+      : `<span style="padding:0.15rem 0.5rem;background:#fee2e2;color:#991b1b;border-radius:2px;font-size:0.6rem;font-weight:700;">⏳ OUTSTANDING (ያልተከፈለ)</span>`;
     return `
       <div style="border:1.5px solid ${borderColor};border-left:4px solid ${accentColor};border-radius:4px;padding:0.8rem 0.9rem;margin-bottom:0.6rem;background:${bgColor};">
         <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.35rem;">
@@ -1594,11 +1706,11 @@ function renderLoans() {
     html += loans.map(cardHtml).join('');
   } else {
     if (weAreOwed.length) {
-      html += `<div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.1em;color:#1e40af;margin-bottom:0.5rem;padding-bottom:0.35rem;border-bottom:2px solid #93c5fd;">🔵 Owed to Us</div>`;
+      html += `<div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.1em;color:#1e40af;margin-bottom:0.5rem;padding-bottom:0.35rem;border-bottom:2px solid #93c5fd;">🔵 Owed to Us (ብድር የተሰጠ) (ብድር የተሰጠ)</div>`;
       html += weAreOwed.map(cardHtml).join('');
     }
     if (weOwe.length) {
-      html += `<div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.1em;color:#c0392b;margin:1rem 0 0.5rem;padding-bottom:0.35rem;border-bottom:2px solid #fca5a5;">🔴 We Owe</div>`;
+      html += `<div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.1em;color:#c0392b;margin:1rem 0 0.5rem;padding-bottom:0.35rem;border-bottom:2px solid #fca5a5;">🔴 We Owe (ብድር የተወሰደ) (ብድር የተወሰደ)</div>`;
       html += weOwe.map(cardHtml).join('');
     }
   }
