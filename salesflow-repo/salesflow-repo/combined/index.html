@@ -791,7 +791,7 @@
   <div class="pin-back" onclick="backToLanding()">← Back to role selection</div>
 </div>
 
-<!-- SALES MANAGER SCREEN -->
+<!-- SALES MANAGER (አስተዳዳሪ) SCREEN -->
 <div id="manager-screen" class="screen">
   <div class="topbar">
     <div class="topbar-logo">Sales<span>Flow</span></div>
@@ -811,16 +811,16 @@
   </div>
   <div class="content">
     <div class="tabs">
-      <div class="tab active" onclick="switchTab('manager','log',this)">Log Sale</div>
-      <div class="tab" onclick="switchTab('manager','purchase',this)">Log Purchase</div>
-      <div class="tab" onclick="switchTab('manager','history',this)">My Sales</div>
-      <div class="tab" onclick="switchTab('manager','loans',this)">💳 Loans</div>
+      <div class="tab active" onclick="switchTab('manager','log',this)">Log Sale (ሽያጭ)</div>
+      <div class="tab" onclick="switchTab('manager','purchase',this)">Log Purchase (ግቢ)</div>
+      <div class="tab" onclick="switchTab('manager','history',this)">My Sales (ሽያጮቼ)</div>
+      <div class="tab" onclick="switchTab('manager','loans',this)">💳 Loans (ብድር)</div>
     </div>
 
     <!-- LOG SALE TAB -->
     <div class="tab-pane active" id="m-tab-log">
       <div class="card">
-        <div class="card-title">📦 New Sale Entry</div>
+        <div class="card-title">📦 New Sale Entry (አዲስ ሽያጭ)</div>
 
         <div class="form-row">
           <div>
@@ -836,11 +836,11 @@
 
         <div class="form-row triple">
           <div>
-            <label>Qty Sold</label>
+            <label>Qty Sold (የተሸጠ መጠን)</label>
             <input type="number" id="m-qty" placeholder="0" min="1" oninput="calcPreview()">
           </div>
           <div>
-            <label>Selling Price / Unit (ETB)</label>
+            <label>Selling Price (የሽያጭ ዋጋ) / Unit (ETB)</label>
             <input type="number" id="m-price" placeholder="0.00" min="0" step="0.01" oninput="calcPreview()">
           </div>
           <div>
@@ -854,7 +854,7 @@
 
         <div class="form-row single">
           <div>
-            <label>Expenses / Unit (ETB) <span style="font-size:0.7rem;color:var(--muted);">— transport, handling, etc. per unit sold</span></label>
+            <label>Expenses (ወጪዎች) / Unit (ETB) <span style="font-size:0.7rem;color:var(--muted);">— transport, handling, etc. per unit sold</span></label>
             <input type="number" id="m-expenses" placeholder="0.00" min="0" step="0.01" oninput="calcPreview()">
           </div>
         </div>
@@ -873,7 +873,7 @@
             ⚠ Cannot apply VAT — item not found in stock or stock is zero. Ask owner to update stock.
           </div>
           <div class="vat-rate-row" id="vat-rate-row">
-            <label style="margin-top:0.5rem;">VAT Rate (%)</label>
+            <label style="margin-top:0.5rem;">VAT Rate (%) (የቫት መጠን)</label>
             <input type="number" id="m-vat-rate" placeholder="e.g. 15" min="0" max="100" step="0.01" oninput="calcPreview()" value="15">
           </div>
         </div>
@@ -893,8 +893,8 @@
               <div>
                 <label>Loan Type</label>
                 <select id="sale-loan-type" style="width:100%;padding:0.65rem 0.75rem;border:1.5px solid var(--border);border-radius:3px;font-family:'DM Mono',monospace;font-size:0.82rem;background:var(--paper);">
-                  <option value="credit_sale">Sold on credit — customer hasn't paid yet</option>
-                  <option value="lent_goods">Lent goods — expecting return</option>
+                  <option value="credit_sale">Sold on credit (ብድር የተሰጠ) — customer hasn't paid yet</option>
+                  <option value="lent_goods">Lent goods (ብድር የተሰጠ) — expecting return</option>
                 </select>
               </div>
             </div>
@@ -909,7 +909,7 @@
               </div>
             </div>
             <div>
-              <label>Loan Notes (optional)</label>
+              <label>Loan Notes (ማስታወሻ) (optional)</label>
               <input type="text" id="sale-loan-notes" placeholder="e.g. To be paid by end of month">
             </div>
           </div>
@@ -917,21 +917,21 @@
 
         <div class="form-row single">
           <div>
-            <label>Notes (optional)</label>
+            <label>Notes (ማስታወሻ) (optional)</label>
             <textarea id="m-notes" placeholder="Any remarks about this sale..."></textarea>
           </div>
         </div>
         <div class="summary-box" id="sale-preview">
           <div class="s-row"><span>Items sold</span><span id="p-qty">—</span></div>
-          <div class="s-row"><span>Revenue (gross)</span><span id="p-revenue">ETB —</span></div>
+          <div class="s-row"><span>Revenue (ገቢ) (gross)</span><span id="p-revenue">ETB —</span></div>
           <div class="s-row" id="p-vat-row" style="display:none"><span id="p-vat-label">VAT (0%)</span><span id="p-vat">ETB —</span></div>
           <div class="s-row"><span>Cost (unit × qty)</span><span id="p-cost">ETB —</span></div>
-          <div class="s-row"><span>Expenses (per unit × qty)</span><span id="p-exp">ETB —</span></div>
-          <div class="s-row total profit"><span>Profit</span><span id="p-profit">ETB —</span></div>
+          <div class="s-row"><span>Expenses (ወጪዎች) (per unit × qty)</span><span id="p-exp">ETB —</span></div>
+          <div class="s-row total profit"><span>Profit (ትርፍ)</span><span id="p-profit">ETB —</span></div>
         </div>
 
         <div style="margin-top:1rem; display:flex; gap:0.75rem; flex-wrap:wrap;">
-          <button class="btn btn-primary" onclick="submitSale()">Submit to Owner →</button>
+          <button class="btn btn-primary" onclick="submitSale()">Submit to Owner (አስረክብ) →</button>
           <button class="btn btn-ghost" onclick="clearSaleForm()">Clear</button>
         </div>
       </div>
@@ -945,7 +945,7 @@
     <!-- PURCHASE TAB -->
     <div class="tab-pane" id="m-tab-purchase">
       <div class="card">
-        <div class="card-title">🛒 Log Purchase</div>
+        <div class="card-title">🛒 Log Purchase (ግዢ መዝገብ) (ግቢ መዝገብ) (ግቢ)</div>
         <p style="font-size:0.75rem;color:var(--muted);margin-bottom:1.25rem;">
           All purchases go to the owner for review. <strong>With VAT</strong> = owner approves and adds qty to stock. <strong>Without VAT</strong> = owner approves as a purchase log only, no stock change.
         </p>
@@ -963,21 +963,21 @@
             <input type="number" id="pu-qty" placeholder="0" min="1" step="1" oninput="calcPurchasePreview()">
           </div>
           <div>
-            <label>Cost per Unit (ETB)</label>
+            <label>Cost per Unit (የአንዱ ዋጋ) (ETB)</label>
             <input type="number" id="pu-cost-unit" placeholder="0.00" min="0" step="0.01" oninput="calcPurchasePreview()">
           </div>
           <div>
-            <label>Expenses / Unit (ETB)</label>
+            <label>Expenses (ወጪዎች) / Unit (ETB)</label>
             <input type="number" id="pu-expenses" placeholder="0.00" min="0" step="0.01" oninput="calcPurchasePreview()">
           </div>
         </div>
         <div class="form-row single" style="margin-top:-0.25rem;">
-          <div style="font-size:0.7rem;color:var(--muted);">Expenses per unit: transport, handling, etc. Multiplied by qty in totals.</div>
+          <div style="font-size:0.7rem;color:var(--muted);">Expenses (ወጪዎች) per unit: transport, handling, etc. Multiplied by qty in totals.</div>
         </div>
 
         <div class="form-row single">
           <div>
-            <label>Date</label>
+            <label>Date (ቀን)</label>
             <input type="date" id="pu-date">
           </div>
         </div>
@@ -993,7 +993,7 @@
             <div class="toggle" id="pvat-toggle"></div>
           </div>
           <div class="vat-rate-row" id="pvat-rate-row">
-            <label style="margin-top:0.5rem;">VAT Rate (%)</label>
+            <label style="margin-top:0.5rem;">VAT Rate (%) (የቫት መጠን)</label>
             <input type="number" id="pu-vat-rate" placeholder="e.g. 15" min="0" max="100" step="0.01" oninput="calcPurchasePreview()" value="15">
           </div>
           <div id="pvat-flag-info" style="display:none;margin-top:0.5rem;padding:0.6rem 0.9rem;background:#fef9c3;border:1.5px solid #fde047;border-radius:3px;font-size:0.72rem;color:#713f12;">
@@ -1003,10 +1003,10 @@
 
         <!-- Purchase Loan Toggle -->
         <div style="margin-bottom:1rem;">
-          <label>💳 Bought on Credit</label>
+          <label>💳 Bought on Credit (ብድር የተወሰደ)</label>
           <div class="toggle-row" onclick="togglePurchaseLoan()">
             <div style="flex:1">
-              <div style="font-size:0.8rem;font-weight:600;">Purchased on credit — not yet paid</div>
+              <div style="font-size:0.8rem;font-weight:600;">Purchased on credit (ብድር የተወሰደ) — not yet paid</div>
               <div style="font-size:0.7rem;color:var(--muted);margin-top:0.15rem;">You received goods but haven't paid the supplier yet</div>
             </div>
             <div class="toggle" id="pu-loan-toggle"></div>
@@ -1014,7 +1014,7 @@
           <div id="pu-loan-fields" style="display:none;margin-top:0.75rem;padding:0.9rem;background:#fef9c3;border:1.5px solid #fde047;border-radius:4px;">
             <div class="form-row two" style="margin-bottom:0.75rem;">
               <div>
-                <label>Supplier Name</label>
+                <label>Supplier Name (የአቅራቢ ስም)</label>
                 <input type="text" id="pu-loan-person" placeholder="e.g. Supplier ABC">
               </div>
               <div>
@@ -1023,7 +1023,7 @@
               </div>
             </div>
             <div>
-              <label>Loan Notes (optional)</label>
+              <label>Loan Notes (ማስታወሻ) (optional)</label>
               <input type="text" id="pu-loan-notes" placeholder="e.g. Payment due in 30 days">
             </div>
           </div>
@@ -1031,17 +1031,17 @@
 
         <div class="form-row single">
           <div>
-            <label>Notes (optional)</label>
+            <label>Notes (ማስታወሻ) (optional)</label>
             <textarea id="pu-notes" placeholder="Supplier name, delivery info, etc."></textarea>
           </div>
         </div>
         <div class="summary-box">
           <div class="s-row"><span>Qty purchased</span><span id="pu-prev-qty">—</span></div>
           <div class="s-row"><span>Unit cost</span><span id="pu-prev-unit">ETB —</span></div>
-          <div class="s-row"><span>Expenses (per unit × qty)</span><span id="pu-prev-exp">ETB —</span></div>
+          <div class="s-row"><span>Expenses (ወጪዎች) (per unit × qty)</span><span id="pu-prev-exp">ETB —</span></div>
           <div class="s-row"><span>Subtotal</span><span id="pu-prev-sub">ETB —</span></div>
           <div class="s-row" id="pu-prev-vat-row" style="display:none"><span id="pu-prev-vat-label">VAT (0%)</span><span id="pu-prev-vat">ETB —</span></div>
-          <div class="s-row total"><span>Total Cost</span><span id="pu-prev-total">ETB —</span></div>
+          <div class="s-row total"><span>Total Cost (ጠቅላላ ወጪ)</span><span id="pu-prev-total">ETB —</span></div>
         </div>
 
         <div style="margin-top:1rem;display:flex;gap:0.75rem;flex-wrap:wrap;">
@@ -1059,7 +1059,7 @@
     <!-- LOANS TAB (Manager) -->
     <div class="tab-pane" id="m-tab-loans">
       <div class="card">
-        <div class="card-title">💳 My Loans</div>
+        <div class="card-title">💳 My Loans (የኔ ብድሮች)</div>
         <div style="margin-bottom:1rem;">
           <input type="text" id="m-loan-search" placeholder="🔍 Search by person or customer name..." oninput="renderManagerLoans()" style="width:100%;padding:0.65rem 0.85rem;border:1.5px solid var(--border);border-radius:3px;font-family:'DM Mono',monospace;font-size:0.82rem;background:var(--paper);">
         </div>
@@ -1074,25 +1074,28 @@
 <div id="owner-screen" class="screen">
   <div class="topbar">
     <div class="topbar-logo">Sales<span>Flow</span></div>
-    <span class="topbar-role role-o">Owner Dashboard</span>
+    <span class="topbar-role role-o">Owner Dashboard (ባለበት)</span>
     <span class="topbar-logout" onclick="logout()">Logout</span>
   </div>
   <div class="content">
     <div class="tabs">
-      <div class="tab active" onclick="switchTab('owner','review',this)">Review</div>
-      <div class="tab" onclick="switchTab('owner','records',this)">Records</div>
-      <div class="tab" onclick="switchTab('owner','monthly',this)">Monthly Report</div>
-      <div class="tab" onclick="switchTab('owner','stock',this)">Stock</div>
-      <div class="tab" onclick="switchTab('owner','purchases',this)">Purchases</div>
-      <div class="tab" onclick="switchTab('owner','loans',this)">💳 Loans</div>
-      <div class="tab" onclick="switchTab('owner','export',this)">Export & Print</div>
-      <div class="tab" onclick="switchTab('owner','tax',this)">Tax Calculator</div>
-      <div class="tab" onclick="switchTab('owner','settings',this)">Settings</div>
+      <div class="tab active" onclick="switchTab('owner','review',this)">Review (ግምገማ)</div>
+      <div class="tab" onclick="switchTab('owner','records',this)">Records (መዝገብ)</div>
+      <div class="tab" onclick="switchTab('owner','monthly',this)">Monthly Report (ወርሃዊ ሪፖርት)</div>
+      <div class="tab" onclick="switchTab('owner','stock',this)">Stock (ስቶክ)</div>
+      <div class="tab" onclick="switchTab('owner','purchases',this)">Purchases (ግቢ)</div>
+      <div class="tab" onclick="switchTab('owner','loans',this)">💳 Loans (ብድር)</div>
+      <div class="tab" onclick="switchTab('owner','export',this)">Export & Print (ላክ እና አትም)</div>
+      <div class="tab" onclick="switchTab('owner','tax',this)">Tax Calculator (የግብር ሒሳብ)</div>
+      <div class="tab" onclick="switchTab('owner','settings',this)">Settings (ቅንብሮች)</div>
     </div>
 
     <!-- REVIEW TAB -->
     <div class="tab-pane active" id="o-tab-review">
-      <!-- Low Stock Alerts -->
+      <div style="display:flex;justify-content:flex-end;margin-bottom:0.5rem;">
+        <button class="btn btn-ghost btn-sm" onclick="initOwner()" style="font-size:0.7rem;">↻ Refresh from cloud (ከደመና አድስ)</button>
+      </div>
+      <!-- Low Stock (ዝቅተኛ ስቶክ) Alerts -->
       <div id="o-low-stock-alerts"></div>
       <!-- Pending Purchases needing stock action -->
       <div id="o-purchase-review"></div>
@@ -1112,13 +1115,13 @@
       <!-- STOCK TAB -->
     <div class="tab-pane" id="o-tab-stock">
       <div class="card">
-        <div class="card-title">📦 Stock Management</div>
+        <div class="card-title">📦 Stock Management (የስቶክ አስተዳደር) (ስቶክ አስተዳደር)</div>
         <p style="font-size:0.75rem;color:var(--muted);margin-bottom:1.25rem;">Items with stock > 0 allow the Sales Manager to apply VAT. Items with zero or no stock block VAT.</p>
 
         <!-- Manual add -->
         <div class="form-row triple" style="margin-bottom:0.5rem">
           <div>
-            <label>Item Name</label>
+            <label>Item Name (የእቃ ስም)</label>
             <input type="text" id="stock-add-name" placeholder="e.g. Coffee Bags">
           </div>
           <div>
@@ -1133,10 +1136,10 @@
         <!-- Excel upload -->
         <div style="margin-top:1.25rem;padding:1rem;background:var(--cream);border:1.5px dashed var(--border);border-radius:4px;">
           <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.8rem;margin-bottom:0.5rem;">📊 Bulk Import from Excel</div>
-          <p style="font-size:0.72rem;color:var(--muted);margin-bottom:0.75rem;line-height:1.5;">Upload an <strong>.xlsx</strong> or <strong>.csv</strong> file with two columns: <strong>Item Name</strong> and <strong>Qty</strong>. Existing items will be updated, new ones added. Header row is skipped automatically.</p>
+          <p style="font-size:0.72rem;color:var(--muted);margin-bottom:0.75rem;line-height:1.5;">Upload an <strong>.xlsx</strong> or <strong>.csv</strong> file with two columns: <strong>Item Name (የእቃ ስም)</strong> and <strong>Qty</strong>. Existing items will be updated, new ones added. Header row is skipped automatically.</p>
           <div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;">
-            <label for="stock-excel-input" class="btn btn-ghost btn-sm" style="cursor:pointer;margin:0;">📁 Choose File</label>
-            <input type="file" id="stock-excel-input" accept=".xlsx,.xls,.csv" style="display:none;" onchange="importStockFromExcel(this)">
+            <button class="btn btn-ghost btn-sm" style="cursor:pointer;margin:0;" onclick="document.getElementById('stock-excel-input').click()">📁 Choose File</button>
+            <input type="file" id="stock-excel-input" accept=".xlsx,.xls,.csv" style="position:absolute;width:1px;height:1px;opacity:0;overflow:hidden;" onchange="importStockFromExcel(this)">
             <span id="stock-excel-filename" style="font-size:0.72rem;color:var(--muted);">No file chosen</span>
             <button class="btn btn-sm" style="background:var(--green);color:#fff;border-color:var(--green);" onclick="downloadStockTemplate()">⬇ Download Template</button>
           </div>
@@ -1144,6 +1147,12 @@
         </div>
 
         <div id="stock-list" style="margin-top:1.25rem;"></div>
+
+        <!-- Clear all stock -->
+        <div style="margin-top:1rem;padding-top:1rem;border-top:1.5px solid var(--border);">
+          <button class="btn btn-danger btn-sm" onclick="clearAllStock()">🗑 Clear All (ሁሉንም አጥፋ) Stock</button>
+          <span style="font-size:0.68rem;color:var(--muted);margin-left:0.75rem;">Permanently removes all stock items from the database.</span>
+        </div>
       </div>
     </div>
 
@@ -1159,7 +1168,7 @@
     <!-- LOANS TAB (Owner) -->
     <div class="tab-pane" id="o-tab-loans">
       <div class="card">
-        <div class="card-title">💳 Loan Tracker</div>
+        <div class="card-title">💳 Loan Tracker (የብድር መከታተያ)</div>
         <p style="font-size:0.75rem;color:var(--muted);margin-bottom:1rem;">Track all credit sales, lent goods, and purchases made on credit. Mark entries as settled when payment is received or made.</p>
         <div style="display:flex;gap:0.6rem;margin-bottom:1rem;align-items:center;">
           <input type="text" id="o-loan-search" placeholder="🔍 Search by person or customer name..." oninput="renderOwnerLoans()" style="flex:1;padding:0.65rem 0.85rem;border:1.5px solid var(--border);border-radius:3px;font-family:'DM Mono',monospace;font-size:0.82rem;background:var(--paper);">
@@ -1311,7 +1320,7 @@
 
           <div class="tax-input-row">
             <div class="tax-input-label">
-              <label>Total Revenue / Turnover (ETB)</label>
+              <label>Total Revenue (ገቢ) / Turnover (ETB)</label>
               <div style="font-size:0.68rem;color:var(--muted);">All income from approved sales</div>
             </div>
             <div class="tax-input-controls">
@@ -1392,7 +1401,7 @@
 
       <!-- TAX PAYMENT HISTORY -->
       <div class="card" style="margin-top:1.25rem;">
-        <div class="card-title">📋 Tax Payment Log</div>
+        <div class="card-title">📋 Tax Payment Log (የግብር ክፍያ መዝገብ)</div>
         <p style="font-size:0.75rem;color:var(--muted);margin-bottom:1.25rem;">
           Saved tax calculations. Mark as paid when settled with ERCA. Download individual records anytime.
         </p>
@@ -1493,8 +1502,8 @@
   <div style="background:var(--paper);border:2px solid var(--border);border-radius:6px;padding:1.75rem 2rem;max-width:360px;width:90%;box-shadow:0 8px 32px rgba(0,0,0,0.18);">
     <div id="confirm-modal-msg" style="font-family:'Syne',sans-serif;font-size:0.95rem;font-weight:600;margin-bottom:1.25rem;line-height:1.5;"></div>
     <div style="display:flex;gap:0.75rem;justify-content:flex-end;">
-      <button class="btn btn-ghost btn-sm" id="confirm-modal-cancel" style="min-width:80px;">Cancel</button>
-      <button class="btn btn-danger btn-sm" id="confirm-modal-ok" style="min-width:80px;">Confirm</button>
+      <button class="btn btn-ghost btn-sm" id="confirm-modal-cancel" style="min-width:80px;">Cancel (ሰርዝ)</button>
+      <button class="btn btn-danger btn-sm" id="confirm-modal-ok" style="min-width:80px;">Confirm (አረጋግጥ)</button>
     </div>
   </div>
 </div>
@@ -1552,6 +1561,7 @@ async function sbGet(table) {
     const r = await fetch(`${SUPABASE_URL}/rest/v1/${table}?select=*`, {
       headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
     });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
     const rows = await r.json();
     if (!Array.isArray(rows)) return [];
     return rows.map(row => row.data || row);
@@ -1560,7 +1570,7 @@ async function sbGet(table) {
 
 async function sbUpsert(table, id, data) {
   try {
-    await fetch(`${SUPABASE_URL}/rest/v1/${table}`, {
+    const r = await fetch(`${SUPABASE_URL}/rest/v1/${table}`, {
       method: 'POST',
       headers: {
         'apikey': SUPABASE_KEY,
@@ -1570,7 +1580,8 @@ async function sbUpsert(table, id, data) {
       },
       body: JSON.stringify({ id, data })
     });
-  } catch {}
+    return r.ok;
+  } catch { return false; }
 }
 
 async function sbDelete(table, id) {
@@ -1628,9 +1639,60 @@ async function deletePurchaseRemote(id) { await sbDelete('purchases', id); }
 function getStock() { return getS('sf_stock', []); }
 function setStock(s) { setS('sf_stock', s); }
 
-async function getStockRemote() { return await sbGet('stock'); }
-async function upsertStockRemote(item) { await sbUpsert('stock', item.name, item); }
-async function deleteStockRemote(name) { await sbDelete('stock', name); }
+async function getStockRemote() {
+  try {
+    const r = await fetch(`${SUPABASE_URL}/rest/v1/stock?select=*`, {
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
+    });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const rows = await r.json();
+    if (!Array.isArray(rows)) return [];
+    return rows.map(row => row.data || row);
+  } catch { return []; }
+}
+
+async function upsertStockRemote(item) {
+  try {
+    const r = await fetch(`${SUPABASE_URL}/rest/v1/stock`, {
+      method: 'POST',
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_KEY,
+        'Content-Type': 'application/json',
+        'Prefer': 'resolution=merge-duplicates'
+      },
+      body: JSON.stringify({ name: item.name, data: item })
+    });
+    return r.ok;
+  } catch { return false; }
+}
+
+// Batch upsert — sends all items in one request
+async function upsertStockBatch(items) {
+  if (!items.length) return true;
+  try {
+    const r = await fetch(`${SUPABASE_URL}/rest/v1/stock`, {
+      method: 'POST',
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_KEY,
+        'Content-Type': 'application/json',
+        'Prefer': 'resolution=merge-duplicates'
+      },
+      body: JSON.stringify(items.map(item => ({ name: item.name, data: item })))
+    });
+    return r.ok;
+  } catch { return false; }
+}
+
+async function deleteStockRemote(name) {
+  try {
+    await fetch(`${SUPABASE_URL}/rest/v1/stock?name=eq.${encodeURIComponent(name)}`, {
+      method: 'DELETE',
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
+    });
+  } catch {}
+}
 
 // Tax logs — owner only, Supabase
 async function getTaxLogsRemote() { return await sbGet('tax_logs'); }
@@ -1707,7 +1769,7 @@ function goToPin(role) {
   pinBuffer = '';
   updateDots();
   document.getElementById('pin-error').textContent = '';
-  document.getElementById('pin-title').textContent = role === 'manager' ? 'Sales Manager Login' : 'Owner Login';
+  document.getElementById('pin-title').textContent = role === 'manager' ? 'Sales Manager (አስተዳዳሪ) Login' : 'Owner (ባለቤት) Login';
   document.getElementById('pin-sub').textContent = 'Enter your 4-digit PIN';
   show('pin-screen');
 }
@@ -1788,7 +1850,7 @@ function switchTab(role, tab, el) {
 }
 
 // ════════════════════════════════════════
-// MANAGER — LOG SALE
+// MANAGER (አስተዳዳሪ) — LOG SALE
 // ════════════════════════════════════════
 async function initManager() {
   const today = new Date().toISOString().split('T')[0];
@@ -1829,6 +1891,7 @@ async function initManager() {
 
 async function initOwner() {
   showLoading('Loading data from cloud...');
+  let loadOk = false;
   try {
     const [sales, purchases, stock, taxLogs, loans, settings] = await Promise.all([
       getSalesRemote(),
@@ -1844,8 +1907,22 @@ async function initOwner() {
     if (taxLogs.length) setTaxLogs(taxLogs);
     if (loans.length) setLoans(loans);
     if (settings) setS('sf_settings', settings);
-  } catch {}
+    loadOk = true;
+  } catch(e) {
+    console.error('Supabase load error:', e);
+  }
   hideLoading();
+
+  if (!loadOk) {
+    showToast('Could not reach cloud — showing cached data. Tap Refresh to retry.', 'error');
+    const reviewEl = document.getElementById('o-review-list');
+    if (reviewEl) reviewEl.innerHTML = `
+      <div style="text-align:center;padding:2rem;">
+        <p style="color:var(--red);margin-bottom:1rem;">⚠ Could not load data from cloud.</p>
+        <button class="btn btn-primary" onclick="initOwner()">↻ Retry</button>
+      </div>`;
+    return;
+  }
 
   renderOwnerReview();
   renderOwnerRecords();
@@ -2022,7 +2099,7 @@ function calcPreview() {
   const revenue = qty * price;
   const vatAmount = vatOn ? (revenue * vatRate / 100) : 0;
   const totalExpenses = expPerUnit * qty;
-  const totalCost = (cost * qty) + totalExpenses;
+  const totalCost = (cost * qty) + totalExpenses (ወጪዎች);
   const profit = revenue - totalCost;
 
   document.getElementById('p-qty').textContent = qty || '—';
@@ -2031,7 +2108,7 @@ function calcPreview() {
   document.getElementById('p-vat').textContent = 'ETB ' + vatAmount.toFixed(2);
   document.getElementById('p-vat-row').style.display = vatOn ? 'flex' : 'none';
   document.getElementById('p-cost').textContent = 'ETB ' + (cost * qty).toFixed(2);
-  document.getElementById('p-exp').textContent = 'ETB ' + totalExpenses.toFixed(2);
+  document.getElementById('p-exp').textContent = 'ETB ' + totalExpenses (ወጪዎች).toFixed(2);
   document.getElementById('p-profit').textContent = 'ETB ' + profit.toFixed(2);
 
   // Auto-fill loan amount with revenue if loan toggle is on
@@ -2075,7 +2152,7 @@ function submitSale() {
   const revenue = qty * price;
   const vatAmount = vatOn ? (revenue * vatRate / 100) : 0;
   const totalExpenses = expPerUnit * qty;
-  const totalCost = (cost * qty) + totalExpenses;
+  const totalCost = (cost * qty) + totalExpenses (ወጪዎች);
   const profit = revenue - totalCost;
 
   // Build loan info if applicable
@@ -2110,7 +2187,7 @@ function submitSale() {
     addToOfflineQueue('sale', sale);
     showToast('Saved offline — will sync when back online 📡', 'success');
   } else {
-    showToast(saleLoanOn ? 'Sale submitted — loan will be logged after owner approval ✓' : 'Sale submitted to owner ✓', 'success');
+    showToast(saleLoanOn ? 'Sale submitted — loan will be logged after owner approval ✓' : 'ሽያጭ ለባለቤቱ ተልኳል ✓', 'success');
   }
 
   clearSaleForm();
@@ -2144,7 +2221,7 @@ function renderManagerHistory() {
   const sorted = [...sales].sort((a,b) => new Date(b.submittedAt) - new Date(a.submittedAt));
   container.innerHTML = `
     <div style="display:flex;justify-content:flex-end;margin-bottom:0.75rem;">
-      <button class="btn btn-danger btn-sm" onclick="clearManagerSalesHistory()">🗑 Clear All History</button>
+      <button class="btn btn-danger btn-sm" onclick="clearManagerSalesHistory()">🗑 Clear All (ሁሉንም አጥፋ) History</button>
     </div>
   ` + sorted.map(s => `
     <div class="sale-item">
@@ -2159,7 +2236,7 @@ function renderManagerHistory() {
       <div class="sale-item-nums">
         <div class="amount">ETB ${s.revenue.toFixed(2)}</div>
         <div class="profit-label">Profit: ETB ${s.profit.toFixed(2)}</div>
-        <button class="btn btn-danger btn-sm" style="margin-top:0.5rem;font-size:0.65rem;padding:0.2rem 0.6rem;" onclick="deleteManagerSale('${s.id}')">Delete</button>
+        <button class="btn btn-danger btn-sm" style="margin-top:0.5rem;font-size:0.65rem;padding:0.2rem 0.6rem;" onclick="deleteManagerSale('${s.id}')">Delete (አጥፋ)</button>
       </div>
     </div>
   `).join('');
@@ -2199,19 +2276,19 @@ function renderOwnerReview() {
     <div class="review-card">
       <div class="review-card-head">
         <h3>${s.name} <span class="vat-badge ${s.vatOn ? 'vat-yes' : 'vat-no'}">${s.vatOn ? 'VAT ' + s.vatRate + '%' : 'No VAT'}</span></h3>
-        <span class="status-badge status-pending">PENDING REVIEW</span>
+        <span class="status-badge status-pending">PENDING (በጥበቃ ላይ) REVIEW</span>
       </div>
       <div class="review-card-body">
-        <div class="row"><span>Date</span><strong>${s.date}</strong></div>
+        <div class="row"><span>Date (ቀን)</span><strong>${s.date}</strong></div>
         <div class="row"><span>Quantity Sold</span><strong>${s.qty}</strong></div>
-        <div class="row"><span>Selling Price / Unit</span><strong>ETB ${s.price.toFixed(2)}</strong></div>
+        <div class="row"><span>Selling Price (የሽያጭ ዋጋ) / Unit</span><strong>ETB ${s.price.toFixed(2)}</strong></div>
         <div class="row"><span>Cost Price / Unit</span><strong>ETB ${s.cost.toFixed(2)}</strong></div>
-        <div class="row"><span>Expenses</span><strong>ETB ${s.expenses.toFixed(2)}</strong></div>
+        <div class="row"><span>Expenses (ወጪዎች)</span><strong>ETB ${s.expenses.toFixed(2)}</strong></div>
         ${s.vatOn ? `<div class="row"><span>VAT (${s.vatRate}%)</span><strong>ETB ${s.vatAmount.toFixed(2)}</strong></div>` : ''}
-        <div class="row"><span>Gross Revenue</span><strong>ETB ${s.revenue.toFixed(2)}</strong></div>
-        <div class="row"><span>Total Cost</span><strong>ETB ${s.totalCost.toFixed(2)}</strong></div>
+        <div class="row"><span>Gross Revenue (ገቢ)</span><strong>ETB ${s.revenue.toFixed(2)}</strong></div>
+        <div class="row"><span>Total Cost (ጠቅላላ ወጪ)</span><strong>ETB ${s.totalCost.toFixed(2)}</strong></div>
         <div class="row"><span style="font-weight:700">NET PROFIT</span><strong style="color:var(--green)">ETB ${s.profit.toFixed(2)}</strong></div>
-        ${s.notes ? `<div class="row"><span>Notes</span><strong>${s.notes}</strong></div>` : ''}
+        ${s.notes ? `<div class="row"><span>Notes (ማስታወሻ)</span><strong>${s.notes}</strong></div>` : ''}
       </div>
       <div style="padding:0.75rem 1.25rem; border-top:1px solid var(--border);">
         <label>Owner note (optional)</label>
@@ -2341,10 +2418,10 @@ function renderOwnerRecords() {
   const totalCost = approved.reduce((a, s) => a + s.totalCost, 0);
 
   document.getElementById('o-stats').innerHTML = `
-    <div class="stat-box"><div class="stat-label">Total Revenue</div><div class="stat-value">ETB ${fmtNum(totalRev)}</div><div class="stat-sub">${approved.length} entries</div></div>
-    <div class="stat-box green"><div class="stat-label">Net Profit</div><div class="stat-value">ETB ${fmtNum(totalProfit)}</div></div>
+    <div class="stat-box"><div class="stat-label">Total Revenue (ገቢ)</div><div class="stat-value">ETB ${fmtNum(totalRev)}</div><div class="stat-sub">${approved.length} entries</div></div>
+    <div class="stat-box green"><div class="stat-label">Net Profit (ትርፍ)</div><div class="stat-value">ETB ${fmtNum(totalProfit)}</div></div>
     <div class="stat-box gold"><div class="stat-label">VAT Collected</div><div class="stat-value">ETB ${fmtNum(totalVat)}</div><div class="stat-sub" style="margin-top:0.5rem"><button class="btn btn-sm" style="background:var(--gold);color:var(--ink);padding:0.25rem 0.6rem;font-size:0.6rem;" onclick="downloadVatSheet()">⬇ Download Sheet</button></div></div>
-    <div class="stat-box blue"><div class="stat-label">Total Costs</div><div class="stat-value">ETB ${fmtNum(totalCost)}</div></div>
+    <div class="stat-box blue"><div class="stat-label">Total Cost (ጠቅላላ ወጪ)s</div><div class="stat-value">ETB ${fmtNum(totalCost)}</div></div>
   `;
 
   const container = document.getElementById('o-records-list');
@@ -2355,11 +2432,11 @@ function renderOwnerRecords() {
   const sorted = [...approved].sort((a,b) => new Date(b.date) - new Date(a.date));
   container.innerHTML = `
     <div style="display:flex;justify-content:flex-end;margin-bottom:0.75rem;">
-      <button class="btn btn-danger btn-sm" onclick="clearOwnerRecords()">🗑 Clear All Records</button>
+      <button class="btn btn-danger btn-sm" onclick="clearOwnerRecords()">🗑 Clear All (ሁሉንም አጥፋ) Records</button>
     </div>
     <table class="report-table">
       <thead><tr>
-        <th>Date</th><th>Item</th><th>Qty</th><th>Revenue</th><th>VAT</th><th>Cost</th><th>Profit</th><th></th>
+        <th>Date (ቀን)</th><th>Item</th><th>Qty</th><th>Revenue (ገቢ)</th><th>VAT</th><th>Cost</th><th>Profit (ትርፍ)</th><th></th>
       </tr></thead>
       <tbody>
         ${sorted.map(s => `<tr>
@@ -2370,7 +2447,7 @@ function renderOwnerRecords() {
           <td>${s.vatOn ? 'ETB ' + s.vatAmount.toFixed(2) + ' (' + s.vatRate + '%)' : '—'}</td>
           <td>ETB ${s.totalCost.toFixed(2)}</td>
           <td style="color:var(--green);font-weight:600">ETB ${s.profit.toFixed(2)}</td>
-          <td><button class="btn btn-danger btn-sm" style="font-size:0.65rem;padding:0.2rem 0.5rem;" onclick="deleteOwnerRecord('${s.id}')">Delete</button></td>
+          <td><button class="btn btn-danger btn-sm" style="font-size:0.65rem;padding:0.2rem 0.5rem;" onclick="deleteOwnerRecord('${s.id}')">Delete (አጥፋ)</button></td>
         </tr>`).join('')}
       </tbody>
     </table>
@@ -2435,7 +2512,7 @@ function renderMonthly() {
   const totalProfit = approved.reduce((a,s) => a+s.profit, 0);
   const totalVat = approved.reduce((a,s) => a+s.vatAmount, 0);
   const totalCost = approved.reduce((a,s) => a+s.totalCost, 0);
-  const margin = totalRev ? ((totalProfit/totalRev)*100).toFixed(1) : 0;
+  const margin = totalRev ? ((totalProfit (ትርፍ)/totalRev)*100).toFixed(1) : 0;
 
   // Best & worst sellers by revenue
   const byItem = {};
@@ -2451,10 +2528,10 @@ function renderMonthly() {
 
   container.innerHTML = `
     <div class="stats-grid" style="margin-bottom:1.5rem">
-      <div class="stat-box"><div class="stat-label">Total Revenue</div><div class="stat-value">ETB ${fmtNum(totalRev)}</div><div class="stat-sub">${approved.length} sales</div></div>
-      <div class="stat-box green"><div class="stat-label">Net Profit</div><div class="stat-value">ETB ${fmtNum(totalProfit)}</div><div class="stat-sub">Margin: ${margin}%</div></div>
+      <div class="stat-box"><div class="stat-label">Total Revenue (ገቢ)</div><div class="stat-value">ETB ${fmtNum(totalRev)}</div><div class="stat-sub">${approved.length} sales</div></div>
+      <div class="stat-box green"><div class="stat-label">Net Profit (ትርፍ)</div><div class="stat-value">ETB ${fmtNum(totalProfit)}</div><div class="stat-sub">Margin: ${margin}%</div></div>
       <div class="stat-box gold"><div class="stat-label">VAT Collected</div><div class="stat-value">ETB ${fmtNum(totalVat)}</div></div>
-      <div class="stat-box blue"><div class="stat-label">Total Costs</div><div class="stat-value">ETB ${fmtNum(totalCost)}</div></div>
+      <div class="stat-box blue"><div class="stat-label">Total Cost (ጠቅላላ ወጪ)s</div><div class="stat-value">ETB ${fmtNum(totalCost)}</div></div>
     </div>
     <div class="top-items" style="margin-bottom:1.5rem">
       <div class="top-item">
@@ -2469,7 +2546,7 @@ function renderMonthly() {
       </div>
     </div>
     <table class="report-table">
-      <thead><tr><th>Item</th><th>Units</th><th>Revenue</th><th>VAT</th><th>Profit</th></tr></thead>
+      <thead><tr><th>Item</th><th>Units</th><th>Revenue (ገቢ)</th><th>VAT</th><th>Profit (ትርፍ)</th></tr></thead>
       <tbody>
         ${items.map(([name, d]) => `<tr>
           <td>${name}</td>
@@ -2483,7 +2560,7 @@ function renderMonthly() {
           <td>${approved.reduce((a,s)=>a+s.qty,0)}</td>
           <td>ETB ${totalRev.toFixed(2)}</td>
           <td>ETB ${totalVat.toFixed(2)}</td>
-          <td style="color:var(--green)">ETB ${totalProfit.toFixed(2)}</td>
+          <td style="color:var(--green)">ETB ${totalProfit (ትርፍ).toFixed(2)}</td>
         </tr>
       </tbody>
     </table>
@@ -2608,7 +2685,7 @@ function confirmArchive() {
   // RECORDS (approved sales)
   if (checks.records && allSales.length) {
     rows.push(['RECORDS (Approved Sales)']);
-    rows.push(['Date','Item','Qty','Revenue (ETB)','VAT Amount (ETB)','Cost (ETB)','Expenses (ETB)','Profit (ETB)','Notes','Owner Note']);
+    rows.push(['Date','Item','Qty','Revenue (ገቢ) (ETB)','VAT Amount (ETB)','Cost (ETB)','Expenses (ወጪዎች) (ETB)','Profit (ትርፍ) (ETB)','Notes','Owner Note']);
     allSales.sort((a,b)=>a.date.localeCompare(b.date)).forEach(s =>
       rows.push([s.date,s.name,s.qty,s.revenue.toFixed(2),s.vatAmount.toFixed(2),s.totalCost.toFixed(2),s.expenses.toFixed(2),s.profit.toFixed(2),s.notes||'',s.ownerNote||''])
     );
@@ -2631,7 +2708,7 @@ function confirmArchive() {
   if (checks.vat) {
     const vatSales = allSales.filter(s => s.vatOn);
     rows.push(['VAT REPORT']);
-    rows.push(['Date','Item','Qty','Revenue (ETB)','VAT Rate (%)','VAT Amount (ETB)']);
+    rows.push(['Date','Item','Qty','Revenue (ገቢ) (ETB)','VAT Rate (%) (የቫት መጠን)','VAT Amount (ETB)']);
     vatSales.sort((a,b)=>a.date.localeCompare(b.date)).forEach(s =>
       rows.push([s.date,s.name,s.qty,s.revenue.toFixed(2),s.vatRate,s.vatAmount.toFixed(2)])
     );
@@ -2642,7 +2719,7 @@ function confirmArchive() {
   // STOCK SNAPSHOT
   if (checks.stock) {
     rows.push(['STOCK SNAPSHOT (at time of archive)']);
-    rows.push(['Item','Qty in Stock','VAT Eligible']);
+    rows.push(['Item','Qty in Stock','VAT Eligible (ለቫት ብቁ)']);
     stock.forEach(s => rows.push([s.name, s.qty, s.qty > 0 ? 'Yes' : 'No']));
     rows.push([]);
   }
@@ -2660,9 +2737,9 @@ function confirmArchive() {
     const incomeTax = Math.max(standardTax, mat);
     rows.push(['TAX SUMMARY']);
     rows.push(['Period', from + ' to ' + to]);
-    rows.push(['Total Revenue (ETB)', rev.toFixed(2)]);
-    rows.push(['Total Costs (ETB)', costs.toFixed(2)]);
-    rows.push(['Taxable Profit (ETB)', profit.toFixed(2)]);
+    rows.push(['Total Revenue (ገቢ) (ETB)', rev.toFixed(2)]);
+    rows.push(['Total Cost (ጠቅላላ ወጪ)s (ETB)', costs.toFixed(2)]);
+    rows.push(['Taxable Profit (ትርፍ) (ETB)', profit.toFixed(2)]);
     rows.push(['Income Tax Due 30% (ETB)', standardTax.toFixed(2)]);
     rows.push(['MAT 2.5% of turnover (ETB)', mat.toFixed(2)]);
     rows.push(['Income Tax Payable (ETB)', incomeTax.toFixed(2), incomeTax === mat && mat > standardTax ? 'MAT Applied' : '']);
@@ -2709,7 +2786,7 @@ function confirmArchive() {
 }
 
 // ════════════════════════════════════════
-// MANAGER — PURCHASE LOG
+// MANAGER (አስተዳዳሪ) — PURCHASE LOG
 // ════════════════════════════════════════
 // ── Loan toggles ──
 function toggleSaleLoan() {
@@ -2862,7 +2939,7 @@ function renderPurchaseHistory() {
   const sorted = [...purchases].sort((a,b) => new Date(b.submittedAt) - new Date(a.submittedAt));
   container.innerHTML = `
     <div style="display:flex;justify-content:flex-end;margin-bottom:0.75rem;">
-      <button class="btn btn-danger btn-sm" onclick="clearManagerPurchaseHistory()">🗑 Clear All History</button>
+      <button class="btn btn-danger btn-sm" onclick="clearManagerPurchaseHistory()">🗑 Clear All (ሁሉንም አጥፋ) History</button>
     </div>
   ` + sorted.map(p => `
     <div class="sale-item">
@@ -2879,8 +2956,8 @@ function renderPurchaseHistory() {
       </div>
       <div class="sale-item-nums">
         <div class="amount">ETB ${p.total.toFixed(2)}</div>
-        <div style="font-size:0.7rem;color:var(--muted)">Total Cost</div>
-        <button class="btn btn-danger btn-sm" style="margin-top:0.5rem;font-size:0.65rem;padding:0.2rem 0.6rem;" onclick="deleteManagerPurchase('${p.id}')">Delete</button>
+        <div style="font-size:0.7rem;color:var(--muted)">Total Cost (ጠቅላላ ወጪ)</div>
+        <button class="btn btn-danger btn-sm" style="margin-top:0.5rem;font-size:0.65rem;padding:0.2rem 0.6rem;" onclick="deleteManagerPurchase('${p.id}')">Delete (አጥፋ)</button>
       </div>
     </div>
   `).join('');
@@ -2910,8 +2987,8 @@ function clearManagerPurchaseHistory() {
 // ════════════════════════════════════════
 function renderLowStockAlerts() {
   const stock = getStock();
-  const low = stock.filter(s => s.qty <= 10 && s.qty > 0);
-  const zero = stock.filter(s => s.qty === 0);
+  const low  = stock.filter(s => Number(s.qty) <= 10 && Number(s.qty) > 0);
+  const zero = stock.filter(s => Number(s.qty) === 0 || s.qty === undefined);
   const container = document.getElementById('o-low-stock-alerts');
   if (!container) return;
 
@@ -2953,16 +3030,16 @@ function renderPurchaseReview() {
               ${p.flagForStock ? '🚩 VAT — Add to Stock' : '✓ No VAT — Log Only'}
             </span>
           </h3>
-          <span class="status-badge status-pending">PENDING</span>
+          <span class="status-badge status-pending">PENDING (በጥበቃ ላይ)</span>
         </div>
         <div class="review-card-body">
-          <div class="row"><span>Date</span><strong>${p.date}</strong></div>
+          <div class="row"><span>Date (ቀን)</span><strong>${p.date}</strong></div>
           <div class="row"><span>Qty Purchased</span><strong>${p.qty} units</strong></div>
           <div class="row"><span>Cost / Unit</span><strong>ETB ${p.costUnit.toFixed(2)}</strong></div>
           <div class="row"><span>Subtotal</span><strong>ETB ${p.subtotal.toFixed(2)}</strong></div>
           ${p.vatOn ? `<div class="row"><span>VAT (${p.vatRate}%)</span><strong>ETB ${p.vatAmount.toFixed(2)}</strong></div>` : ''}
-          <div class="row"><span style="font-weight:700">Total Cost</span><strong>ETB ${p.total.toFixed(2)}</strong></div>
-          ${p.notes ? `<div class="row"><span>Notes</span><strong>${p.notes}</strong></div>` : ''}
+          <div class="row"><span style="font-weight:700">Total Cost (ጠቅላላ ወጪ)</span><strong>ETB ${p.total.toFixed(2)}</strong></div>
+          ${p.notes ? `<div class="row"><span>Notes (ማስታወሻ)</span><strong>${p.notes}</strong></div>` : ''}
           ${p.flagForStock ? `
           <div style="margin-top:0.75rem;padding:0.6rem 0.8rem;background:#fef9c3;border-radius:3px;font-size:0.75rem;color:#713f12;">
             🚩 Approving will add <strong>${p.qty} units of &ldquo;${p.name}&rdquo;</strong> to stock.
@@ -3063,12 +3140,12 @@ function renderOwnerPurchases() {
       <span style="font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;">${approved.length} purchases</span>
       <div style="display:flex;align-items:center;gap:0.75rem;">
         <span style="font-family:'Syne',sans-serif;font-weight:700;">Total Spent: ETB ${fmtNum(totalSpent)}</span>
-        <button class="btn btn-danger btn-sm" onclick="clearOwnerPurchases()">🗑 Clear All</button>
+        <button class="btn btn-danger btn-sm" onclick="clearOwnerPurchases()">🗑 Clear All (ሁሉንም አጥፋ)</button>
       </div>
     </div>
     <table class="report-table">
       <thead><tr>
-        <th>Date</th><th>Item</th><th>Qty</th><th>Remaining</th><th>Unit Cost</th><th>Total</th><th>Notes</th><th>Owner Note</th><th></th>
+        <th>Date (ቀን)</th><th>Item</th><th>Qty</th><th>Remaining</th><th>Unit Cost</th><th>Total</th><th>Notes (ማስታወሻ)</th><th>Owner Note</th><th></th>
       </tr></thead>
       <tbody>
         ${sorted.map(p => {
@@ -3083,7 +3160,7 @@ function renderOwnerPurchases() {
             <td>ETB ${p.total.toFixed(2)}</td>
             <td style="color:var(--muted);font-size:0.72rem">${p.notes || '—'}</td>
             <td style="color:var(--muted);font-size:0.72rem">${p.ownerNote || '—'}</td>
-            <td><button class="btn btn-danger btn-sm" style="font-size:0.65rem;padding:0.2rem 0.5rem;" onclick="deleteOwnerPurchase('${p.id}')">Delete</button></td>
+            <td><button class="btn btn-danger btn-sm" style="font-size:0.65rem;padding:0.2rem 0.5rem;" onclick="deleteOwnerPurchase('${p.id}')">Delete (አጥፋ)</button></td>
           </tr>`;
         }).join('')}
       </tbody>
@@ -3147,32 +3224,114 @@ function importStockFromExcel(input) {
 
   const isCsv = file.name.toLowerCase().endsWith('.csv');
 
-  function processRows(rows) {
-    if (!rows.length) { showImportResult('No data found in file.', 'error'); return; }
+  // ── Smart column detector ──
+  // Finds the header row, name column, and ending qty column automatically
+  function detectAndProcess(allRows) {
+    if (!allRows.length) { showImportResult('No data found in file.', 'error'); return; }
 
-    // Auto-detect and skip header row
-    const firstRow = rows[0];
-    const hasHeader = isNaN(firstRow[1]) || String(firstRow[0]).toLowerCase().includes('name') || String(firstRow[0]).toLowerCase().includes('item');
-    const dataRows = hasHeader ? rows.slice(1) : rows;
+    // Keywords to identify columns
+    const nameKeywords    = ['description', 'item', 'name', 'product', 'goods', 'material'];
+    const endingKeywords  = ['ending', 'audit', 'declared', 'balance', 'remaining', 'closing', 'end qty', 'end stock', 'final'];
+    const skipKeywords    = ['total', 'grand', 'subtotal', 'sum'];
 
+    let headerRowIdx = -1;
+    let nameColIdx   = -1;
+    let qtyColIdx    = -1;
+
+    // Scan for the header row (first row that has both a name-like and qty-like header)
+    for (let r = 0; r < Math.min(allRows.length, 15); r++) {
+      const row = allRows[r].map(v => String(v || '').toLowerCase().trim());
+      const hasName   = row.some(c => nameKeywords.some(k => c.includes(k)));
+      const hasEnding = row.some(c => endingKeywords.some(k => c.includes(k)));
+      const hasNo     = row.some(c => c === 'no.' || c === 'no' || c === 'sl.no' || c === '#');
+
+      if (hasName || (hasNo && hasEnding)) {
+        headerRowIdx = r;
+        // Find name column
+        nameColIdx = row.findIndex(c => nameKeywords.some(k => c.includes(k)));
+        if (nameColIdx === -1) nameColIdx = 1; // default col B
+
+        // Find ending qty column — prefer "ending" keyword
+        for (let c = row.length - 1; c >= 0; c--) {
+          if (endingKeywords.some(k => row[c].includes(k))) {
+            qtyColIdx = c;
+            break;
+          }
+        }
+        break;
+      }
+    }
+
+    // If no header found → try simple 2-column format, Qty)
+    if (headerRowIdx === -1) {
+      const firstRow = allRows[0];
+      const isSimple = firstRow.length >= 2 &&
+        (isNaN(firstRow[1]) || String(firstRow[0]).toLowerCase().includes('name') ||
+         String(firstRow[0]).toLowerCase().includes('item'));
+      if (isSimple) {
+        nameColIdx   = 0;
+        qtyColIdx    = 1;
+        headerRowIdx = 0;
+      } else {
+        nameColIdx   = 1; // guess col B for name
+        qtyColIdx    = -1;
+        headerRowIdx = 0;
+      }
+    }
+
+    // If still no ending qty column found, look for the last column with numeric data
+    if (qtyColIdx === -1) {
+      const dataRows = allRows.slice(headerRowIdx + 1).filter(r => r[nameColIdx]);
+      if (dataRows.length) {
+        const sampleRow = dataRows[0];
+        for (let c = sampleRow.length - 1; c > nameColIdx; c--) {
+          const val = parseFloat(sampleRow[c]);
+          if (!isNaN(val) && val >= 0) { qtyColIdx = c; break; }
+        }
+      }
+    }
+
+    // If still nothing, default to col right after name
+    if (qtyColIdx === -1) qtyColIdx = nameColIdx + 1;
+
+    // ── Process data rows ──
+    const dataRows = allRows.slice(headerRowIdx + 1);
     let added = 0, updated = 0, skipped = 0;
     const stock = getStock();
+    const toUpsert = []; // collect all items for batch upload
 
     dataRows.forEach(row => {
-      const name = String(row[0] || '').trim();
-      const qty = parseInt(row[1]);
-      if (!name || isNaN(qty) || qty < 0) { skipped++; return; }
+      const name = String(row[nameColIdx] || '').trim();
+      if (!name) { skipped++; return; }
+
+      // Skip total/summary rows
+      if (skipKeywords.some(k => name.toLowerCase().includes(k))) { skipped++; return; }
+
+      // Skip rows where name looks like a number (e.g. row numbers)
+      if (/^\d+$/.test(name)) { skipped++; return; }
+
+      // Parse qty — keep exact decimals, no approximation
+      const rawQty = row[qtyColIdx];
+      let qty;
+      if (rawQty === null || rawQty === undefined || rawQty === '') {
+        qty = 0;
+      } else {
+        qty = parseFloat(String(rawQty).replace(/,/g, ''));
+        if (isNaN(qty) || qty < 0) qty = 0;
+        qty = Math.round(qty * 100) / 100;
+      }
+      qty = Number(qty);
 
       const existing = stock.findIndex(s => s.name.toLowerCase() === name.toLowerCase());
       if (existing > -1) {
         stock[existing].qty = qty;
         stock[existing].name = name;
-        upsertStockRemote(stock[existing]);
+        toUpsert.push(stock[existing]);
         updated++;
       } else {
         const newItem = { name, qty, addedAt: new Date().toISOString() };
         stock.push(newItem);
-        upsertStockRemote(newItem);
+        toUpsert.push(newItem);
         added++;
       }
     });
@@ -3180,20 +3339,26 @@ function importStockFromExcel(input) {
     setStock(stock);
     renderStockList();
     renderLowStockAlerts();
-
-    const msg = `✓ Import complete — ${added} added, ${updated} updated${skipped ? ', ' + skipped + ' skipped (invalid rows)' : ''}.`;
-    showImportResult(msg, 'success');
     input.value = '';
+
+    // Batch upload ALL items in one single Supabase request
+    const colInfo = `(Name: col ${String.fromCharCode(65 + nameColIdx)}, Qty: col ${String.fromCharCode(65 + qtyColIdx)})`;
+    showImportResult(`⏳ Uploading ${toUpsert.length} items to cloud...`, 'success');
+
+    upsertStockBatch(toUpsert).then(ok => {
+      const status = ok ? '✓' : '⚠ Saved locally only —';
+      const msg = `${status} Import complete — ${added} added, ${updated} updated${skipped ? ', ' + skipped + ' skipped' : ''} ${colInfo}`;
+      showImportResult(msg, ok ? 'success' : 'error');
+      if (!ok) showToast('Cloud upload failed — check connection and try again', 'error');
+    });
   }
 
   if (isCsv) {
-    // Handle CSV with plain text reader — more reliable than SheetJS for CSV
     const reader = new FileReader();
     reader.onload = function(e) {
       try {
         const text = e.target.result;
         const rows = text.split(/\r?\n/).filter(l => l.trim()).map(line => {
-          // Handle quoted CSV fields
           const cols = [];
           let cur = '', inQ = false;
           for (let i = 0; i < line.length; i++) {
@@ -3205,31 +3370,37 @@ function importStockFromExcel(input) {
           cols.push(cur.trim());
           return cols;
         });
-        processRows(rows);
+        detectAndProcess(rows);
       } catch (err) {
-        showImportResult('Error reading CSV file. Make sure it has two columns: Item Name and Qty.', 'error');
+        showImportResult('Error reading CSV file.', 'error');
       }
     };
     reader.onerror = () => showImportResult('Could not read the file.', 'error');
     reader.readAsText(file, 'UTF-8');
   } else {
-    // Handle XLSX with SheetJS
     const reader = new FileReader();
     reader.onload = function(e) {
       try {
         const data = new Uint8Array(e.target.result);
         const workbook = XLSX.read(data, { type: 'array' });
-        const sheet = workbook.Sheets[workbook.SheetNames[0]];
-        const rows = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '' });
-        processRows(rows);
+        // Try to find the most relevant sheet
+        let sheetName = workbook.SheetNames[0];
+        const stockSheet = workbook.SheetNames.find(n =>
+          /stock|inventory|item|product/i.test(n)
+        );
+        if (stockSheet) sheetName = stockSheet;
+        const sheet = workbook.Sheets[sheetName];
+        const rows = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '', raw: true });
+        detectAndProcess(rows);
       } catch (err) {
-        showImportResult('Could not read .xlsx file — it may be too complex (formulas, merged cells). Try saving it as a .csv file first, then upload the .csv instead.', 'error');
+        showImportResult('Error reading file: ' + err.message, 'error');
       }
     };
     reader.onerror = () => showImportResult('Could not read the file.', 'error');
     reader.readAsArrayBuffer(file);
   }
 }
+
 
 function showImportResult(msg, type) {
   const el = document.getElementById('stock-import-result');
@@ -3241,7 +3412,7 @@ function showImportResult(msg, type) {
 }
 
 function downloadStockTemplate() {
-  const rows = [['Item Name', 'Qty'], ['Coffee Bags', 50], ['Sugar (kg)', 100], ['Milk (litre)', 30]];
+  const rows = [['Item Name (የእቃ ስም)', 'Qty'], ['Coffee Bags', 50], ['Sugar (kg)', 100], ['Milk (litre)', 30]];
   const csv = rows.map(r => r.map(c => '"' + String(c).replace(/"/g, '""') + '"').join(',')).join('\n');
   const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
   const url = URL.createObjectURL(blob);
@@ -3260,6 +3431,34 @@ function deleteStockItem(name) {
   });
 }
 
+async function clearAllStockRemote() {
+  try {
+    const r = await fetch(`${SUPABASE_URL}/rest/v1/stock?name=neq.`, {
+      method: 'DELETE',
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
+    });
+    return r.ok;
+  } catch { return false; }
+}
+
+function clearAllStock() {
+  const stock = getStock();
+  if (!stock.length) return showToast('Stock is already empty', 'error');
+  askConfirm(`Clear ALL ${stock.length} stock item${stock.length !== 1 ? 's' : ''}? This permanently deletes them from the database.`, async () => {
+    showLoading('Clearing stock...');
+    const ok = await clearAllStockRemote();
+    hideLoading();
+    setStock([]);
+    renderStockList();
+    renderLowStockAlerts();
+    if (ok) {
+      showToast('ስቶክ ጸድቷል ✓', 'success');
+    } else {
+      showToast('Cleared locally — cloud delete may have failed. Refresh to verify.', 'error');
+    }
+  });
+}
+
 function renderStockList() {
   const stock = getStock();
   const container = document.getElementById('stock-list');
@@ -3270,14 +3469,14 @@ function renderStockList() {
   }
   container.innerHTML = `
     <table class="report-table">
-      <thead><tr><th>Item</th><th>Qty in Stock</th><th>VAT Eligible</th><th>Action</th></tr></thead>
+      <thead><tr><th>Item</th><th>Qty in Stock</th><th>VAT Eligible (ለቫት ብቁ)</th><th>Action</th></tr></thead>
       <tbody>
         ${stock.map(s => `<tr>
           <td><strong>${s.name}</strong></td>
           <td>${s.qty}</td>
           <td>${s.qty > 0
             ? '<span style="color:var(--green);font-weight:600">✓ Yes</span>'
-            : '<span style="color:var(--red)">✗ No (out of stock)</span>'}</td>
+            : '<span style="color:var(--red)">✗ No)</span>'}</td>
           <td>
             <button class="btn btn-sm btn-ghost" onclick="promptEditStock('${s.name.replace(/'/g,"\\'")}', ${s.qty})">Edit</button>
             <button class="btn btn-sm btn-danger" style="margin-left:0.5rem" onclick="deleteStockItem('${s.name.replace(/'/g,"\\'")}')">Remove</button>
@@ -3294,7 +3493,7 @@ function promptEditStock(name, currentQty) {
   document.getElementById('confirm-modal-msg').innerHTML =
     `Update quantity for <strong>${name}</strong>:<br><input id="stock-edit-qty" type="number" min="0" value="${currentQty}" style="margin-top:0.75rem;width:100%;padding:0.6rem;border:1.5px solid var(--border);border-radius:3px;font-size:1rem;font-family:inherit;">`;
   document.getElementById('confirm-modal-ok').textContent = 'Update';
-  document.getElementById('confirm-modal-cancel').textContent = 'Cancel';
+  document.getElementById('confirm-modal-cancel').textContent = 'Cancel (ሰርዝ)';
   modal.style.display = 'flex';
   setTimeout(() => document.getElementById('stock-edit-qty')?.focus(), 100);
 
@@ -3303,7 +3502,7 @@ function promptEditStock(name, currentQty) {
   function cleanup() {
     modal.style.display = 'none';
     ok.textContent = 'Confirm';
-    cancel.textContent = 'Cancel';
+    cancel.textContent = 'Cancel (ሰርዝ)';
     ok.onclick = null; cancel.onclick = null;
   }
   ok.onclick = () => {
@@ -3395,12 +3594,12 @@ function updateTaxFromData() {
 
   const periodLabel = document.getElementById('tax-period').selectedOptions[0]?.text || period;
 
-  // Revenue options
+  // Revenue (ገቢ) options
   const totalRevenue = sales.reduce((a,s)=>a+s.revenue,0);
   const vatSalesRev = sales.filter(s=>s.vatOn).reduce((a,s)=>a+s.revenue,0);
   const nonVatSalesRev = sales.filter(s=>!s.vatOn).reduce((a,s)=>a+s.revenue,0);
   const revenueOpts = [
-    { label: 'All sales revenue — ETB ' + totalRevenue.toFixed(2) + ' (' + sales.length + ' records)', val: totalRevenue.toFixed(2) },
+    { label: 'All sales revenue — ETB ' + totalRevenue (ገቢ).toFixed(2) + ' (' + sales.length + ' records)', val: totalRevenue (ገቢ).toFixed(2) },
     { label: 'VAT sales only — ETB ' + vatSalesRev.toFixed(2), val: vatSalesRev.toFixed(2) },
     { label: 'Non-VAT sales only — ETB ' + nonVatSalesRev.toFixed(2), val: nonVatSalesRev.toFixed(2) },
   ];
@@ -3476,7 +3675,7 @@ function calcTax() {
 
   // ── Business Income Tax ──
   const taxableProfit = Math.max(0, revenue - costs);
-  const standardTax = taxableProfit * 0.30; // 30% flat rate
+  const standardTax = taxableProfit (ትርፍ) * 0.30; // 30% flat rate
 
   // MAT: 2.5% of turnover — applies if calculated tax < MAT
   const mat = revenue * 0.025;
@@ -3530,9 +3729,9 @@ function calcTax() {
     <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.75rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:0.75rem;">Full Breakdown</div>
     <table class="report-table">
       <tbody>
-        <tr><td>Total Revenue (Turnover)</td><td style="text-align:right;font-weight:600;">${fmt(revenue)}</td></tr>
+        <tr><td>Total Revenue (ገቢ) (Turnover)</td><td style="text-align:right;font-weight:600;">${fmt(revenue)}</td></tr>
         <tr><td>Total Allowable Costs</td><td style="text-align:right;color:var(--red)">− ${fmt(costs)}</td></tr>
-        <tr style="font-weight:700;border-top:2px solid var(--border)"><td>Taxable Profit</td><td style="text-align:right;">${fmt(taxableProfit)}</td></tr>
+        <tr style="font-weight:700;border-top:2px solid var(--border)"><td>Taxable Profit (ትርፍ)</td><td style="text-align:right;">${fmt(taxableProfit)}</td></tr>
         <tr><td style="padding-left:1.5rem;color:var(--muted);font-size:0.78rem;">Standard Tax (30% × profit)</td><td style="text-align:right;color:var(--muted);font-size:0.78rem;">${fmt(standardTax)}</td></tr>
         <tr><td style="padding-left:1.5rem;color:var(--muted);font-size:0.78rem;">MAT floor (2.5% × turnover)</td><td style="text-align:right;color:var(--muted);font-size:0.78rem;">${fmt(mat)}</td></tr>
         <tr style="font-weight:700;${matApplied ? 'color:#b45309' : ''}">
@@ -3565,7 +3764,7 @@ function getTaxReportRows() {
 
   const vatPayable = Math.max(0, vatCollected - vatInputPaid);
   const taxableProfit = Math.max(0, revenue - costs);
-  const standardTax = taxableProfit * 0.30;
+  const standardTax = taxableProfit (ትርፍ) * 0.30;
   const mat = revenue * 0.025;
   const incomeTaxDue = Math.max(standardTax, mat);
   const quarterlyAdvance = priorYearTax / 12;
@@ -3577,9 +3776,9 @@ function getTaxReportRows() {
     ['Generated', new Date().toLocaleDateString()],
     [],
     ['INCOME & PROFIT'],
-    ['Total Revenue (Turnover)', revenue.toFixed(2)],
+    ['Total Revenue (ገቢ) (Turnover)', revenue.toFixed(2)],
     ['Total Allowable Costs', costs.toFixed(2)],
-    ['Taxable Profit', (revenue - costs).toFixed(2)],
+    ['Taxable Profit (ትርፍ)', (revenue - costs).toFixed(2)],
     [],
     ['BUSINESS INCOME TAX'],
     ['Standard Tax (30% × profit)', standardTax.toFixed(2)],
@@ -3612,7 +3811,7 @@ function createLoanRecord(sourceRecord, sourceType) {
   const loanTypeLabels = {
     credit_sale: 'Credit Sale — Customer Owes Us',
     lent_goods:  'Lent Goods — Expecting Return',
-    credit_purchase: 'Credit Purchase — We Owe Supplier'
+    credit_purchase: 'Credit Purchase — We Owe (ብድር የተወሰደ) Supplier'
   };
 
   const loan = {
@@ -3648,7 +3847,7 @@ function settleLoan(id) {
     upsertLoanRemote(loans[i]);
     renderOwnerLoans();
     renderManagerLoans();
-    showToast('Loan marked as settled ✓', 'success');
+    showToast('ብድር እንደተከፈለ ተምልክቷል ✓', 'success');
   });
 }
 
@@ -3694,10 +3893,10 @@ function loanCard(loan, showActions) {
   const accentColor = loan.settled ? '#1a6b3a' : isOwe ? '#c0392b' : '#1e40af';
   const bgColor = loan.settled ? '#f0fdf4' : isOwe ? '#fff5f5' : '#eff6ff';
   const borderColor = loan.settled ? '#86efac' : isOwe ? '#fca5a5' : '#93c5fd';
-  const loanTypeLabel = isOwe ? '🔴 We Owe' : loan.loanType === 'lent_goods' ? '🟡 Lent Goods' : '🔵 Owed to Us';
+  const loanTypeLabel = isOwe ? '🔴 We Owe (ብድር የተወሰደ) (ብድር የተወሰደ)' : loan.loanType === 'lent_goods' ? '🟡 Lent Goods' : '🔵 Owed to Us (ብድር የተሰጠ) (ብድር የተሰጠ)';
   const statusBadge = loan.settled
-    ? `<span style="display:inline-block;padding:0.15rem 0.55rem;background:#dcfce7;color:#166534;border-radius:2px;font-size:0.62rem;font-weight:700;letter-spacing:0.08em;">✓ SETTLED${loan.settledAt ? ' · ' + loan.settledAt.split('T')[0] : ''}</span>`
-    : `<span style="display:inline-block;padding:0.15rem 0.55rem;background:#fee2e2;color:#991b1b;border-radius:2px;font-size:0.62rem;font-weight:700;letter-spacing:0.08em;">⏳ OUTSTANDING</span>`;
+    ? `<span style="display:inline-block;padding:0.15rem 0.55rem;background:#dcfce7;color:#166534;border-radius:2px;font-size:0.62rem;font-weight:700;letter-spacing:0.08em;">✓ SETTLED (ብድር መልሷል)${loan.settledAt ? ' · ' + loan.settledAt.split('T')[0] : ''}</span>`
+    : `<span style="display:inline-block;padding:0.15rem 0.55rem;background:#fee2e2;color:#991b1b;border-radius:2px;font-size:0.62rem;font-weight:700;letter-spacing:0.08em;">⏳ OUTSTANDING (ያልተከፈለ)</span>`;
 
   return `
     <div style="border:1.5px solid ${borderColor};border-left:5px solid ${accentColor};border-radius:4px;padding:0.9rem 1rem;margin-bottom:0.65rem;background:${bgColor};">
@@ -3718,10 +3917,10 @@ function loanCard(loan, showActions) {
         ${showActions ? `
           <div style="display:flex;gap:0.4rem;">
             ${!loan.settled
-              ? `<button class="btn btn-sm" style="background:var(--green);color:#fff;border-color:var(--green);font-size:0.65rem;padding:0.25rem 0.6rem;" onclick="settleLoan('${loan.id}')">✓ Mark Settled</button>`
+              ? `<button class="btn btn-sm" style="background:var(--green);color:#fff;border-color:var(--green);font-size:0.65rem;padding:0.25rem 0.6rem;" onclick="settleLoan('${loan.id}')">✓ Mark Settled (ብድር መልሷል)</button>`
               : `<button class="btn btn-ghost btn-sm" style="font-size:0.65rem;padding:0.25rem 0.6rem;" onclick="unsettleLoan('${loan.id}')">↩ Unsettle</button>`
             }
-            <button class="btn btn-danger btn-sm" style="font-size:0.65rem;padding:0.25rem 0.6rem;" onclick="deleteLoan('${loan.id}')">Delete</button>
+            <button class="btn btn-danger btn-sm" style="font-size:0.65rem;padding:0.25rem 0.6rem;" onclick="deleteLoan('${loan.id}')">Delete (አጥፋ)</button>
           </div>
         ` : ''}
       </div>
@@ -3743,12 +3942,12 @@ function renderOwnerLoans() {
   let html = `
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:1.25rem;">
       <div style="padding:0.9rem;background:#eff6ff;border:1.5px solid #93c5fd;border-radius:4px;text-align:center;">
-        <div style="font-size:0.68rem;color:#1e40af;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.25rem;">Owed to Us</div>
+        <div style="font-size:0.68rem;color:#1e40af;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.25rem;">Owed to Us (ብድር የተሰጠ)</div>
         <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;color:#1e40af;">ETB ${fmtNum(totalOwedToUs)}</div>
         <div style="font-size:0.65rem;color:#6b7280;margin-top:0.1rem;">${allLoans.filter(l=>l.loanType!=='credit_purchase'&&!l.settled).length} outstanding</div>
       </div>
       <div style="padding:0.9rem;background:#fff5f5;border:1.5px solid #fca5a5;border-radius:4px;text-align:center;">
-        <div style="font-size:0.68rem;color:#c0392b;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.25rem;">We Owe</div>
+        <div style="font-size:0.68rem;color:#c0392b;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.25rem;">We Owe (ብድር የተወሰደ)</div>
         <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;color:#c0392b;">ETB ${fmtNum(totalWeOwe)}</div>
         <div style="font-size:0.65rem;color:#6b7280;margin-top:0.1rem;">${allLoans.filter(l=>l.loanType==='credit_purchase'&&!l.settled).length} outstanding</div>
       </div>
@@ -3771,11 +3970,11 @@ function renderOwnerLoans() {
     html += loans.map(l => loanCard(l, true)).join('');
   } else {
     if (weAreOwed.length) {
-      html += `<div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.1em;color:#1e40af;margin-bottom:0.6rem;padding-bottom:0.4rem;border-bottom:2px solid #93c5fd;">🔵 We Are Owed — Credit Sales & Lent Goods</div>`;
+      html += `<div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.1em;color:#1e40af;margin-bottom:0.6rem;padding-bottom:0.4rem;border-bottom:2px solid #93c5fd;">🔵 We Are Owed (ብድር የተሰጠ)</div>`;
       html += weAreOwed.map(l => loanCard(l, true)).join('');
     }
     if (weOwe.length) {
-      html += `<div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.1em;color:#c0392b;margin:1.25rem 0 0.6rem;padding-bottom:0.4rem;border-bottom:2px solid #fca5a5;">🔴 We Owe — Credit Purchases</div>`;
+      html += `<div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.1em;color:#c0392b;margin:1.25rem 0 0.6rem;padding-bottom:0.4rem;border-bottom:2px solid #fca5a5;">🔴 We Owe (ብድር የተወሰደ) (ብድር የተወሰደ) (ብድር የተወሰደ)</div>`;
       html += weOwe.map(l => loanCard(l, true)).join('');
     }
   }
@@ -3806,11 +4005,11 @@ function renderManagerLoans() {
     html += loans.map(l => loanCard(l, false)).join('');
   } else {
     if (weAreOwed.length) {
-      html += `<div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.1em;color:#1e40af;margin-bottom:0.6rem;padding-bottom:0.4rem;border-bottom:2px solid #93c5fd;">🔵 Owed to Us</div>`;
+      html += `<div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.1em;color:#1e40af;margin-bottom:0.6rem;padding-bottom:0.4rem;border-bottom:2px solid #93c5fd;">🔵 Owed to Us (ብድር የተሰጠ) (ብድር የተሰጠ)</div>`;
       html += weAreOwed.map(l => loanCard(l, false)).join('');
     }
     if (weOwe.length) {
-      html += `<div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.1em;color:#c0392b;margin:1rem 0 0.6rem;padding-bottom:0.4rem;border-bottom:2px solid #fca5a5;">🔴 We Owe</div>`;
+      html += `<div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.1em;color:#c0392b;margin:1rem 0 0.6rem;padding-bottom:0.4rem;border-bottom:2px solid #fca5a5;">🔴 We Owe (ብድር የተወሰደ) (ብድር የተወሰደ)</div>`;
       html += weOwe.map(l => loanCard(l, false)).join('');
     }
   }
@@ -3838,7 +4037,7 @@ function saveTaxLog() {
 
   const vatPayable    = Math.max(0, vatCollected - vatInput);
   const taxableProfit = Math.max(0, revenue - costs);
-  const standardTax  = taxableProfit * 0.30;
+  const standardTax  = taxableProfit (ትርፍ) * 0.30;
   const mat          = revenue * 0.025;
   const incomeTax    = Math.max(standardTax, mat);
   const matApplied   = incomeTax === mat && mat > standardTax;
@@ -3885,7 +4084,7 @@ function toggleTaxPaid(id) {
   setTaxLogs(logs);
   upsertTaxLogRemote(logs[i]);
   renderTaxLog();
-  showToast(logs[i].paid ? 'Marked as paid ✓' : 'Marked as unpaid', logs[i].paid ? 'success' : 'error');
+  showToast(logs[i].paid ? 'እንደተከፈለ ተምልክቷል ✓' : 'Marked as unpaid', logs[i].paid ? 'success' : 'error');
 }
 
 function deleteTaxLog(id) {
@@ -3909,14 +4108,14 @@ function downloadTaxLogEntry(id) {
     ['Status', log.paid ? 'PAID on ' + new Date(log.paidAt).toLocaleDateString() : 'UNPAID'],
     [],
     ['INPUTS'],
-    ['Total Revenue (ETB)', fmt(log.revenue)],
-    ['Total Costs (ETB)', fmt(log.costs)],
+    ['Total Revenue (ገቢ) (ETB)', fmt(log.revenue)],
+    ['Total Cost (ጠቅላላ ወጪ)s (ETB)', fmt(log.costs)],
     ['VAT Collected (ETB)', fmt(log.vatCollected)],
     ['Input VAT Paid (ETB)', fmt(log.vatInput)],
     ['Prior Year Tax (ETB)', fmt(log.priorYear)],
     [],
     ['CALCULATION'],
-    ['Taxable Profit (ETB)', fmt(log.taxableProfit)],
+    ['Taxable Profit (ትርፍ) (ETB)', fmt(log.taxableProfit)],
     ['Standard Tax 30% (ETB)', fmt(log.standardTax)],
     ['MAT 2.5% of turnover (ETB)', fmt(log.mat)],
     ['Income Tax Due (ETB)', fmt(log.incomeTax), log.matApplied ? 'MAT Applied' : ''],
@@ -3958,8 +4157,8 @@ function renderTaxLog() {
         </span>
       </div>
       <div class="tax-log-body">
-        <div class="row"><span>Total Revenue</span><strong>${fmt(log.revenue)}</strong></div>
-        <div class="row"><span>Taxable Profit</span><strong>${fmt(log.taxableProfit)}</strong></div>
+        <div class="row"><span>Total Revenue (ገቢ)</span><strong>${fmt(log.revenue)}</strong></div>
+        <div class="row"><span>Taxable Profit (ትርፍ)</span><strong>${fmt(log.taxableProfit)}</strong></div>
         <div class="row"><span>Income Tax Due ${log.matApplied ? '<span style="font-size:0.65rem;color:#b45309;">⚠️ MAT</span>' : ''}</span><strong>${fmt(log.incomeTax)}</strong></div>
         <div class="row"><span>Net VAT Payable</span><strong>${fmt(log.vatPayable)}</strong></div>
         <div class="row"><span>Monthly Advance (1/12)</span><strong>${fmt(log.quarterlyAdv)}</strong></div>
@@ -3972,7 +4171,7 @@ function renderTaxLog() {
           Mark as paid
         </label>
         <button class="btn btn-sm btn-ghost" onclick="downloadTaxLogEntry('${log.id}')">⬇ Download</button>
-        <button class="btn btn-sm btn-danger" onclick="deleteTaxLog('${log.id}')" style="margin-left:auto;">Delete</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteTaxLog('${log.id}')" style="margin-left:auto;">Delete (አጥፋ)</button>
       </div>
     </div>
   `).join('');
@@ -4004,7 +4203,7 @@ function printTaxReport() {
   const year = document.getElementById('tax-year').selectedOptions[0].text;
   const vatPayable = Math.max(0, vatCollected - vatInputPaid);
   const taxableProfit = Math.max(0, revenue - costs);
-  const standardTax = taxableProfit * 0.30;
+  const standardTax = taxableProfit (ትርፍ) * 0.30;
   const mat = revenue * 0.025;
   const incomeTaxDue = Math.max(standardTax, mat);
   const quarterlyAdv = priorYearTax / 12;
@@ -4019,8 +4218,8 @@ function printTaxReport() {
       <p>${period} · ${year} &nbsp;|&nbsp; Generated: ${new Date().toLocaleDateString()}</p>
     </div>
     <div class="print-stats">
-      <div class="print-stat"><div class="label">Total Revenue</div><div class="value">${fmt(revenue)}</div></div>
-      <div class="print-stat"><div class="label">Taxable Profit</div><div class="value">${fmt(taxableProfit)}</div></div>
+      <div class="print-stat"><div class="label">Total Revenue (ገቢ)</div><div class="value">${fmt(revenue)}</div></div>
+      <div class="print-stat"><div class="label">Taxable Profit (ትርፍ)</div><div class="value">${fmt(taxableProfit)}</div></div>
       <div class="print-stat"><div class="label">Income Tax Due</div><div class="value">${fmt(incomeTaxDue)}</div></div>
       <div class="print-stat"><div class="label">Net VAT Payable</div><div class="value">${fmt(vatPayable)}</div></div>
       <div class="print-stat"><div class="label">Quarterly Advance</div><div class="value">${fmt(quarterlyAdv)}</div></div>
@@ -4030,9 +4229,9 @@ function printTaxReport() {
     <table>
       <tbody>
         <tr><th>Item</th><th>Amount (ETB)</th></tr>
-        <tr><td>Total Revenue (Turnover)</td><td>${fmt(revenue)}</td></tr>
+        <tr><td>Total Revenue (ገቢ) (Turnover)</td><td>${fmt(revenue)}</td></tr>
         <tr><td>Total Allowable Costs</td><td>− ${fmt(costs)}</td></tr>
-        <tr><td><strong>Taxable Profit</strong></td><td><strong>${fmt(taxableProfit)}</strong></td></tr>
+        <tr><td><strong>Taxable Profit (ትርፍ)</strong></td><td><strong>${fmt(taxableProfit)}</strong></td></tr>
         <tr><td>Standard Income Tax (30%)</td><td>${fmt(standardTax)}</td></tr>
         <tr><td>MAT Floor (2.5% of turnover)</td><td>${fmt(mat)}</td></tr>
         <tr><td><strong>Income Tax Due${incomeTaxDue === mat && mat > standardTax ? ' ⚠️ MAT Applied' : ''}</strong></td><td><strong>${fmt(incomeTaxDue)}</strong></td></tr>
@@ -4058,7 +4257,7 @@ function downloadVatSheet() {
   if (!approved.length) return showToast('No VAT sales to download', 'error');
 
   const rows = [
-    ['Date', 'Item', 'Qty', 'Selling Price (ETB)', 'Revenue (ETB)', 'VAT Rate (%)', 'VAT Amount (ETB)', 'Cost (ETB)', 'Profit (ETB)', 'Owner Note']
+    ['Date', 'Item', 'Qty', 'Selling Price (የሽያጭ ዋጋ) (ETB)', 'Revenue (ገቢ) (ETB)', 'VAT Rate (%) (የቫት መጠን)', 'VAT Amount (ETB)', 'Cost (ETB)', 'Profit (ትርፍ) (ETB)', 'Owner Note']
   ];
   approved.sort((a,b) => new Date(a.date) - new Date(b.date)).forEach(s => {
     rows.push([
@@ -4119,7 +4318,7 @@ function triggerCSV(rows, filename) {
 function downloadAllSales() {
   const sales = getSales().filter(s => s.status === 'approved');
   if (!sales.length) return showToast('No approved sales to export', 'error');
-  const rows = [['Date','Item','Qty','Selling Price (ETB)','Revenue (ETB)','VAT?','VAT Rate (%)','VAT Amount (ETB)','Cost/Unit (ETB)','Total Cost (ETB)','Expenses (ETB)','Profit (ETB)','Notes','Owner Note']];
+  const rows = [['Date','Item','Qty','Selling Price (የሽያጭ ዋጋ) (ETB)','Revenue (ገቢ) (ETB)','VAT?','VAT Rate (%) (የቫት መጠን)','VAT Amount (ETB)','Cost/Unit (ዋጋ/አንድ) (ETB)','Total Cost (ጠቅላላ ወጪ) (ETB)','Expenses (ወጪዎች) (ETB)','Profit (ትርፍ) (ETB)','Notes','Owner Note']];
   sales.sort((a,b) => new Date(a.date)-new Date(b.date)).forEach(s => {
     rows.push([s.date, s.name, s.qty, s.price.toFixed(2), s.revenue.toFixed(2),
       s.vatOn ? 'Yes' : 'No', s.vatOn ? s.vatRate : '', s.vatOn ? s.vatAmount.toFixed(2) : '',
@@ -4142,7 +4341,7 @@ function downloadAllSales() {
 function downloadAllPurchases() {
   const purchases = getPurchases().filter(p => p.status === 'approved');
   if (!purchases.length) return showToast('No approved purchases to export', 'error');
-  const rows = [['Date','Item','Qty','Cost/Unit (ETB)','Subtotal (ETB)','VAT?','VAT Rate (%)','VAT Amount (ETB)','Total (ETB)','Added to Stock?','Notes','Owner Note']];
+  const rows = [['Date','Item','Qty','Cost/Unit (ዋጋ/አንድ) (ETB)','Subtotal (ETB)','VAT?','VAT Rate (%) (የቫት መጠን)','VAT Amount (ETB)','Total (ETB)','Added to Stock?','Notes','Owner Note']];
   purchases.sort((a,b) => new Date(a.date)-new Date(b.date)).forEach(p => {
     rows.push([p.date, p.name, p.qty, p.costUnit.toFixed(2), p.subtotal.toFixed(2),
       p.vatOn ? 'Yes' : 'No', p.vatOn ? p.vatRate : '', p.vatOn ? p.vatAmount.toFixed(2) : '',
@@ -4160,8 +4359,8 @@ function downloadAllPurchases() {
 function downloadStock() {
   const stock = getStock();
   if (!stock.length) return showToast('No stock items to export', 'error');
-  const rows = [['Item','Qty in Stock','VAT Eligible']];
-  stock.forEach(s => rows.push([s.name, s.qty, s.qty > 0 ? 'Yes' : 'No (out of stock)']));
+  const rows = [['Item','Qty in Stock','VAT Eligible (ለቫት ብቁ)']];
+  stock.forEach(s => rows.push([s.name, s.qty, s.qty > 0 ? 'Yes' : 'No)']));
   triggerCSV(rows, 'SalesFlow_Stock_Snapshot.csv');
   showToast('Stock snapshot downloaded ✓', 'success');
 }
@@ -4222,14 +4421,14 @@ function downloadMonthlyCSV() {
     ['SalesFlow Monthly Report — ' + MONTHS[month] + ' ' + year],
     [],
     ['SUMMARY'],
-    ['Total Revenue (ETB)', d.totalRev.toFixed(2)],
-    ['Net Profit (ETB)', d.totalProfit.toFixed(2)],
+    ['Total Revenue (ገቢ) (ETB)', d.totalRev.toFixed(2)],
+    ['Net Profit (ትርፍ) (ETB)', d.totalProfit (ትርፍ).toFixed(2)],
     ['VAT Collected (ETB)', d.totalVat.toFixed(2)],
-    ['Total Costs (ETB)', d.totalCost.toFixed(2)],
+    ['Total Cost (ጠቅላላ ወጪ)s (ETB)', d.totalCost.toFixed(2)],
     ['Total Purchases Spent (ETB)', d.totalPurchases.toFixed(2)],
     [],
     ['SALES'],
-    ['Date','Item','Qty','Revenue (ETB)','VAT Amount (ETB)','Cost (ETB)','Profit (ETB)']
+    ['Date','Item','Qty','Revenue (ገቢ) (ETB)','VAT Amount (ETB)','Cost (ETB)','Profit (ትርፍ) (ETB)']
   ];
   d.sales.sort((a,b)=>new Date(a.date)-new Date(b.date)).forEach(s => {
     rows.push([s.date, s.name, s.qty, s.revenue.toFixed(2), s.vatAmount.toFixed(2), s.totalCost.toFixed(2), s.profit.toFixed(2)]);
@@ -4246,7 +4445,7 @@ function downloadMonthlyCSV() {
 
 // ── Build print HTML ──
 function buildPrintHTML(month, year, d, forPrint) {
-  const margin = d.totalRev > 0 ? ((d.totalProfit/d.totalRev)*100).toFixed(1) : '0.0';
+  const margin = d.totalRev > 0 ? ((d.totalProfit (ትርፍ)/d.totalRev)*100).toFixed(1) : '0.0';
   const byItem = {};
   d.sales.forEach(s => {
     if (!byItem[s.name]) byItem[s.name] = { revenue:0, profit:0, qty:0, vat:0 };
@@ -4269,25 +4468,25 @@ function buildPrintHTML(month, year, d, forPrint) {
       <p>${MONTHS[month]} ${year} &nbsp;|&nbsp; Generated: ${new Date().toLocaleDateString()}</p>
     </div>
     <div class="print-stats">
-      <div class="print-stat"><div class="label">Total Revenue</div><div class="value">ETB ${fmtNum(d.totalRev)}</div></div>
-      <div class="print-stat"><div class="label">Net Profit (${margin}%)</div><div class="value">ETB ${fmtNum(d.totalProfit)}</div></div>
+      <div class="print-stat"><div class="label">Total Revenue (ገቢ)</div><div class="value">ETB ${fmtNum(d.totalRev)}</div></div>
+      <div class="print-stat"><div class="label">Net Profit (ትርፍ) (${margin}%)</div><div class="value">ETB ${fmtNum(d.totalProfit)}</div></div>
       <div class="print-stat"><div class="label">VAT Collected</div><div class="value">ETB ${fmtNum(d.totalVat)}</div></div>
-      <div class="print-stat"><div class="label">Total Costs</div><div class="value">ETB ${fmtNum(d.totalCost)}</div></div>
+      <div class="print-stat"><div class="label">Total Cost (ጠቅላላ ወጪ)s</div><div class="value">ETB ${fmtNum(d.totalCost)}</div></div>
       ${d.purchases.length ? '<div class="print-stat"><div class="label">Purchases Spent</div><div class="value">ETB '+fmtNum(d.totalPurchases)+'</div></div>' : ''}
     </div>
     ${items.length ? `
-    <div class="section-title">Top Items by Revenue</div>
-    <table><thead><tr><th>Item</th><th>Units Sold</th><th>Revenue</th><th>VAT</th><th>Profit</th></tr></thead>
+    <div class="section-title">Top Items by Revenue (ገቢ)</div>
+    <table><thead><tr><th>Item</th><th>Units Sold</th><th>Revenue (ገቢ)</th><th>VAT</th><th>Profit (ትርፍ)</th></tr></thead>
     <tbody>${items.map(([name,v])=>'<tr><td>'+name+'</td><td>'+v.qty+'</td><td>ETB '+v.revenue.toFixed(2)+'</td><td>ETB '+v.vat.toFixed(2)+'</td><td>ETB '+v.profit.toFixed(2)+'</td></tr>').join('')}</tbody>
     </table>` : ''}
     ${d.sales.length ? `
     <div class="section-title">Sales Detail</div>
-    <table><thead><tr><th>Date</th><th>Item</th><th>Qty</th><th>Revenue</th><th>VAT</th><th>Cost</th><th>Profit</th></tr></thead>
-    <tbody>${salesRows}<tr style="font-weight:700;border-top:2px solid #ccc"><td colspan="3">TOTAL</td><td>ETB ${d.totalRev.toFixed(2)}</td><td>ETB ${d.totalVat.toFixed(2)}</td><td>ETB ${d.totalCost.toFixed(2)}</td><td>ETB ${d.totalProfit.toFixed(2)}</td></tr></tbody>
+    <table><thead><tr><th>Date (ቀን)</th><th>Item</th><th>Qty</th><th>Revenue (ገቢ)</th><th>VAT</th><th>Cost</th><th>Profit (ትርፍ)</th></tr></thead>
+    <tbody>${salesRows}<tr style="font-weight:700;border-top:2px solid #ccc"><td colspan="3">TOTAL</td><td>ETB ${d.totalRev.toFixed(2)}</td><td>ETB ${d.totalVat.toFixed(2)}</td><td>ETB ${d.totalCost.toFixed(2)}</td><td>ETB ${d.totalProfit (ትርፍ).toFixed(2)}</td></tr></tbody>
     </table>` : '<p style="color:#999;font-size:0.8rem">No sales this month.</p>'}
     ${d.purchases.length ? `
-    <div class="section-title">Purchases</div>
-    <table><thead><tr><th>Date</th><th>Item</th><th>Qty</th><th>Unit Cost</th><th>Total</th><th>VAT</th></tr></thead>
+    <div class="section-title">Purchases (ግቢ)</div>
+    <table><thead><tr><th>Date (ቀን)</th><th>Item</th><th>Qty</th><th>Unit Cost</th><th>Total</th><th>VAT</th></tr></thead>
     <tbody>${purchaseRows}<tr style="font-weight:700;border-top:2px solid #ccc"><td colspan="4">TOTAL SPENT</td><td>ETB ${d.totalPurchases.toFixed(2)}</td><td></td></tr></tbody>
     </table>` : ''}
     ${forPrint ? '' : '<div style="margin-top:1.5rem;text-align:right"><button onclick="printMonthlyReport()" style="padding:0.6rem 1.2rem;background:#0f0e0d;color:white;border:none;border-radius:3px;font-family:Syne,sans-serif;font-weight:700;font-size:0.8rem;cursor:pointer;">🖨️ Print This Report</button></div>'}
