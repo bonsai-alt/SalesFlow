@@ -1978,8 +1978,8 @@ function confirmArchive() {
 // ════════════════════════════════════════
 function renderLowStockAlerts() {
   const stock = getStock();
-  const low = stock.filter(s => s.qty <= 10 && s.qty > 0);
-  const zero = stock.filter(s => s.qty === 0);
+  const low  = stock.filter(s => Number(s.qty) <= 10 && Number(s.qty) > 0);
+  const zero = stock.filter(s => Number(s.qty) === 0 || s.qty === undefined);
   const container = document.getElementById('o-low-stock-alerts');
   if (!container) return;
 
@@ -2213,20 +2213,104 @@ function importStockFromExcel(input) {
 
   const isCsv = file.name.toLowerCase().endsWith('.csv');
 
-  function processRows(rows) {
-    if (!rows.length) { showImportResult('No data found in file.', 'error'); return; }
+  // ── Smart column detector ──
+  // Finds the header row, name column, and ending qty column automatically
+  function detectAndProcess(allRows) {
+    if (!allRows.length) { showImportResult('No data found in file.', 'error'); return; }
 
-    const firstRow = rows[0];
-    const hasHeader = isNaN(firstRow[1]) || String(firstRow[0]).toLowerCase().includes('name') || String(firstRow[0]).toLowerCase().includes('item');
-    const dataRows = hasHeader ? rows.slice(1) : rows;
+    // Keywords to identify columns
+    const nameKeywords    = ['description', 'item', 'name', 'product', 'goods', 'material'];
+    const endingKeywords  = ['ending', 'audit', 'declared', 'balance', 'remaining', 'closing', 'end qty', 'end stock', 'final'];
+    const skipKeywords    = ['total', 'grand', 'subtotal', 'sum'];
 
+    let headerRowIdx = -1;
+    let nameColIdx   = -1;
+    let qtyColIdx    = -1;
+
+    // Scan for the header row (first row that has both a name-like and qty-like header)
+    for (let r = 0; r < Math.min(allRows.length, 15); r++) {
+      const row = allRows[r].map(v => String(v || '').toLowerCase().trim());
+      const hasName   = row.some(c => nameKeywords.some(k => c.includes(k)));
+      const hasEnding = row.some(c => endingKeywords.some(k => c.includes(k)));
+      const hasNo     = row.some(c => c === 'no.' || c === 'no' || c === 'sl.no' || c === '#');
+
+      if (hasName || (hasNo && hasEnding)) {
+        headerRowIdx = r;
+        // Find name column
+        nameColIdx = row.findIndex(c => nameKeywords.some(k => c.includes(k)));
+        if (nameColIdx === -1) nameColIdx = 1; // default col B
+
+        // Find ending qty column — prefer "ending" keyword
+        for (let c = row.length - 1; c >= 0; c--) {
+          if (endingKeywords.some(k => row[c].includes(k))) {
+            qtyColIdx = c;
+            break;
+          }
+        }
+        break;
+      }
+    }
+
+    // If no header found → try simple 2-column format (Item Name, Qty)
+    if (headerRowIdx === -1) {
+      const firstRow = allRows[0];
+      const isSimple = firstRow.length >= 2 &&
+        (isNaN(firstRow[1]) || String(firstRow[0]).toLowerCase().includes('name') ||
+         String(firstRow[0]).toLowerCase().includes('item'));
+      if (isSimple) {
+        nameColIdx   = 0;
+        qtyColIdx    = 1;
+        headerRowIdx = 0;
+      } else {
+        nameColIdx   = 1; // guess col B for name
+        qtyColIdx    = -1;
+        headerRowIdx = 0;
+      }
+    }
+
+    // If still no ending qty column found, look for the last column with numeric data
+    if (qtyColIdx === -1) {
+      const dataRows = allRows.slice(headerRowIdx + 1).filter(r => r[nameColIdx]);
+      if (dataRows.length) {
+        const sampleRow = dataRows[0];
+        for (let c = sampleRow.length - 1; c > nameColIdx; c--) {
+          const val = parseFloat(sampleRow[c]);
+          if (!isNaN(val) && val >= 0) { qtyColIdx = c; break; }
+        }
+      }
+    }
+
+    // If still nothing, default to col right after name
+    if (qtyColIdx === -1) qtyColIdx = nameColIdx + 1;
+
+    // ── Process data rows ──
+    const dataRows = allRows.slice(headerRowIdx + 1);
     let added = 0, updated = 0, skipped = 0;
     const stock = getStock();
 
     dataRows.forEach(row => {
-      const name = String(row[0] || '').trim();
-      const qty = parseInt(row[1]);
-      if (!name || isNaN(qty) || qty < 0) { skipped++; return; }
+      const name = String(row[nameColIdx] || '').trim();
+      if (!name) { skipped++; return; }
+
+      // Skip total/summary rows
+      if (skipKeywords.some(k => name.toLowerCase().includes(k))) { skipped++; return; }
+
+      // Skip rows where name looks like a number (e.g. row numbers)
+      if (/^\d+$/.test(name)) { skipped++; return; }
+
+      // Parse qty — keep exact decimals, no approximation
+      const rawQty = row[qtyColIdx];
+      let qty;
+      if (rawQty === null || rawQty === undefined || rawQty === '') {
+        qty = 0;
+      } else {
+        qty = parseFloat(String(rawQty).replace(/,/g, ''));
+        if (isNaN(qty) || qty < 0) qty = 0;
+        // Remove float noise (e.g. 1666.5999999999997 → 1666.6)
+        qty = Math.round(qty * 100) / 100;
+      }
+      // Force to number type
+      qty = Number(qty);
 
       const existing = stock.findIndex(s => s.name.toLowerCase() === name.toLowerCase());
       if (existing > -1) {
@@ -2245,10 +2329,12 @@ function importStockFromExcel(input) {
     setStock(stock);
     renderStockList();
     renderLowStockAlerts();
-
-    const msg = `✓ Import complete — ${added} added, ${updated} updated${skipped ? ', ' + skipped + ' skipped (invalid rows)' : ''}.`;
-    showImportResult(msg, 'success');
     input.value = '';
+
+    // Show result with detected columns info
+    const colInfo = `(Name: col ${String.fromCharCode(65 + nameColIdx)}, Qty: col ${String.fromCharCode(65 + qtyColIdx)})`;
+    const msg = `✓ Import complete — ${added} added, ${updated} updated${skipped ? ', ' + skipped + ' skipped' : ''} ${colInfo}`;
+    showImportResult(msg, 'success');
   }
 
   if (isCsv) {
@@ -2268,9 +2354,9 @@ function importStockFromExcel(input) {
           cols.push(cur.trim());
           return cols;
         });
-        processRows(rows);
+        detectAndProcess(rows);
       } catch (err) {
-        showImportResult('Error reading CSV file. Make sure it has two columns: Item Name and Qty.', 'error');
+        showImportResult('Error reading CSV file.', 'error');
       }
     };
     reader.onerror = () => showImportResult('Could not read the file.', 'error');
@@ -2281,11 +2367,17 @@ function importStockFromExcel(input) {
       try {
         const data = new Uint8Array(e.target.result);
         const workbook = XLSX.read(data, { type: 'array' });
-        const sheet = workbook.Sheets[workbook.SheetNames[0]];
-        const rows = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '' });
-        processRows(rows);
+        // Try to find the most relevant sheet
+        let sheetName = workbook.SheetNames[0];
+        const stockSheet = workbook.SheetNames.find(n =>
+          /stock|inventory|item|product/i.test(n)
+        );
+        if (stockSheet) sheetName = stockSheet;
+        const sheet = workbook.Sheets[sheetName];
+        const rows = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '', raw: true });
+        detectAndProcess(rows);
       } catch (err) {
-        showImportResult('Could not read .xlsx file — it may be too complex (formulas, merged cells). Try saving it as a .csv file first, then upload the .csv instead.', 'error');
+        showImportResult('Error reading file: ' + err.message, 'error');
       }
     };
     reader.onerror = () => showImportResult('Could not read the file.', 'error');
@@ -2322,15 +2414,32 @@ function deleteStockItem(name) {
   });
 }
 
+async function clearAllStockRemote() {
+  try {
+    // Delete all rows — Supabase requires a filter, so we use neq on empty string which matches all
+    const r = await fetch(`${SUPABASE_URL}/rest/v1/stock?name=neq.`, {
+      method: 'DELETE',
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
+    });
+    return r.ok;
+  } catch { return false; }
+}
+
 function clearAllStock() {
   const stock = getStock();
   if (!stock.length) return showToast('Stock is already empty', 'error');
-  askConfirm(`Clear ALL ${stock.length} stock item${stock.length !== 1 ? 's' : ''}? This permanently deletes them from the database.`, () => {
-    stock.forEach(item => deleteStockRemote(item.name));
+  askConfirm(`Clear ALL ${stock.length} stock item${stock.length !== 1 ? 's' : ''}? This permanently deletes them from the database.`, async () => {
+    showLoading('Clearing stock...');
+    const ok = await clearAllStockRemote();
+    hideLoading();
     setStock([]);
     renderStockList();
     renderLowStockAlerts();
-    showToast('All stock cleared ✓', 'success');
+    if (ok) {
+      showToast('All stock cleared ✓', 'success');
+    } else {
+      showToast('Cleared locally — cloud delete may have failed. Refresh to verify.', 'error');
+    }
   });
 }
 
@@ -2346,17 +2455,19 @@ function renderStockList() {
     <table class="report-table">
       <thead><tr><th>Item</th><th>Qty in Stock</th><th>VAT Eligible</th><th>Action</th></tr></thead>
       <tbody>
-        ${stock.map(s => `<tr>
+        ${stock.map(s => {
+          const qty = Number(s.qty) || 0;
+          return `<tr>
           <td><strong>${s.name}</strong></td>
-          <td>${s.qty}</td>
-          <td>${s.qty > 0
+          <td>${qty}</td>
+          <td>${qty > 0
             ? '<span style="color:var(--green);font-weight:600">✓ Yes</span>'
             : '<span style="color:var(--red)">✗ No (out of stock)</span>'}</td>
           <td>
-            <button class="btn btn-sm btn-ghost" onclick="promptEditStock('${s.name.replace(/'/g,"\\'")}', ${s.qty})">Edit</button>
+            <button class="btn btn-sm btn-ghost" onclick="promptEditStock('${s.name.replace(/'/g,"\\'")}', ${qty})">Edit</button>
             <button class="btn btn-sm btn-danger" style="margin-left:0.5rem" onclick="deleteStockItem('${s.name.replace(/'/g,"\\'")}')">Remove</button>
           </td>
-        </tr>`).join('')}
+        </tr>`;}).join('')}
       </tbody>
     </table>
   `;
