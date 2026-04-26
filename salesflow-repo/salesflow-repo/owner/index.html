@@ -1560,7 +1560,7 @@ function switchTab(tab, el) {
   if (el) el.classList.add('active');
   const pane = document.getElementById('o-tab-' + tab);
   if (pane) pane.classList.add('active');
-  if (tab === 'review') renderOwnerReview();
+  if (tab === 'review') { renderOwnerReview(); populatePurchaseOrderDropdown(); renderPurchaseOrders(); }
   if (tab === 'records') renderOwnerRecords();
   if (tab === 'monthly') renderMonthly();
   if (tab === 'stock') renderStockList();
@@ -2165,32 +2165,71 @@ function renderLowStockAlerts() {
 
   if (!low.length && !zero.length) { container.innerHTML = ''; return; }
 
-  let html = `<div style="background:white;border:1.5px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:1.25rem;box-shadow:var(--shadow-sm);">
-    <div style="background:linear-gradient(90deg,#7f1d1d,#991b1b);padding:0.75rem 1.1rem;display:flex;align-items:center;justify-content:space-between;">
-      <span style="font-family:'Syne',sans-serif;font-weight:800;font-size:0.85rem;color:white;">⚠ Stock Alerts (ስቶክ ማስጠንቀቂያ)</span>
-      <span style="background:white;color:#991b1b;font-size:0.65rem;font-weight:800;padding:0.15rem 0.55rem;border-radius:20px;">${zero.length + low.length} items</span>
+  const total = zero.length + low.length;
+  let html = `
+  <div style="border-radius:16px;overflow:hidden;margin-bottom:1.25rem;box-shadow:var(--shadow-md);border:1.5px solid #FCA5A5;">
+    <!-- Header -->
+    <div style="background:linear-gradient(90deg,var(--purple-deep),#991b1b);padding:0.85rem 1.2rem;display:flex;align-items:center;justify-content:space-between;">
+      <div style="display:flex;align-items:center;gap:0.6rem;">
+        <span style="font-size:1.1rem;">⚠️</span>
+        <span style="font-family:'Syne',sans-serif;font-weight:800;font-size:0.9rem;color:white;">Stock Alerts (ስቶክ ማስጠንቀቂያ)</span>
+      </div>
+      <span style="background:var(--gold);color:var(--purple-deep);font-size:0.65rem;font-weight:800;padding:0.2rem 0.65rem;border-radius:20px;">${total} item${total!==1?'s':''}</span>
     </div>`;
 
   if (zero.length) {
-    html += `<div style="padding:0.6rem 1.1rem;background:#fff5f5;border-bottom:1px solid #fecaca;">
-      <div style="font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#991b1b;margin-bottom:0.4rem;">🔴 Out of Stock (ምርት አልቋል)</div>
+    html += `
+    <div style="padding:0.85rem 1.1rem;background:#FFF5F5;border-bottom:1px solid #FED7D7;">
+      <div style="font-size:0.64rem;font-weight:800;text-transform:uppercase;letter-spacing:0.12em;color:#C53030;margin-bottom:0.6rem;">🔴 Out of Stock (ምርት አልቋል)</div>
       <div style="display:flex;flex-wrap:wrap;gap:0.4rem;">
-        ${zero.map(s => `<span style="background:#fee2e2;color:#991b1b;padding:0.2rem 0.65rem;border-radius:20px;font-size:0.72rem;font-weight:600;border:1px solid #fca5a5;">${s.name}</span>`).join('')}
+        ${zero.map(s => `
+        <button onclick="quickOrder('${s.name.replace(/'/g,"\\'")}',50)"
+          style="background:#FEE2E2;color:#991B1B;padding:0.25rem 0.75rem;border-radius:20px;font-size:0.72rem;font-weight:700;border:1.5px solid #FCA5A5;cursor:pointer;transition:all 0.15s;font-family:inherit;"
+          onmouseover="this.style.background='#FCA5A5'" onmouseout="this.style.background='#FEE2E2'"
+          title="Click to send a purchase order for ${s.name}">
+          ${s.name} <span style="opacity:0.6;">+Order</span>
+        </button>`).join('')}
       </div>
     </div>`;
   }
 
   if (low.length) {
-    html += `<div style="padding:0.6rem 1.1rem;background:#fffbeb;">
-      <div style="font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#92400e;margin-bottom:0.4rem;">🟡 Running Low</div>
+    html += `
+    <div style="padding:0.85rem 1.1rem;background:#FFFBEB;">
+      <div style="font-size:0.64rem;font-weight:800;text-transform:uppercase;letter-spacing:0.12em;color:#92400E;margin-bottom:0.6rem;">🟡 Running Low — restock soon</div>
       <div style="display:flex;flex-wrap:wrap;gap:0.4rem;">
-        ${low.map(s => `<span style="background:#fef9c3;color:#92400e;padding:0.2rem 0.65rem;border-radius:20px;font-size:0.72rem;font-weight:600;border:1px solid #fde68a;">${s.name} — ${s.qty} left</span>`).join('')}
+        ${low.map(s => `
+        <button onclick="quickOrder('${s.name.replace(/'/g,"\\'")}',${Math.max(10, 20 - Math.round(Number(s.qty)))})"
+          style="background:#FEF9C3;color:#92400E;padding:0.25rem 0.75rem;border-radius:20px;font-size:0.72rem;font-weight:700;border:1.5px solid #FDE68A;cursor:pointer;transition:all 0.15s;font-family:inherit;"
+          onmouseover="this.style.background='#FDE68A'" onmouseout="this.style.background='#FEF9C3'"
+          title="Click to send a purchase order for ${s.name}">
+          ${s.name} <span style="opacity:0.7;">(${s.qty} left)</span> <span style="opacity:0.6;">+Order</span>
+        </button>`).join('')}
       </div>
     </div>`;
   }
 
-  html += `</div>`;
+  html += `
+    <div style="padding:0.6rem 1.1rem;background:#F9F9FF;border-top:1px solid var(--border);">
+      <span style="font-size:0.68rem;color:var(--muted);">💡 Click any item to quickly create a purchase order for the manager</span>
+    </div>
+  </div>`;
+
   container.innerHTML = html;
+}
+
+function quickOrder(itemName, suggestedQty) {
+  // Pre-fill the purchase order form and scroll to it
+  const sel = document.getElementById('po-item');
+  const qtyInput = document.getElementById('po-qty');
+  if (!sel || !qtyInput) return;
+  sel.value = itemName;
+  qtyInput.value = suggestedQty;
+  qtyInput.focus();
+  document.getElementById('po-note').focus();
+  // Scroll to the purchase order card
+  document.getElementById('o-purchase-orders')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  showToast(`Pre-filled order for "${itemName}" — add a note and send!`, 'success');
 }
 
 // ════════════════════════════════════════
